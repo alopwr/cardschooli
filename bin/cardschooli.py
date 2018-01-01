@@ -27,7 +27,6 @@ class Window0(QWidget):
         print(self.project)
         self.close()
         window1.init_ui()
-        window1.show()
 
 
 class Window1(QWidget):
@@ -44,13 +43,19 @@ class Window1(QWidget):
                 window0.project), self)
         open_btn = QPushButton('Otwórz plik', self)
         open_btn.clicked.connect(self.open_file)
+        self.show()
 
     def open_file(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        filename, _ = QFileDialog.getOpenFileName(self, "Wybierz swój plik z danymi", "",
+        filename, _ = QFileDialog.getOpenFileName(self, "Wybierz swój plik z danymi:", "",
                                                   "dane do cardschooli (*.csv)", options=options)
         self.filename = filename
+        self.next()
+
+    def next(self):
+        print(self.filename)
+        self.close()
 
 
 def center(window):

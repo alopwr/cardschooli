@@ -4,7 +4,8 @@ import sys
 
 from PIL import Image, ImageDraw
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
+    QColorDialog
 
 
 class Window0(QWidget):
@@ -85,7 +86,9 @@ class Window2(QWidget):
     def init_ui(self, location):
         self.resize(800, 600)
         self.setWindowTitle('cardschooli - krok 2')
-        QLabel('Zaprojektuj swoją kartę.', self)
+        QLabel(
+            'Zaprojektuj swoją kartę. Zacznijmy od rewersu, czyli tej części z tyłu. Będzie taka sama dla każdej karty',
+            self)
         center(self)
         preview = QLabel(self)
         path = os.path.join(os.pardir, 'cards', window0.project)
@@ -93,16 +96,41 @@ class Window2(QWidget):
         print(path, file, location)
         if not os.path.exists(path):
             os.makedirs(path)
-        self.make_card_preview(file)
+        self.card = Card(os.path.join(os.pardir, 'cards', window0.project, 'preview.png'))
+        self.card.preview()
         pixmap = QPixmap(file)
         preview.setPixmap(pixmap)
+        preview.setGeometry(25, (600 - pixmap.height()) / 2, pixmap.width(), pixmap.height())
+        color_btn = QPushButton('Wybierz', self)
+        color_btn.clicked.connect(self.color_btn_act)
         self.show()
 
-    def make_card_preview(self, prev_file):
-        prev = Image.new('RGBA', (240, 336), 'white')
-        prev_draw = ImageDraw.Draw(prev)
-        prev.save(prev_file)
+    def color_btn_act(self):
+        self.card.change_color(self.get_color())
 
+    def get_color(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            return color.name()
+        return "#ffffff"
+
+
+class Card(object):
+
+    def __init__(self, location, size=(240, 336), color='#ffffff'):
+        self.location = location
+        self.size = size
+        self.color = color
+
+    def preview(self):
+        prev = Image.new('RGBA', self.size, self.color)
+        prev_draw = ImageDraw.Draw(prev)
+        prev.save(self.location)
+
+    def change_color(self, color):
+        self.color = color
+        print("color is now {}".format(color))
+        self.preview()
 
 def center(window):
     qr = window.frameGeometry()

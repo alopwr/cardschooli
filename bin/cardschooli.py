@@ -90,23 +90,29 @@ class Window2(QWidget):
             'Zaprojektuj swoją kartę. Zacznijmy od rewersu, czyli tej części z tyłu. Będzie taka sama dla każdej karty',
             self)
         center(self)
-        preview = QLabel(self)
         path = os.path.join(os.pardir, 'cards', window0.project)
-        file = os.path.join(os.pardir, 'cards', window0.project, 'preview.png')
-        print(path, file, location)
+        self.card_loc = os.path.join(os.pardir, 'cards', window0.project, 'preview.png')
+        print(path, self.card_loc, location)
         if not os.path.exists(path):
             os.makedirs(path)
         self.card = Card(os.path.join(os.pardir, 'cards', window0.project, 'preview.png'))
         self.card.preview()
-        pixmap = QPixmap(file)
-        preview.setPixmap(pixmap)
-        preview.setGeometry(25, (600 - pixmap.height()) / 2, pixmap.width(), pixmap.height())
-        color_btn = QPushButton('Wybierz', self)
+        self.preview = QLabel(self)
+        self.pixmap = QPixmap(self.card_loc)
+        self.preview.setPixmap(self.pixmap)
+        self.preview.setGeometry(25, (600 - self.pixmap.height()) / 2, self.pixmap.width(), self.pixmap.height())
+        color_btn = QPushButton('Wybierz kolor tła', self)
+        color_btn.setGeometry(500, 60, 150, 35)
         color_btn.clicked.connect(self.color_btn_act)
         self.show()
 
     def color_btn_act(self):
         self.card.change_color(self.get_color())
+        print("exec")
+        self.pixmap = QPixmap(self.card_loc)
+        self.preview.setPixmap(self.pixmap)
+        self.hide()
+        self.show()
 
     def get_color(self):
         color = QColorDialog.getColor()
@@ -131,6 +137,7 @@ class Card(object):
         self.color = color
         print("color is now {}".format(color))
         self.preview()
+
 
 def center(window):
     qr = window.frameGeometry()

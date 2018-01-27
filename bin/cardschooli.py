@@ -5,7 +5,7 @@ import sys
 from PIL import Image, ImageDraw, ImageFont
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
-    QColorDialog, QInputDialog, QFontDialog
+    QColorDialog, QInputDialog, QMessageBox
 
 
 class Window0(QWidget):
@@ -119,20 +119,24 @@ class Window2(QWidget):
     def image_btn_act(self):
         imported_rev = self.get_image()
         print(imported_rev.size)
-        coords = self.get_integer()
+        coords = self.get_coords()
         print(coords)
         self.card.paste_in_rev(imported_rev, coords)
         self.update_preview()
 
     def text_btn_act(self):
-        # font = self.get_font()
-        font = ImageFont.truetype('../fonts/impact.ttf', 15)
+        size = self.get_size()
         text = self.get_text()
-        # print(font.toString())
-        # font_prop = font.toString().split(',')
-        # print(font_prop)
+        coords = self.get_coords()
+        color = self.get_color()
+        font = ImageFont.truetype(os.path.join(os.pardir, 'fonts', 'font.ttf'), size)
         print(self.card.check_txt_size(text, font))
-        self.card.add_text((0, 0), text, font=font)
+        if self.card.check_txt_size(text, font) > (self.width(), self.height()):
+            QMessageBox().warning(self, 'Za duży!',
+                                  'Tekst o tych paramentrach nie zmieści się na twojej grafice. Spróbuj z innymi ustawieniami!',
+                                  QMessageBox.Ok)
+            return None
+        self.card.add_text(coords, text, color, font)
         self.update_preview()
 
     def update_preview(self):
@@ -154,7 +158,12 @@ class Window2(QWidget):
                                         options=options)[0]
         return Image.open(filename)
 
-    def get_integer(self):
+    def get_size(self):
+        i, ok_pressed = QInputDialog.getInt(self, "Podaj rozmiar czcionki:", "Wielkość czcionki:", 0)
+        if ok_pressed:
+            return i
+
+    def get_coords(self):
         i, ok_pressed0 = QInputDialog.getInt(self, "Podaj pozycję dodawanego obiektu:", "Pozycja x:", 0)
         if ok_pressed0:
             j, ok_pressed1 = QInputDialog.getInt(self, "Podaj pozycję dodawanego obiektu:", "Pozycja y:", 0)
@@ -165,11 +174,6 @@ class Window2(QWidget):
         text, okPressed = QInputDialog.getText(self, "Jaki tekst chcesz dodać?", "Podaj tekst:", QLineEdit.Normal, "")
         if okPressed and text != '':
             return text
-
-    def get_font(self):
-        font, ok = QFontDialog.getFont()
-        if ok:
-            return font
 
 
 class Card(object):

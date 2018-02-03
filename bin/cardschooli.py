@@ -1,9 +1,10 @@
 import csv
 import os.path
+import os.path
 import sys
 
 from PIL import Image, ImageDraw, ImageFont
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
 
@@ -52,7 +53,7 @@ class Window1(QWidget):
         self.resize(800, 600)
         center(self)
         QLabel(
-            'Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony.'.format(
+            'Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony. Nie używaj nagłówków!'.format(
                 window0.project), self)
         open_btn = QPushButton('Otwórz plik', self)
         open_btn.setGeometry(325, 250, 150, 100)
@@ -66,24 +67,23 @@ class Window1(QWidget):
             QFileDialog.getOpenFileName(self, 'Wybierz swój plik z danymi:', filter='dane do cardschooli (*.csv)',
                                         options=options)[0]
         self.filename = filename
-        print(get_data(filename))
         self.next()
 
     def next(self):
         print(self.filename)
         self.close()
-        window2.init_ui(self.filename)
+        window2.init_ui()
 
 
 class Window2(QWidget):
     """
-    user creates his card
+    user creates his card's reverse
     """
 
     def __init__(self):
         super().__init__()
 
-    def init_ui(self, location):
+    def init_ui(self):
         self.resize(800, 600)
         self.setWindowTitle('cardschooli - krok 2')
         QLabel(
@@ -92,11 +92,10 @@ class Window2(QWidget):
         center(self)
         path = os.path.join(os.pardir, 'cards', window0.project)
         self.card_loc = os.path.join(os.pardir, 'cards', window0.project, 'preview_rev.png')
-        print(path, self.card_loc, location)
+        print(path, self.card_loc)
         if not os.path.exists(path):
             os.makedirs(path)
-        self.card = Card(os.path.join(os.pardir, 'cards', window0.project, 'preview_rev.png'))
-        self.card.preview_rev()
+        self.card = Card(os.path.join(os.pardir, 'cards', window0.project))
         self.preview = QLabel(self)
         self.pixmap = QPixmap(self.card_loc)
         self.preview.setPixmap(self.pixmap)
@@ -104,16 +103,19 @@ class Window2(QWidget):
         color_btn = QPushButton('Wybierz kolor tła', self)
         image_btn = QPushButton('Zaimportuj grafikę PNG', self)
         text_btn = QPushButton('Dodaj tekst', self)
+        finish_btn = QPushButton('Dalej >>>', self)
         color_btn.setGeometry(500, 60, 225, 35)
         image_btn.setGeometry(500, 115, 225, 35)
         text_btn.setGeometry(500, 170, 225, 35)
+        finish_btn.setGeometry(500, 475, 225, 70)
         color_btn.clicked.connect(self.color_btn_act)
         image_btn.clicked.connect(self.image_btn_act)
         text_btn.clicked.connect(self.text_btn_act)
+        finish_btn.clicked.connect(self.finish_btn_act)
         self.show()
 
     def color_btn_act(self):
-        self.card.change_color(self.get_color())
+        self.card.change_color_rev(self.get_color())
         self.update_preview()
 
     def image_btn_act(self):
@@ -130,14 +132,18 @@ class Window2(QWidget):
         coords = self.get_coords()
         color = self.get_color()
         font = ImageFont.truetype(os.path.join(os.pardir, 'fonts', 'font.ttf'), size)
-        print(self.card.check_txt_size(text, font))
-        if self.card.check_txt_size(text, font) > (self.width(), self.height()):
+        print(self.card.check_txt_size_rev(text, font))
+        if self.card.check_txt_size_rev(text, font) > (self.width(), self.height()):
             QMessageBox().warning(self, 'Za duży!',
                                   'Tekst o tych paramentrach nie zmieści się na twojej grafice. Spróbuj z innymi ustawieniami!',
                                   QMessageBox.Ok)
             return None
-        self.card.add_text(coords, text, color, font)
+        self.card.add_text_rev(coords, text, color, font)
         self.update_preview()
+
+    def finish_btn_act(self):
+        self.close()
+        window3.init_ui()
 
     def update_preview(self):
         self.pixmap = QPixmap(self.card_loc)
@@ -159,52 +165,201 @@ class Window2(QWidget):
         return Image.open(filename)
 
     def get_size(self):
-        i, ok_pressed = QInputDialog.getInt(self, "Podaj rozmiar czcionki:", "Wielkość czcionki:", 0)
+        i, ok_pressed = QInputDialog.getInt(self, 'Podaj rozmiar czcionki:', 'Wielkość czcionki:', 0)
         if ok_pressed:
             return i
 
     def get_coords(self):
-        i, ok_pressed0 = QInputDialog.getInt(self, "Podaj pozycję dodawanego obiektu:", "Pozycja x:", 0)
+        i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję dodawanego obiektu:', 'Pozycja x:', 0)
         if ok_pressed0:
-            j, ok_pressed1 = QInputDialog.getInt(self, "Podaj pozycję dodawanego obiektu:", "Pozycja y:", 0)
+            j, ok_pressed1 = QInputDialog.getInt(self, 'Podaj pozycję dodawanego obiektu:', 'Pozycja y:', 0)
             if ok_pressed1:
                 return (i, j)
 
     def get_text(self):
-        text, okPressed = QInputDialog.getText(self, "Jaki tekst chcesz dodać?", "Podaj tekst:", QLineEdit.Normal, "")
+        text, okPressed = QInputDialog.getText(self, 'Jaki tekst chcesz dodać?', 'Podaj tekst:', QLineEdit.Normal, '')
         if okPressed and text != '':
             return text
 
 
+class Window3(QWidget):
+    """
+    user generates his card averse
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def init_ui(self):
+        self.resize(800, 600)
+        self.setWindowTitle('cardschooli - krok 3')
+        QLabel(
+            'Zaprojektuj swoją kartę. Teraz pora zaprojektować awers. Szablon dla każdej karty będzie taki sam, ale masz\nmożliwość umieszczenia na nim elementów, które dla każdej karty przetworzone zostaną na\nodpowiednią wartość z pliku danych.'.format(),
+            self)
+        center(self)
+        self.card = window2.card
+        self.card_loc = os.path.join(os.pardir, 'cards', window0.project, 'preview_ave.png')
+        self.preview = QLabel(self)
+        self.pixmap = QPixmap(self.card_loc)
+        self.preview.setPixmap(self.pixmap)
+        self.preview.setGeometry(25, (600 - self.pixmap.height()) / 2, self.pixmap.width(), self.pixmap.height())
+        color_btn = QPushButton('Wybierz kolor tła', self)
+        image_btn = QPushButton('Zaimportuj grafikę PNG', self)
+        text_btn = QPushButton('Dodaj tekst', self)
+        finish_btn = QPushButton('Zakończ >>>', self)
+        color_btn.setGeometry(500, 60, 225, 35)
+        image_btn.setGeometry(500, 115, 225, 35)
+        text_btn.setGeometry(500, 170, 225, 35)
+        finish_btn.setGeometry(500, 475, 225, 70)
+        color_btn.clicked.connect(self.color_btn_act)
+        image_btn.clicked.connect(self.image_btn_act)
+        text_btn.clicked.connect(self.text_btn_act)
+        finish_btn.clicked.connect(self.finish_btn_act)
+        self.show()
+
+    def color_btn_act(self):
+        color = self.get_color()
+        self.card.change_color_ave(color)
+        self.update_preview()
+
+    def image_btn_act(self):
+        pass
+
+    def text_btn_act(self):
+        pass
+
+    def finish_btn_act(self):
+        self.card.save_ave_cmd_buf()
+        self.close()
+        window4.init_ui()
+
+    def get_color(self):
+        color = QColorDialog()
+        color.setFocus()
+        color_val = color.getColor()
+        if color_val.isValid():
+            return color_val.name()
+        return "#ffffff"
+
+    def update_preview(self):
+        self.preview.setPixmap(QPixmap(self.card_loc))
+        self.update()
+
+
+class Window4(QWidget):
+    """
+    cards are compiling
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def init_ui(self):
+        self.resize(800, 600)
+        self.setWindowTitle('cardschooli - krok 4')
+        center(self)
+        self.card = window3.card
+        self.loading = QLabel('Twoja talia jest generowana. Zachowaj cierpliwość, to może chwilę potrwać...', self)
+        self.loading.move(140, 216)
+        self.preloader = QLabel(self)
+        movie = QMovie(os.path.join(os.pardir, 'img', 'preloader.gif'))
+        self.preloader.setMovie(movie)
+        self.preloader.setGeometry(336, 236, 128, 128)
+        self.show()
+        movie.start()
+        print(self.read_csv_data(window1.filename))
+        self.compile()
+
+    def read_csv_data(self, location):
+        return list(csv.reader(open(location)))
+
+    def compile(self):
+        self.card.compile_ave(self.read_csv_data(window1.filename))
+
+
 class Card(object):
-    def __init__(self, location, size=(180, 252), color='#ffffff'):
+    def __init__(self, location, size=(180, 252), color_rev='#ffffff', color_av='#ffffff'):
         self.location = location
         self.size = size
-        self.color = color
-        self.prev = Image.new('RGBA', self.size, self.color)
-        self.prev_draw = ImageDraw.Draw(self.prev)
+        self.color_rev = color_rev
+        self.color_av = color_av
+        self.prev_rev = Image.new('RGBA', self.size, self.color_rev)
+        self.prev_rev_draw = ImageDraw.Draw(self.prev_rev)
+        self.prev_ave = Image.new('RGBA', self.size, self.color_av)
+        self.prev_ave_draw = ImageDraw.Draw(self.prev_ave)
+        self.cmd_buf = ''
+        self.preview_rev()
+        self.preview_ave()
 
     def preview_rev(self):
-        self.prev.save(self.location)
+        self.prev_rev.save(os.path.join(self.location, 'preview_rev.png'))
 
-    def change_color(self, color):
-        self.color = color
-        self.prev = Image.new('RGBA', self.size, self.color)
-        self.prev_draw = ImageDraw.Draw(self.prev)
-        print("color is now {}".format(color))
+    def change_color_rev(self, color):
+        self.prev_rev = Image.new('RGBA', self.size, color)
+        self.prev_rev_draw = ImageDraw.Draw(self.prev_rev)
+        print("color_rev is now {}".format(color))
         self.preview_rev()
 
     def paste_in_rev(self, thing, coords):
-        self.prev.paste(thing, coords, thing)
-        print('pasted {} in {} at {!s}'.format(thing, self.prev, coords))
+        self.prev_rev.paste(thing, coords, thing)
+        print('pasted {} in {} at {!s}'.format(thing, self.prev_rev, coords))
         self.preview_rev()
 
-    def check_txt_size(self, text, font=None):
-        return self.prev_draw.textsize(text, font)
+    def check_txt_size_rev(self, text, font=None):
+        return self.prev_rev_draw.textsize(text, font)
 
-    def add_text(self, coords, text, fill=None, font=None):
-        self.prev_draw.text(coords, text, fill, font)
+    def add_text_rev(self, coords, text, fill=None, font=None):
+        self.prev_rev_draw.text(coords, text, fill, font)
         self.preview_rev()
+
+    def preview_ave(self):
+        self.prev_ave.save(os.path.join(self.location, 'preview_ave.png'))
+
+    def read_ave_config(self):
+        cmds = []
+        with open(os.path.join(self.location, 'ave.cardconfig')) as config:
+            for i in config.readlines():
+                cmds.append(i[:-1].split("_"))
+        return cmds
+
+    def compile_ave(self, import_data):
+        cmds = self.read_ave_config()
+        cards = [Image.new('RGBA', self.size, self.color_av) for i in range(len(import_data))]
+        print(cards)
+        print(len(cards))
+        for i in cmds:
+            for j in range(len(cards)):
+                if i[0] == 'col':
+                    cards[j] = Image.new('RGBA', self.size, i[1])
+                    print('updated j to {}, now has color {}'.format(cards[j], i[1]))
+                """if i[0] == 'img':
+                    ImageDraw.Draw(j) cośtam"""
+        for i in range(len(cards)):
+            cards[i].save(os.path.join(self.location, 'card_{}.png'.format(i)))
+
+    def save_ave_cmd_buf(self):
+        with open(os.path.join(self.location, 'ave.cardconfig'), 'w') as cmd_loc:
+            cmd_loc.writelines(self.cmd_buf)
+        print('config saved at {}'.format(os.path.join(self.location, 'ave.cardconfig')))
+
+    def change_color_ave(self, color):
+        self.prev_ave = Image.new('RGBA', self.size, color)
+        self.prev_ave_draw = ImageDraw.Draw(self.prev_ave)
+        self.cmd_buf += 'col_{}\n'.format(color)
+        print(self.cmd_buf)
+        self.preview_ave()
+
+    def check_txt_size_ave(self, text, font=None):
+        return self.prev_ave_draw.textsize(text, font)
+
+    def add_text_ave(self, coords, text, fill=None, font=None):
+        if coords[0] == 154 or coords[1] == 154:
+            size = self.check_txt_size_ave(text, font)
+            if coords[0] == 154:
+                self.prev_rev_draw.text((self.prev_ave.width - size[0] / 2, coords[1]), text, fill, font)
+        else:
+            self.prev_rev_draw.text(coords, text, fill, font)
+        self.preview_ave()
 
 
 def center(window):
@@ -213,13 +368,11 @@ def center(window):
     window.move(qr.topLeft())
 
 
-def get_data(location):
-    return list(csv.reader(open(location)))
-
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window0 = Window0()
     window1 = Window1()
     window2 = Window2()
+    window3 = Window3()
+    window4 = Window4()
     sys.exit(app.exec_())

@@ -53,7 +53,7 @@ class Window1(QWidget):
         self.resize(800, 600)
         center(self)
         QLabel(
-            'Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony. Nie używaj nagłówków!'.format(
+            'Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony. Koniecznie użyj nagłówków!'.format(
                 window0.project), self)
         open_btn = QPushButton('Otwórz plik', self)
         open_btn.setGeometry(325, 250, 150, 100)
@@ -67,6 +67,9 @@ class Window1(QWidget):
             QFileDialog.getOpenFileName(self, 'Wybierz swój plik z danymi:', filter='dane do cardschooli (*.csv)',
                                         options=options)[0]
         self.filename = filename
+        with open(filename, newline='') as f:
+            reader = csv.reader(f)
+            self.headers = next(reader)
         self.next()
 
     def next(self):
@@ -170,11 +173,15 @@ class Window2(QWidget):
             return i
 
     def get_coords(self):
-        i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję dodawanego obiektu:', 'Pozycja x:', 0)
-        if ok_pressed0:
-            j, ok_pressed1 = QInputDialog.getInt(self, 'Podaj pozycję dodawanego obiektu:', 'Pozycja y:', 0)
-            if ok_pressed1:
-                return (i, j)
+        i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję w poziomie dodawanego obiektu:',
+                                             'Anuluj aby wycentrować horyzontalnie. X:', min=0, max=180)
+        j, ok_pressed1 = QInputDialog.getInt(self, 'Podaj pozycję w pionie obiektu:',
+                                             'Anuluj aby wycentrować wertykalnie. Y:', min=0, max=252)
+        if not ok_pressed0:
+            i = -1
+        if not ok_pressed1:
+            j = -1
+        return [i, j]
 
     def get_text(self):
         text, okPressed = QInputDialog.getText(self, 'Jaki tekst chcesz dodać?', 'Podaj tekst:', QLineEdit.Normal, '')
@@ -205,14 +212,17 @@ class Window3(QWidget):
         self.preview.setGeometry(25, (600 - self.pixmap.height()) / 2, self.pixmap.width(), self.pixmap.height())
         color_btn = QPushButton('Wybierz kolor tła', self)
         image_btn = QPushButton('Zaimportuj grafikę PNG', self)
+        image_var_btn = QPushButton('Zaimportuj folder z grafikami PNG', self)
         text_btn = QPushButton('Dodaj tekst', self)
         finish_btn = QPushButton('Zakończ >>>', self)
-        color_btn.setGeometry(500, 60, 225, 35)
-        image_btn.setGeometry(500, 115, 225, 35)
-        text_btn.setGeometry(500, 170, 225, 35)
-        finish_btn.setGeometry(500, 475, 225, 70)
+        color_btn.setGeometry(490, 60, 235, 35)
+        image_btn.setGeometry(490, 115, 235, 35)
+        image_var_btn.setGeometry(490, 170, 235, 35)
+        text_btn.setGeometry(490, 225, 235, 35)
+        finish_btn.setGeometry(490, 475, 235, 70)
         color_btn.clicked.connect(self.color_btn_act)
         image_btn.clicked.connect(self.image_btn_act)
+        image_var_btn.clicked.connect(self.image_var_btn_act)
         text_btn.clicked.connect(self.text_btn_act)
         finish_btn.clicked.connect(self.finish_btn_act)
         self.show()
@@ -223,7 +233,14 @@ class Window3(QWidget):
         self.update_preview()
 
     def image_btn_act(self):
-        pass
+        imported_ave = self.get_image()
+        coords = self.get_coords()
+        self.card.paste_in_ave(imported_ave, coords)
+        self.update_preview()
+
+    def image_var_btn_act(self):
+        self.get_folder()
+        print(self.get_coords())
 
     def text_btn_act(self):
         pass
@@ -241,6 +258,30 @@ class Window3(QWidget):
             return color_val.name()
         return "#ffffff"
 
+    def get_folder(self):
+        options = QFileDialog.Options()
+        filename = \
+            QFileDialog.getExistingDirectory(self, "Wybierz folder z plikami PNG:")
+        return filename
+
+    def get_image(self):
+        options = QFileDialog.Options()
+        filename = \
+            QFileDialog.getOpenFileName(self, 'Wybierz obrazek do zaimportowania na rewers:', filter='PNG (*.png)',
+                                        options=options)[0]
+        return filename
+
+    def get_coords(self):
+        i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję w poziomie dodawanego obiektu:',
+                                             'Anuluj aby wycentrować horyzontalnie. X:', min=0, max=180)
+        j, ok_pressed1 = QInputDialog.getInt(self, 'Podaj pozycję w pionie obiektu:',
+                                             'Anuluj aby wycentrować wertykalnie. Y:', min=0, max=252)
+        if not ok_pressed0:
+            i = -1
+        if not ok_pressed1:
+            j = -1
+        return [i, j]
+
     def update_preview(self):
         self.preview.setPixmap(QPixmap(self.card_loc))
         self.update()
@@ -248,7 +289,7 @@ class Window3(QWidget):
 
 class Window4(QWidget):
     """
-    cards are compiling
+    cards are compiling info and card compilation
     """
 
     def __init__(self):
@@ -283,8 +324,8 @@ class Card(object):
         self.size = size
         self.color_rev = color_rev
         self.color_av = color_av
-        self.prev_rev = Image.new('RGBA', self.size, self.color_rev)
-        self.prev_rev_draw = ImageDraw.Draw(self.prev_rev)
+        self.prev_ave = Image.new('RGBA', self.size, self.color_rev)
+        self.prev_rev_draw = ImageDraw.Draw(self.prev_ave)
         self.prev_ave = Image.new('RGBA', self.size, self.color_av)
         self.prev_ave_draw = ImageDraw.Draw(self.prev_ave)
         self.cmd_buf = ''
@@ -292,17 +333,25 @@ class Card(object):
         self.preview_ave()
 
     def preview_rev(self):
-        self.prev_rev.save(os.path.join(self.location, 'preview_rev.png'))
+        self.prev_ave.save(os.path.join(self.location, 'preview_rev.png'))
 
     def change_color_rev(self, color):
-        self.prev_rev = Image.new('RGBA', self.size, color)
-        self.prev_rev_draw = ImageDraw.Draw(self.prev_rev)
+        self.prev_ave = Image.new('RGBA', self.size, color)
+        self.prev_rev_draw = ImageDraw.Draw(self.prev_ave)
         print("color_rev is now {}".format(color))
         self.preview_rev()
 
     def paste_in_rev(self, thing, coords):
-        self.prev_rev.paste(thing, coords, thing)
-        print('pasted {} in {} at {!s}'.format(thing, self.prev_rev, coords))
+        if coords[0] == -1 or coords[1] == -1:
+            if coords[0] == -1:
+                print(self.prev_ave.width, thing.width)
+                coords[0] = int((self.prev_ave.width - thing.width) / 2)
+            if coords[1] == -1:
+                print('h', self.prev_ave.height, thing.height)
+                coords[1] = int((self.prev_ave.height - thing.height) / 2)
+        print(coords)
+        self.prev_ave.paste(thing, coords, thing)
+        print('pasted {} in {} at {}'.format(thing, self.prev_ave, coords))
         self.preview_rev()
 
     def check_txt_size_rev(self, text, font=None):
@@ -332,10 +381,12 @@ class Card(object):
                 if i[0] == 'col':
                     cards[j] = Image.new('RGBA', self.size, i[1])
                     print('updated j to {}, now has color {}'.format(cards[j], i[1]))
-                """if i[0] == 'img':
-                    ImageDraw.Draw(j) cośtam"""
-        for i in range(len(cards)):
-            cards[i].save(os.path.join(self.location, 'card_{}.png'.format(i)))
+                if i[0] == 'img':
+                    thing = Image.open(i[1])
+                    cards[j].paste(thing, (int(i[2]), int(i[3])), thing)
+                if i[0] == 'imgv':
+                    pass
+        [cards[i].save(os.path.join(self.location, 'card_{}.png'.format(i))) for i in range(len(cards))]
 
     def save_ave_cmd_buf(self):
         with open(os.path.join(self.location, 'ave.cardconfig'), 'w') as cmd_loc:
@@ -349,16 +400,32 @@ class Card(object):
         print(self.cmd_buf)
         self.preview_ave()
 
+    def paste_in_ave(self, png_loc, coords):
+        self.cmd_buf += 'img_{}_{}_{}\n'.format(png_loc, coords[0], coords[1])
+        print(self.cmd_buf)
+        thing = Image.open(png_loc)
+        if coords[0] == -1 or coords[1] == -1:
+            if coords[0] == -1:
+                print('w', self.prev_ave.width, thing.width)
+                coords[0] = int((self.prev_ave.width - thing.width) / 2)
+            if coords[1] == -1:
+                print('h', self.prev_ave.height, thing.height)
+                coords[1] = int((self.prev_ave.height - thing.height) / 2)
+        print(coords)
+        self.prev_ave.paste(thing, coords, thing)
+        self.preview_ave()
+
     def check_txt_size_ave(self, text, font=None):
         return self.prev_ave_draw.textsize(text, font)
 
     def add_text_ave(self, coords, text, fill=None, font=None):
-        if coords[0] == 154 or coords[1] == 154:
+        """if coords[0] == 154 or coords[1] == 154:
             size = self.check_txt_size_ave(text, font)
             if coords[0] == 154:
                 self.prev_rev_draw.text((self.prev_ave.width - size[0] / 2, coords[1]), text, fill, font)
         else:
-            self.prev_rev_draw.text(coords, text, fill, font)
+            """
+        self.prev_rev_draw.text(coords, text, fill, font)
         self.preview_ave()
 
 

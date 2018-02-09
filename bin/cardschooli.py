@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, 
 class Window0(QWidget):
     """
     starting window
-    asks for project name
+    asks for project name and saves it
     """
 
     def __init__(self):
@@ -239,8 +239,10 @@ class Window3(QWidget):
         self.update_preview()
 
     def image_var_btn_act(self):
-        self.get_folder()
-        print(self.get_coords())
+        folder = self.get_folder()
+        column = self.choose_colum()
+        coords = self.get_coords()
+        self.card.paste_img_folder_in_ave()
 
     def text_btn_act(self):
         pass
@@ -270,6 +272,9 @@ class Window3(QWidget):
             QFileDialog.getOpenFileName(self, 'Wybierz obrazek do zaimportowania na rewers:', filter='PNG (*.png)',
                                         options=options)[0]
         return filename
+
+    def choose_colum(self):
+        QInputDialog.getItem(self, 'FOO', 'BAR', window1.headers)
 
     def get_coords(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję w poziomie dodawanego obiektu:',
@@ -383,6 +388,13 @@ class Card(object):
                     print('updated j to {}, now has color {}'.format(cards[j], i[1]))
                 if i[0] == 'img':
                     thing = Image.open(i[1])
+                    if int(i[2]) == -1 or int(i[3]) == -1:
+                        if int(i[2]) == -1:
+                            print('w', self.prev_ave.width, thing.width)
+                            i[2] = int((self.prev_ave.width - thing.width) / 2)
+                        if int(i[3]) == -1:
+                            print('h', self.prev_ave.height, thing.height)
+                            i[3] = int((self.prev_ave.height - thing.height) / 2)
                     cards[j].paste(thing, (int(i[2]), int(i[3])), thing)
                 if i[0] == 'imgv':
                     pass
@@ -414,6 +426,9 @@ class Card(object):
         print(coords)
         self.prev_ave.paste(thing, coords, thing)
         self.preview_ave()
+
+    def paste_img_folder_in_ave(self, folder, coords, data_column):
+        for i in
 
     def check_txt_size_ave(self, text, font=None):
         return self.prev_ave_draw.textsize(text, font)

@@ -2,6 +2,7 @@ import csv
 import os.path
 import os.path
 import sys
+
 from PIL import Image, ImageDraw, ImageFont
 from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
@@ -52,7 +53,7 @@ class Window1(QWidget):
         self.resize(800, 600)
         center(self)
         QLabel(
-            'Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony. Koniecznie użyj nagłówków!'.format(
+            'Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony. \nKoniecznie użyj nagłówków!'.format(
                 window0.project), self)
         open_btn = QPushButton('Otwórz plik', self)
         open_btn.setGeometry(325, 250, 150, 100)
@@ -172,7 +173,7 @@ class Window2(QWidget):
             return i
 
     def get_coords(self):
-        i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję w poziomie dodawanego obiektu:',
+        i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję w poziomie obiektu:',
                                              'Anuluj aby wycentrować horyzontalnie. X:', min=0, max=180)
         j, ok_pressed1 = QInputDialog.getInt(self, 'Podaj pozycję w pionie obiektu:',
                                              'Anuluj aby wycentrować wertykalnie. Y:', min=0, max=252)
@@ -239,9 +240,10 @@ class Window3(QWidget):
 
     def image_var_btn_act(self):
         folder = self.get_folder()
-        column = self.choose_colum()
+        column = window1.headers.index(self.choose_colum())
         coords = self.get_coords()
-        self.card.paste_img_folder_in_ave()
+        self.card.paste_img_folder_in_ave(folder, column, coords)
+        self.update_preview()
 
     def text_btn_act(self):
         pass
@@ -273,10 +275,13 @@ class Window3(QWidget):
         return filename
 
     def choose_colum(self):
-        QInputDialog.getItem(self, 'FOO', 'BAR', window1.headers)
+        response = QInputDialog.getItem(self, 'Wybierz kolumnę, która użyta zostanie do sczytania nazw plików PNG',
+                                        'Kolumna z plikami PNG', window1.headers)
+        if response[1]:
+            return response[0]
 
     def get_coords(self):
-        i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję w poziomie dodawanego obiektu:',
+        i, ok_pressed0 = QInputDialog.getInt(self, 'Podaj pozycję w poziomie obiektu:',
                                              'Anuluj aby wycentrować horyzontalnie. X:', min=0, max=180)
         j, ok_pressed1 = QInputDialog.getInt(self, 'Podaj pozycję w pionie obiektu:',
                                              'Anuluj aby wycentrować wertykalnie. Y:', min=0, max=252)
@@ -426,8 +431,28 @@ class Card(object):
         self.prev_ave.paste(thing, coords, thing)
         self.preview_ave()
 
-    def paste_img_folder_in_ave(self, folder, coords, data_column):
-        pass
+    def paste_img_folder_in_ave(self, folder, data_index, coords):
+        self.cmd_buf += 'imgv_{}_{}_{}_{}'.format(folder, data_index, coords[0], coords[1])
+        print(self.cmd_buf)
+        with open(window1.filename, newline='') as f:
+            reader = csv.reader(f)
+            next(reader)
+            first = next(reader)
+        thing = Image.open(os.path.join(folder, first[data_index] + '.png'))
+        print(thing.size)
+        if coords[0] == -1 or coords[1] == -1:
+            if coords[0] == -1:
+                print('w', self.prev_ave.width, thing.width)
+                coords[0] = int((self.prev_ave.width - thing.width) / 2)
+            if coords[1] == -1:
+                print('h', self.prev_ave.height, thing.height)
+                coords[1] = int((self.prev_ave.height - thing.height) / 2)
+        print(coords)
+        try:
+            self.prev_ave.paste(thing, coords, thing)
+        except ValueError:
+            self.prev_ave.paste(thing, coords)
+        self.preview_ave()
 
     def check_txt_size_ave(self, text, font=None):
         return self.prev_ave_draw.textsize(text, font)

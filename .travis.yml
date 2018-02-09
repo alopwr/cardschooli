@@ -6,4 +6,4 @@ python:
 install:
   - pip install -r requirements.txt
 script:
-  - python3 cardschooli.py
+  - python3 bin/cardschooli.py

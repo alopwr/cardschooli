@@ -428,7 +428,7 @@ class Card(object):
         self.preview_ave()
 
     def paste_img_folder_in_ave(self, folder, coords, data_column):
-        for i in
+        pass
 
     def check_txt_size_ave(self, text, font=None):
         return self.prev_ave_draw.textsize(text, font)

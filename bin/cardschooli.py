@@ -2,7 +2,7 @@ import csv
 import os.path
 import os.path
 import sys
-import mathplotlib
+
 from PIL import Image, ImageDraw, ImageFont
 from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, 
 class Window0(QWidget):
     """
     starting window
-    asks for project name and saves it
+    asks for project name
     """
 
     def __init__(self):

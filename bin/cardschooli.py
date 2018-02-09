@@ -2,7 +2,7 @@ import csv
 import os.path
 import os.path
 import sys
-
+import mathplotlib
 from PIL import Image, ImageDraw, ImageFont
 from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \

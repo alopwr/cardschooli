@@ -27,11 +27,11 @@ class Window0(QWidget):
         self.project_name.setToolTip('Wprowadź dowolną nazwę projektu.')
         self.project_name.move(275, 200)
         self.project_name.resize(250, 25)
-        start_btn = QPushButton('Rozpocznij tworzenie talii >>>', self)
-        start_btn.setGeometry(275, 275, 250, 50)
+        self.start_btn = QPushButton('Rozpocznij tworzenie talii >>>', self)
+        self.start_btn.setGeometry(275, 275, 250, 50)
         self.show()
         self.project_name.returnPressed.connect(self.next)
-        start_btn.clicked.connect(self.next)
+        self.start_btn.clicked.connect(self.next)
 
     def next(self):
         self.project = self.project_name.text()
@@ -389,7 +389,7 @@ class Card(object):
 
     def compile_ave(self, import_data):
         cmds = self.read_ave_config()
-        cards = [Image.new('RGBA', self.size, self.color_av) for i in range(len(import_data))]
+        cards = [Image.new('RGBA', self.size, self.color_av) for i in range(1, len(import_data))]
         print(cards)
         print(len(cards))
         for i in cmds:
@@ -409,15 +409,15 @@ class Card(object):
                     cards[j].paste(thing, (int(i[2]), int(i[3])), thing)
                 elif i[0] == 'imgv':
                     print(i)
-                    thing = Image.open(os.path.join(i[1], import_data[j + 1][int(i[2])] + '.png'))
+                    thing = Image.open(os.path.join(i[1], import_data[j + 1][int(i[2])] + '.png')).convert("RGBA")
                     if int(i[3]) == -1 or int(i[4]) == -1:
                         if int(i[3]) == -1:
-                            print('w', self.prev_ave.width, thing.width)
-                            i[3] = int((self.prev_ave.width - thing.width) / 2)
+                            x = int((self.prev_ave.width - thing.width) / 2)
                         if int(i[4]) == -1:
-                            print('h', self.prev_ave.height, thing.height)
-                            i[4] = int((self.prev_ave.height - thing.height) / 2)
-                    cards[j].paste(thing, (int(i[3]), int(i[4])), thing)
+                            y = int((self.prev_ave.height - thing.height) / 2)
+                        cards[j].paste(thing, (x, y), thing)
+                    else:
+                        cards[j].paste(thing, (int(i[3]), int(i[4])), thing)
         [cards[i].save(os.path.join(self.location, 'card_{}.png'.format(i))) for i in range(len(cards))]
 
     def save_ave_cmd_buf(self):
@@ -448,13 +448,13 @@ class Card(object):
         self.preview_ave()
 
     def paste_img_folder_in_ave(self, folder, data_index, coords):
-        self.cmd_buf += 'imgv_{}_{}_{}_{}'.format(folder, data_index, coords[0], coords[1])
+        self.cmd_buf += 'imgv_{}_{}_{}_{}\n'.format(folder, data_index, coords[0], coords[1])
         print(self.cmd_buf)
         with open(window1.filename, newline='') as f:
             reader = csv.reader(f)
             next(reader)
             first = next(reader)
-        thing = Image.open(os.path.join(folder, first[data_index] + '.png'))
+        thing = Image.open(os.path.join(folder, first[data_index] + '.png')).convert("RGBA")
         print(thing.size)
         if coords[0] == -1 or coords[1] == -1:
             if coords[0] == -1:
@@ -464,10 +464,7 @@ class Card(object):
                 print('h', self.prev_ave.height, thing.height)
                 coords[1] = int((self.prev_ave.height - thing.height) / 2)
         print(coords)
-        try:
-            self.prev_ave.paste(thing, coords, thing)
-        except ValueError:
-            self.prev_ave.paste(thing, coords)
+        self.prev_ave.paste(thing, coords, thing)
         self.preview_ave()
 
     def check_txt_size_ave(self, text, font=None):

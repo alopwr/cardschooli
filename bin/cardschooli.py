@@ -367,6 +367,13 @@ class Card(object):
         return self.prev_rev_draw.textsize(text, font)
 
     def add_text_rev(self, coords, text, fill=None, font=None):
+        if coords[0] == -1 or coords[1] == -1:
+            if coords[0] == -1:
+                print(self.prev_ave.width, self.check_txt_size_rev(text, font)[0])
+                coords[0] = int((self.prev_ave.width - self.check_txt_size_rev(text, font)[0]) / 2)
+            if coords[1] == -1:
+                print('h', self.prev_ave.height, self.check_txt_size_rev(text, font)[1])
+                coords[1] = int((self.prev_ave.height - self.check_txt_size_rev(text, font)[1]) / 2)
         self.prev_rev_draw.text(coords, text, fill, font)
         self.preview_rev()
 
@@ -390,7 +397,7 @@ class Card(object):
                 if i[0] == 'col':
                     cards[j] = Image.new('RGBA', self.size, i[1])
                     print('updated j to {}, now has color {}'.format(cards[j], i[1]))
-                if i[0] == 'img':
+                elif i[0] == 'img':
                     thing = Image.open(i[1])
                     if int(i[2]) == -1 or int(i[3]) == -1:
                         if int(i[2]) == -1:
@@ -400,8 +407,17 @@ class Card(object):
                             print('h', self.prev_ave.height, thing.height)
                             i[3] = int((self.prev_ave.height - thing.height) / 2)
                     cards[j].paste(thing, (int(i[2]), int(i[3])), thing)
-                if i[0] == 'imgv':
-                    pass
+                elif i[0] == 'imgv':
+                    print(i)
+                    thing = Image.open(os.path.join(i[1], import_data[j + 1][int(i[2])] + '.png'))
+                    if int(i[3]) == -1 or int(i[4]) == -1:
+                        if int(i[3]) == -1:
+                            print('w', self.prev_ave.width, thing.width)
+                            i[3] = int((self.prev_ave.width - thing.width) / 2)
+                        if int(i[4]) == -1:
+                            print('h', self.prev_ave.height, thing.height)
+                            i[4] = int((self.prev_ave.height - thing.height) / 2)
+                    cards[j].paste(thing, (int(i[3]), int(i[4])), thing)
         [cards[i].save(os.path.join(self.location, 'card_{}.png'.format(i))) for i in range(len(cards))]
 
     def save_ave_cmd_buf(self):

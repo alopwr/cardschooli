@@ -256,7 +256,8 @@ class Window3(QWidget):
                                   'Tekst o tych paramentrach nie zmieści się na twojej grafice. Spróbuj z innymi ustawieniami!',
                                   QMessageBox.Ok)
             return None
-        self.card.add_text_ave(coords, text, color, font)
+        print(color)
+        self.card.add_text_ave(coords, text, color, font, size)
         self.update_preview()
 
     def finish_btn_act(self):
@@ -286,7 +287,7 @@ class Window3(QWidget):
         return filename
 
     def get_size(self):
-        i, ok_pressed = QInputDialog.getInt(self, 'Podaj rozmiar czcionki:', 'Wielkość czcionki:', 0)
+        i, ok_pressed = QInputDialog.getInt(self, 'Podaj rozmiar czcionki:', 'Wielkość czcionki:', 1)
         if ok_pressed:
             return i
 
@@ -437,6 +438,17 @@ class Card(object):
                         cards[j].paste(thing, (x, y), thing)
                     else:
                         cards[j].paste(thing, (int(i[3]), int(i[4])), thing)
+                elif i[0] == 'txt':
+                    print(i)
+                    print(int(i[5]))
+                    if i[1] == -1 or i[2] == -1:
+                        if i[1] == -1:
+                            i[1] = int((self.prev_ave.width - self.check_txt_size_ave(i[3])[0]) / 2)
+                        if i[2] == -1:
+                            i[2] = int((self.prev_ave.height - self.check_txt_size_ave(i[3])[1]) / 2)
+                    font = ImageFont.truetype(os.path.join(os.pardir, 'fonts', 'font.ttf'), int(i[5]))
+                    obj = ImageDraw.Draw(cards[j])
+                    obj.text((i[1], i[2]), i[3], i[4], font)
         [cards[i].save(os.path.join(self.location, 'card_{}.png'.format(i))) for i in range(len(cards))]
 
     def save_ave_cmd_buf(self):
@@ -489,7 +501,10 @@ class Card(object):
     def check_txt_size_ave(self, text, font=None):
         return self.prev_ave_draw.textsize(text, font)
 
-    def add_text_ave(self, coords, text, fill=None, font=None):
+    def add_text_ave(self, coords, text, fill=None, font=None, size=None):
+        print(font)
+        self.cmd_buf += "txt_{}_{}_{}_{}_{}\n".format(coords[0], coords[1], text, fill, size)
+        print(self.cmd_buf)
         if coords[0] == -1 or coords[1] == -1:
             if coords[0] == -1:
                 coords[0] = int((self.prev_ave.width - self.check_txt_size_ave(text, font)[0]) / 2)

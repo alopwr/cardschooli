@@ -246,7 +246,18 @@ class Window3(QWidget):
         self.update_preview()
 
     def text_btn_act(self):
-        pass
+        size = self.get_size()
+        text = self.get_text()
+        coords = self.get_coords()
+        color = self.get_color()
+        font = ImageFont.truetype(os.path.join(os.pardir, 'fonts', 'font.ttf'), size)
+        if self.card.check_txt_size_ave(text, font) > (self.width(), self.height()):
+            QMessageBox().warning(self, 'Za duży!',
+                                  'Tekst o tych paramentrach nie zmieści się na twojej grafice. Spróbuj z innymi ustawieniami!',
+                                  QMessageBox.Ok)
+            return None
+        self.card.add_text_ave(coords, text, color, font)
+        self.update_preview()
 
     def finish_btn_act(self):
         self.card.save_ave_cmd_buf()
@@ -274,6 +285,11 @@ class Window3(QWidget):
                                         options=options)[0]
         return filename
 
+    def get_size(self):
+        i, ok_pressed = QInputDialog.getInt(self, 'Podaj rozmiar czcionki:', 'Wielkość czcionki:', 0)
+        if ok_pressed:
+            return i
+
     def choose_colum(self):
         response = QInputDialog.getItem(self, 'Wybierz kolumnę, która użyta zostanie do sczytania nazw plików PNG',
                                         'Kolumna z plikami PNG', window1.headers)
@@ -290,6 +306,11 @@ class Window3(QWidget):
         if not ok_pressed1:
             j = -1
         return [i, j]
+
+    def get_text(self):
+        text, okPressed = QInputDialog.getText(self, 'Jaki tekst chcesz dodać?', 'Podaj tekst:', QLineEdit.Normal, '')
+        if okPressed and text != '':
+            return text
 
     def update_preview(self):
         self.preview.setPixmap(QPixmap(self.card_loc))
@@ -369,11 +390,9 @@ class Card(object):
     def add_text_rev(self, coords, text, fill=None, font=None):
         if coords[0] == -1 or coords[1] == -1:
             if coords[0] == -1:
-                print(self.prev_ave.width, self.check_txt_size_rev(text, font)[0])
-                coords[0] = int((self.prev_ave.width - self.check_txt_size_rev(text, font)[0]) / 2)
+                coords[0] = int((self.prev_rev.width - self.check_txt_size_rev(text, font)[0]) / 2)
             if coords[1] == -1:
-                print('h', self.prev_ave.height, self.check_txt_size_rev(text, font)[1])
-                coords[1] = int((self.prev_ave.height - self.check_txt_size_rev(text, font)[1]) / 2)
+                coords[1] = int((self.prev_rev.height - self.check_txt_size_rev(text, font)[1]) / 2)
         self.prev_rev_draw.text(coords, text, fill, font)
         self.preview_rev()
 
@@ -471,13 +490,12 @@ class Card(object):
         return self.prev_ave_draw.textsize(text, font)
 
     def add_text_ave(self, coords, text, fill=None, font=None):
-        """if coords[0] == 154 or coords[1] == 154:
-            size = self.check_txt_size_ave(text, font)
-            if coords[0] == 154:
-                self.prev_rev_draw.text((self.prev_ave.width - size[0] / 2, coords[1]), text, fill, font)
-        else:
-            """
-        self.prev_rev_draw.text(coords, text, fill, font)
+        if coords[0] == -1 or coords[1] == -1:
+            if coords[0] == -1:
+                coords[0] = int((self.prev_ave.width - self.check_txt_size_ave(text, font)[0]) / 2)
+            if coords[1] == -1:
+                coords[1] = int((self.prev_ave.height - self.check_txt_size_ave(text, font)[1]) / 2)
+        self.prev_ave_draw.text(coords, text, fill, font)
         self.preview_ave()
 
 

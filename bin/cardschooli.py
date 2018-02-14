@@ -441,13 +441,13 @@ class Card(object):
                 elif i[0] == 'txt':
                     print(i)
                     print(int(i[5]))
-                    if i[1] == '-1' or i[2] == '-1':
-                        if i[1] == '-1':
-                            i[1] = int((self.prev_ave.width - self.check_txt_size_ave(i[3])[0]) / 2)
-                        if i[2] == '-1':
-                            i[2] = int((self.prev_ave.height - self.check_txt_size_ave(i[3])[1]) / 2)
                     font = ImageFont.truetype(os.path.join(os.pardir, 'fonts', 'font.ttf'), int(i[5]))
                     obj = ImageDraw.Draw(cards[j])
+                    if i[1] == '-1' or i[2] == '-1':
+                        if i[1] == '-1':
+                            i[1] = int((self.prev_ave.width - self.check_txt_size_ave(i[3], font)[0]) / 2)
+                        if i[2] == '-1':
+                            i[2] = int((self.prev_ave.height - self.check_txt_size_ave(i[3], font)[1]) / 2)
                     obj.text((int(i[1]), int(i[2])), i[3], i[4], font)
         [cards[i].save(os.path.join(self.location, 'card_{}.png'.format(i))) for i in range(len(cards))]
 

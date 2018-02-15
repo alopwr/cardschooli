@@ -4,9 +4,10 @@ import os.path
 import sys
 
 from PIL import Image, ImageDraw, ImageFont
-from PyQt5.QtGui import QPixmap, QMovie
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QPixmap, QMovie,QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
-    QColorDialog, QInputDialog, QMessageBox
+    QColorDialog, QInputDialog, QMessageBox, QAction, QMainWindow, QListWidget, QVBoxLayout, QListWidgetItem, QHBoxLayout
 
 
 class Window0(QWidget):
@@ -187,7 +188,51 @@ class Window2(QWidget):
         text, okPressed = QInputDialog.getText(self, 'Jaki tekst chcesz dodać?', 'Podaj tekst:', QLineEdit.Normal, '')
         if okPressed and text != '':
             return text
+        self.show()
+class MyWidget(QWidget):
+    def __init__(self,txt,image, parent=None):
+        super(MyWidget, self).__init__(parent)
 
+        delt_btn = QPushButton("", self)
+        delt_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', image)))
+        delt_btn.setIconSize(QSize(35, 35))
+        delt_btn.resize(10, 10)
+
+        label = QLabel(txt)
+
+        layout = QHBoxLayout()
+        layout.addWidget(label)
+        layout.addWidget(delt_btn)
+
+        self.setLayout(layout)
+
+class WindowXD(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.isCreatingChart = False
+
+    def init_ui(self):
+        adding = QAction(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')),"ADD",self)
+        adding.setShortcut('Ctrl+N')
+        adding.triggered.connect(self.AddNew)
+        self.toolbar = self.addToolBar('ADD')
+        self.toolbar.addAction(adding)
+
+        self.LIST = QListWidget()
+        self.LIST.setWindowTitle("Pozycje na wykresie")
+
+        self.resize(800, 600)
+        self.setWindowTitle('cardschooli wykresy')
+        center(self)
+        self.show()
+
+    def AddNew(self):
+        itemek = QListWidgetItem(self.LIST)
+        my_itemek = MyWidget("xddD","deleting.png")
+        itemek.setSizeHint(my_itemek.sizeHint())
+        self.LIST.addItem(itemek)
+        self.LIST.setItemWidget(itemek,my_itemek)
+        self.LIST.show()
 
 class Window3(QWidget):
     """
@@ -225,8 +270,15 @@ class Window3(QWidget):
         image_var_btn.clicked.connect(self.image_var_btn_act)
         text_btn.clicked.connect(self.text_btn_act)
         finish_btn.clicked.connect(self.finish_btn_act)
-        self.show()
 
+        chart_btn = QPushButton('dodaj wykres kołowy', self)
+        chart_btn.setGeometry(490, 225, 235, 35)
+        chart_btn.clicked.connect(self.chart_btn_act)
+
+        self.show()
+    def chart_btn_act(self):
+        windowWYKR.isCreatingChart = True
+        windowWYKR.init_ui()
     def color_btn_act(self):
         color = self.get_color()
         self.card.change_color_ave(color)
@@ -260,11 +312,16 @@ class Window3(QWidget):
         self.card.add_text_ave(coords, text, color, font, size)
         self.update_preview()
 
-    def finish_btn_act(self):
-        self.card.save_ave_cmd_buf()
-        self.close()
-        window4.init_ui()
 
+    def finish_btn_act(self):
+        if not windowWYKR.isCreatingChart:
+            self.card.save_ave_cmd_buf()
+            self.close()
+            window4.init_ui()
+        else:
+            QMessageBox().warning(self, 'W TRAKCIE CZYNNOŚCI',
+                                  'Jesteś w trakcie dodawania wykresu',
+                                  QMessageBox.Ok)
     def get_color(self):
         color = QColorDialog()
         color.setFocus()
@@ -522,6 +579,7 @@ def center(window):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    windowWYKR = WindowXD()
     window0 = Window0()
     window1 = Window1()
     window2 = Window2()

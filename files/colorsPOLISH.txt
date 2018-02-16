@@ -1,0 +1,140 @@
+﻿aliceblue
+antyczna biel
+wodny
+akwamaryn
+lazur
+beżowy
+for
+czarny
+blanchedalmond
+niebieski
+blueviolet
+brązowy
+Burlywood
+cadetblue
+chartreuse
+czekolada
+koral
+chabrowy
+cornsilk
+karmazynowy
+cyjan
+ciemny niebieski
+ciemniak
+darkgoldenrod
+ciemny szary
+ciemnozielony
+darkkhaki
+darkmagenta
+darkolivegreen
+ciemna pomarańcza
+darkorchid
+ciemno czerwony
+darksalmon
+darkseagreen
+darkslateblue
+darkslategray
+darkturkus
+darkviolet
+głęboki róż
+deepskyblue
+dimgray
+dodgerblue
+firebrick
+floralwhite
+zielony las
+fuksja
+gainsboro
+ghostwhite
+złoto
+nawłoć
+szary
+Zielony
+zielony żółty
+spadzi
+gorący róż
+indianred
+indygo
+kość słoniowa
+khaki
+lawenda
+lawendowy
+lawngreen
+lemonchiffon
+jasny niebieski
+lightcoral
+lightcyan
+lightgoldenrodyellow
+jasnozielony
+jasny szary
+jasnoróżowy
+lightalmon
+lightseagreen
+lightskyblue
+lightslategray
+lightsteelblue
+jasny zółty
+Limonka
+limonkowy
+bielizna
+magenta
+kasztanowaty
+mediumaquamarine
+średni niebieski
+mediumorchid
+średniozmiar
+mediumseagreen
+mediumslateblue
+mediumspringgreen
+średniturkusowy
+mediumvioletred
+niebieska północ
+mintcream
+mistyrose
+mokasyn
+navajowhite
+marynarka wojenna
+oldlace
+Oliwa
+olivedrab
+Pomarańczowy
+pomarańczowy czerwony
+orchidea
+palegoldenrod
+bladozielony
+paleturkusowy
+palevioletred
+papayawhip
+brzoskwinia
+Peru
+różowy
+śliwka
+powderblue
+fioletowy
+czerwony
+rosybrown
+Królewski niebieski
+saddlebrown
+łosoś
+sandybrown
+zielone morze
+muszla
+sjena
+srebro
+niebieskie niebo
+odcień niebieskiego
+popielaty
+śnieg
+wiosenna zieleń
+stalowo - niebieski
+dębnik
+cyraneczka
+oset
+pomidor
+turkus
+fioletowy
+pszenica
+biały
+biały dym
+żółty
+żółty zielony

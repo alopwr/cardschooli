@@ -409,7 +409,8 @@ class Window__Wykr(QWidget):
             if self.czyP:
                 self.exchange()
             size = self.get_size()
-            generating_chart(self.LIST_OF_GOD, size)
+            generating_chart(self.LIST_OF_GOD)
+            rescale(size)
             adding_chart([self.X, self.Y])
             self.isCreatingChart = False
             self.close()
@@ -863,12 +864,37 @@ class Card(object):
         self.preview_ave()
 
 
-def generating_chart(LIST_OF_GOD, size):
-    pass
+def generating_chart(LIST_OF_GOD):
+    labels = []
+    for name in LIST_OF_GOD[0].values():  # names = 0
+        labels.append(name)
+
+    sizes = []
+    for value in LIST_OF_GOD[1].values():  # values = 1
+        sizes.append(value)
+
+    colors = []
+    for color in LIST_OF_GOD[2].values():  # colors = 2
+        colors.append(color)
+
+    explode = []
+    for expld in LIST_OF_GOD[3].values():  # explode = 3
+        explode.append(expld)
+
+    plt.pie(sizes, explode=explode, labels=labels, colors=colors,
+            autopct='%1.1f%%', shadow=True, startangle=140)
+
+    plt.axis('equal')
+    plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykres.png"))
 
 
 def adding_chart(coords):
     pass
+
+
+def rescale(size):
+    pass
+
 def center(window):
     qr = window.frameGeometry()
 

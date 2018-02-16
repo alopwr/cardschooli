@@ -6,7 +6,8 @@ from PIL import Image, ImageDraw, ImageFont
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QPixmap, QMovie,QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
-    QColorDialog, QInputDialog, QMessageBox, QAction, QMainWindow, QListWidget, QVBoxLayout, QListWidgetItem, QHBoxLayout,QDoubleSpinBox,QComboBox
+    QColorDialog, QInputDialog, QMessageBox, QAction, QMainWindow, QListWidget, QVBoxLayout, QListWidgetItem, \
+    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox
 import matplotlib.pyplot as plt
 
 
@@ -241,17 +242,17 @@ class MyWidget(QWidget):
 
     def spiinCHANGE(self, newvalue):
 
-        newvalue = self.spin_str_2_float(newvalue)
+        newvalue = windowWYKR.spin_str_2_float(newvalue)
         oldvalue = windowWYKR.LIST_OF_GOD[windowWYKR.values][self.name]
 
-        if windowWYKR.maxim -(newvalue - oldvalue) >= 0:
-
-            windowWYKR.LIST_OF_GOD[windowWYKR.values][self.name] = newvalue
-            windowWYKR.maxim += (oldvalue - newvalue)
-        else:
+        if not windowWYKR.maxim - (newvalue - oldvalue) >= 0:
             QMessageBox().warning(self, '!!! LIMIT !!!',
                                   '!!!       Przekroczono sumę 100 %      !!! \n zmniejsz procent innego elementu',
                                   QMessageBox.Ok)
+        windowWYKR.LIST_OF_GOD[windowWYKR.values][self.name] = newvalue
+        windowWYKR.maxim += (oldvalue - newvalue)
+
+
 
 
     def comboCHANGE(self,value):
@@ -262,15 +263,7 @@ class MyWidget(QWidget):
     def delt_btn_act(self):
         windowWYKR.deleting(self.number)
 
-    def spin_str_2_float(self,newvalueSTR):
-        newvalue = ""
-        for l in newvalueSTR:
-            if l == ",":
-                newvalue += "."
-            else:
-                newvalue += l
-        newvalue = float(newvalue)
-        return newvalue
+
     def adding_to_combo(self,combobox):
         if not windowWYKR.czyP:
             List_of_colors = windowWYKR.list_of_colors
@@ -294,7 +287,8 @@ class quesTion(QMessageBox):
             windowWYKR.czyP = False
         self.show()
 
-class Window__Wykr(QMainWindow):
+
+class Window__Wykr(QWidget):
     def __init__(self):
         super().__init__()
         self.czyP = False
@@ -306,6 +300,8 @@ class Window__Wykr(QMainWindow):
         self.colors = 2
         self.explodings = 3
         self.maxim = 100
+        self.X = 0
+        self.Y = 0
     def init_ui(self):
         czyPol()
         self.loadCOLORS()
@@ -313,9 +309,15 @@ class Window__Wykr(QMainWindow):
         adding = QAction(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')),"ADD",self)
         adding.setShortcut('Ctrl+N')
         adding.triggered.connect(self.AddNew)
-
+        """
         self.toolbar = self.addToolBar('ADD')
         self.toolbar.addAction(adding)
+        """
+        add_btn = QPushButton("ADD", self)
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')))
+        add_btn.setGeometry(30, 30, 50, 50)
+        add_btn.clicked.connect(self.AddNew)
+        add_btn.setToolTip("dodaje element do wykresu")
 
         self.LIST = QListWidget()
         self.LIST.setWindowTitle("Pozycje na wykresie")
@@ -329,7 +331,61 @@ class Window__Wykr(QMainWindow):
 
         self.LIST.setGeometry(50,qr2[1], 400, 600)
 
+        xSPIN = QSpinBox()
+        ySPIN = QSpinBox()
+        xSPIN.setRange(0, 9999)
+        xSPIN.setValue(self.X)
+        ySPIN.setRange(0, 9999)
+        ySPIN.setValue(self.Y)
+
+        xSPIN.valueChanged[str].connect(self.xSPINchange)
+        ySPIN.valueChanged[str].connect(self.ySPINchange)
+
+        OK_btn = QPushButton('Dodaj wykres na karte >>>')
+        OK_btn.setGeometry(450, 450, 300, 70)
+        OK_btn.clicked.connect(self.ok_act)
+        LAJ = QVBoxLayout()
+        laj = QHBoxLayout()
+        laj3 = QHBoxLayout()
+        laj4 = QHBoxLayout()
+        LAJ2 = QVBoxLayout()
+
+        LAJ2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
+        LAJ2.addLayout(laj3)
+        LAJ2.addLayout(laj4)
+
+        laj.addWidget(add_btn)
+        laj.addWidget(self.LIST)
+        laj.addLayout(LAJ2)
+
+        LAJ.addLayout(laj)
+
+        LAJ.addWidget(OK_btn)
+
+        laj3.addWidget(QLabel("X: "))
+        laj3.addWidget(xSPIN)
+        laj4.addWidget(QLabel("Y: "))
+        laj4.addWidget(ySPIN)
+
+        self.setLayout(LAJ)
+
         self.show()
+
+    def spin_str_2_float(self, newvalueSTR):
+        newvalue = ""
+        for l in newvalueSTR:
+            if l == ",":
+                newvalue += "."
+            else:
+                newvalue += l
+        newvalue = float(newvalue)
+        return newvalue
+
+    def xSPINchange(self, newvalue):
+        self.X = self.spin_str_2_float(newvalue)
+
+    def ySPINchange(self, newvalue):
+        self.Y = self.spin_str_2_float(newvalue)
     def deleting(self, number):
         i = 0
         i2 = self.LIST.count()
@@ -348,6 +404,33 @@ class Window__Wykr(QMainWindow):
         xd2 = self.LIST_OF_GOD[self.explodings].pop(name)
         self.maxim += float(xd)
 
+    def ok_act(self):
+        if self.LIST.count() > 0 and self.suma() == 100.0:
+            if self.czyP:
+                self.exchange()
+            size = self.get_size()
+            generating_chart(self.LIST_OF_GOD, size)
+            adding_chart([self.X, self.Y])
+            self.isCreatingChart = False
+            self.close()
+        elif self.LIST.count() == 0:
+            QMessageBox().warning(self, '!!! PUSTO !!!',
+                                  '!!!        nie możesz dodać pustego wykresu        !!!', QMessageBox.Ok)
+        elif self.suma() > 100.0:
+            QMessageBox().warning(self, '!!! LIMIT !!!',
+                                  '!!!       Przekroczono sumę 100 %      !!! \n',
+                                  QMessageBox.Ok)
+        else:
+            QMessageBox().warning(self, '!!! ZA MAŁO !!!',
+                                  '!!!       brakuje do sumy 100%      !!! \n',
+                                  QMessageBox.Ok)
+
+    def exchange(self):
+        for name in self.LIST_OF_GOD[self.colors]:
+            color = self.LIST_OF_GOD[self.colors][name]
+            self.LIST_OF_GOD[self.colors][name] = self.dict_of_colors[color]
+
+
     def AddNew(self):
         if  self.maxim  > 0:
             itemek = QListWidgetItem2()
@@ -365,7 +448,7 @@ class Window__Wykr(QMainWindow):
 
             self.LIST.addItem(itemek)
             self.LIST.setItemWidget(itemek,my_itemek)
-            self.LIST.show()
+
 
             self.LIST_OF_GOD[self.names][self.number_of_layouts] = name
             self.LIST_OF_GOD[self.values][name] = value
@@ -390,10 +473,26 @@ class Window__Wykr(QMainWindow):
             self.get_value()
 
         return i
+
+    def get_size(self):
+        i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
+                                             'Podaj szerokość diagramu. \n(piksele)', min=1)
+        j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
+                                             'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', min=1)
+        if not ok_pressed1:
+            j = i
+        print([i, j])
+        return [i, j]
     def get_text(self):
         text, okPressed = QInputDialog.getText(self, 'Podaj nazwę elementu', 'NAZWA:', QLineEdit.Normal, '')
-        if okPressed and text != '':
+
+        if okPressed and (text != '' or text != " " or text != None):
             return text
+        else:
+            QMessageBox().warning(self, '!!! PUSTE !!!',
+                                  '!!!       Wypełnij nazwę      !!! \n ',
+                                  QMessageBox.Ok)
+            self.get_text()
     def loadCOLORS(self):
 
         with open(os.path.join(os.pardir, 'files','colors.txt')) as f:
@@ -408,8 +507,13 @@ class Window__Wykr(QMainWindow):
         for i in range(len(self.list_of_colors)):
             self.dict_of_colors[self.list_of_colors_P[i]] = self.list_of_colors[i]
 
+    def suma(self):
+        summ = 0
 
+        for i in self.LIST_OF_GOD[self.values].values():
+            summ += i
 
+        return summ
 
 
     def get_color(self):
@@ -759,6 +863,12 @@ class Card(object):
         self.preview_ave()
 
 
+def generating_chart(LIST_OF_GOD, size):
+    pass
+
+
+def adding_chart(coords):
+    pass
 def center(window):
     qr = window.frameGeometry()
 
@@ -767,7 +877,6 @@ def center(window):
 
 def czyPol():
     question1 = quesTion()
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     windowWYKR = Window__Wykr()

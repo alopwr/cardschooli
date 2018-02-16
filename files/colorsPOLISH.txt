@@ -1,15 +1,15 @@
-ï»¿aliceblue
+aliceblue
 antyczna biel
 wodny
 akwamaryn
 lazur
-beÅ¼owy
+be¿owy
 for
 czarny
 blanchedalmond
 niebieski
 blueviolet
-brÄ…zowy
+br¹zowy
 Burlywood
 cadetblue
 chartreuse
@@ -27,7 +27,7 @@ ciemnozielony
 darkkhaki
 darkmagenta
 darkolivegreen
-ciemna pomaraÅ„cza
+ciemna pomarañcza
 darkorchid
 ciemno czerwony
 darksalmon
@@ -36,7 +36,7 @@ darkslateblue
 darkslategray
 darkturkus
 darkviolet
-gÅ‚Ä™boki rÃ³Å¼
+g³êboki ró¿
 deepskyblue
 dimgray
 dodgerblue
@@ -46,16 +46,16 @@ zielony las
 fuksja
 gainsboro
 ghostwhite
-zÅ‚oto
-nawÅ‚oÄ‡
+z³oto
+naw³oæ
 szary
 Zielony
-zielony Å¼Ã³Å‚ty
+zielony ¿ó³ty
 spadzi
-gorÄ…cy rÃ³Å¼
+gor¹cy ró¿
 indianred
 indygo
-koÅ›Ä‡ sÅ‚oniowa
+koœæ s³oniowa
 khaki
 lawenda
 lawendowy
@@ -67,28 +67,28 @@ lightcyan
 lightgoldenrodyellow
 jasnozielony
 jasny szary
-jasnorÃ³Å¼owy
+jasnoró¿owy
 lightalmon
 lightseagreen
 lightskyblue
 lightslategray
 lightsteelblue
-jasny zÃ³Å‚ty
+jasny zó³ty
 Limonka
 limonkowy
 bielizna
 magenta
 kasztanowaty
 mediumaquamarine
-Å›redni niebieski
+œredni niebieski
 mediumorchid
-Å›redniozmiar
+œredniozmiar
 mediumseagreen
 mediumslateblue
 mediumspringgreen
-Å›redniturkusowy
+œredniturkusowy
 mediumvioletred
-niebieska pÃ³Å‚noc
+niebieska pó³noc
 mintcream
 mistyrose
 mokasyn
@@ -97,8 +97,8 @@ marynarka wojenna
 oldlace
 Oliwa
 olivedrab
-PomaraÅ„czowy
-pomaraÅ„czowy czerwony
+Pomarañczowy
+pomarañczowy czerwony
 orchidea
 palegoldenrod
 bladozielony
@@ -107,34 +107,34 @@ palevioletred
 papayawhip
 brzoskwinia
 Peru
-rÃ³Å¼owy
-Å›liwka
+ró¿owy
+œliwka
 powderblue
 fioletowy
 czerwony
 rosybrown
-KrÃ³lewski niebieski
+Królewski niebieski
 saddlebrown
-Å‚osoÅ›
+³osoœ
 sandybrown
 zielone morze
 muszla
 sjena
 srebro
 niebieskie niebo
-odcieÅ„ niebieskiego
+odcieñ niebieskiego
 popielaty
-Å›nieg
-wiosenna zieleÅ„
+œnieg
+wiosenna zieleñ
 stalowo - niebieski
-dÄ™bnik
+dêbnik
 cyraneczka
 oset
 pomidor
 turkus
 fioletowy
 pszenica
-biaÅ‚y
-biaÅ‚y dym
-Å¼Ã³Å‚ty
-Å¼Ã³Å‚ty zielony
+bia³y
+bia³y dym
+¿ó³ty
+¿ó³ty zielony

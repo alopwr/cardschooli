@@ -3,15 +3,15 @@ antyczna biel
 wodny
 akwamaryn
 lazur
-be¿owy
+beÅ¼owy
 for
 czarny
-blanchedalmond
+Blanchedalmond
 niebieski
-blueviolet
-br¹zowy
+niebieski
+brÄ…zowy
 Burlywood
-cadetblue
+kadetblue
 chartreuse
 czekolada
 koral
@@ -27,16 +27,16 @@ ciemnozielony
 darkkhaki
 darkmagenta
 darkolivegreen
-ciemna pomarañcza
-darkorchid
+ciemna pomaraÅ„cza
+ciemnozÄ™bny
 ciemno czerwony
 darksalmon
-darkseagreen
+ciemnoniebieski
 darkslateblue
 darkslategray
 darkturkus
-darkviolet
-g³êboki ró¿
+ciemnofioletowy
+gÅ‚Ä™boki rÃ³Å¼
 deepskyblue
 dimgray
 dodgerblue
@@ -44,18 +44,18 @@ firebrick
 floralwhite
 zielony las
 fuksja
-gainsboro
+Gainsboro
 ghostwhite
-z³oto
-naw³oæ
+zÅ‚oto
+nawÅ‚oci
 szary
 Zielony
-zielony ¿ó³ty
-spadzi
-gor¹cy ró¿
+zielony Å¼Ã³Å‚ty
+spadÅº
+gorÄ…cy rÃ³Å¼
 indianred
 indygo
-koœæ s³oniowa
+koÅ›Ä‡ sÅ‚oniowa
 khaki
 lawenda
 lawendowy
@@ -67,28 +67,28 @@ lightcyan
 lightgoldenrodyellow
 jasnozielony
 jasny szary
-jasnoró¿owy
+jasnorÃ³Å¼owy
 lightalmon
 lightseagreen
 lightskyblue
 lightslategray
 lightsteelblue
-jasny zó³ty
+jasny zÃ³Å‚ty
 Limonka
 limonkowy
 bielizna
 magenta
 kasztanowaty
 mediumaquamarine
-œredni niebieski
+Å›redni niebieski
 mediumorchid
-œredniozmiar
-mediumseagreen
+Å›redniolor
+Å›redniosezon
 mediumslateblue
 mediumspringgreen
-œredniturkusowy
-mediumvioletred
-niebieska pó³noc
+Å›redniturkusowy
+Å›redniowrÃ³Å¼biony
+niebieska pÃ³Å‚noc
 mintcream
 mistyrose
 mokasyn
@@ -97,8 +97,8 @@ marynarka wojenna
 oldlace
 Oliwa
 olivedrab
-Pomarañczowy
-pomarañczowy czerwony
+PomaraÅ„czowy
+pomaraÅ„czowy czerwony
 orchidea
 palegoldenrod
 bladozielony
@@ -107,34 +107,34 @@ palevioletred
 papayawhip
 brzoskwinia
 Peru
-ró¿owy
-œliwka
+rÃ³Å¼owy
+Å›liwka
 powderblue
 fioletowy
 czerwony
-rosybrown
-Królewski niebieski
-saddlebrown
-³osoœ
+rÃ³Å¼owybrown
+KrÃ³lewski niebieski
+Saddlebrown
+Å‚osoÅ›
 sandybrown
 zielone morze
 muszla
 sjena
 srebro
 niebieskie niebo
-odcieñ niebieskiego
+odcieÅ„ niebieskiego
 popielaty
-œnieg
-wiosenna zieleñ
+Å›nieg
+wiosenna zieleÅ„
 stalowo - niebieski
-dêbnik
+dÄ™bnik
 cyraneczka
 oset
 pomidor
 turkus
 fioletowy
 pszenica
-bia³y
-bia³y dym
-¿ó³ty
-¿ó³ty zielony
+biaÅ‚y
+biaÅ‚y dym
+Å¼Ã³Å‚ty
+Å¼Ã³Å‚ty zielony

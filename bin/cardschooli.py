@@ -2,22 +2,23 @@ import csv
 import os.path
 import os.path
 import sys
+
+import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw, ImageFont
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QPixmap, QMovie,QIcon
+from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
-    QColorDialog, QInputDialog, QMessageBox, QAction, QMainWindow, QListWidget, QVBoxLayout, QListWidgetItem, \
+    QColorDialog, QInputDialog, QMessageBox, QAction, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox
-import matplotlib.pyplot as plt
 
 
 class QListWidgetItem2(QListWidgetItem):
-    def __init__(self,number=0):
+    def __init__(self, number=0):
         super().__init__()
         self.number = number
-    def changeNUMB(self,new_number):
-        self.number = new_number
 
+    def changeNUMB(self, new_number):
+        self.number = new_number
 
 
 class Window0(QWidget):
@@ -200,8 +201,9 @@ class Window2(QWidget):
             return text
         self.show()
 
+
 class MyWidget(QWidget):
-    def __init__(self,txt,value,color,image,number, itm=QListWidgetItem2(),maxx=100,parent=None):
+    def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, parent=None):
         super(MyWidget, self).__init__(parent)
 
         self.color = color
@@ -252,19 +254,13 @@ class MyWidget(QWidget):
         windowWYKR.LIST_OF_GOD[windowWYKR.values][self.name] = newvalue
         windowWYKR.maxim += (oldvalue - newvalue)
 
-
-
-
-    def comboCHANGE(self,value):
+    def comboCHANGE(self, value):
         windowWYKR.LIST_OF_GOD[windowWYKR.colors][self.name] = value
-
-
 
     def delt_btn_act(self):
         windowWYKR.deleting(self.number)
 
-
-    def adding_to_combo(self,combobox):
+    def adding_to_combo(self, combobox):
         if not windowWYKR.czyP:
             List_of_colors = windowWYKR.list_of_colors
         else:
@@ -294,7 +290,7 @@ class Window__Wykr(QWidget):
         self.czyP = False
         self.isCreatingChart = False
         self.number_of_layouts = -1
-        self.LIST_OF_GOD = [{},{},{},{}]
+        self.LIST_OF_GOD = [{}, {}, {}, {}]
         self.names = 0
         self.values = 1
         self.colors = 2
@@ -302,11 +298,12 @@ class Window__Wykr(QWidget):
         self.maxim = 100
         self.X = 0
         self.Y = 0
+
     def init_ui(self):
         czyPol()
         self.loadCOLORS()
 
-        adding = QAction(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')),"ADD",self)
+        adding = QAction(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')), "ADD", self)
         adding.setShortcut('Ctrl+N')
         adding.triggered.connect(self.AddNew)
         """
@@ -329,7 +326,7 @@ class Window__Wykr(QWidget):
         qr = self.frameGeometry()
         qr2 = qr.getRect()
 
-        self.LIST.setGeometry(50,qr2[1], 400, 600)
+        self.LIST.setGeometry(50, qr2[1], 400, 600)
 
         xSPIN = QSpinBox()
         ySPIN = QSpinBox()
@@ -386,17 +383,19 @@ class Window__Wykr(QWidget):
 
     def ySPINchange(self, newvalue):
         self.Y = self.spin_str_2_float(newvalue)
+
     def deleting(self, number):
         i = 0
         i2 = self.LIST.count()
-        while i <i2:
+        while i < i2:
             iitem = self.LIST.item(i)
             if iitem.number == number:
                 self.removing(i)
                 self.LIST.removeItemWidget(iitem)
 
-            i+=1
-    def removing(self,numbeer):
+            i += 1
+
+    def removing(self, numbeer):
         name = self.LIST_OF_GOD[self.names].pop(numbeer)
 
         xd = self.LIST_OF_GOD[self.values].pop(name)
@@ -431,25 +430,20 @@ class Window__Wykr(QWidget):
             color = self.LIST_OF_GOD[self.colors][name]
             self.LIST_OF_GOD[self.colors][name] = self.dict_of_colors[color]
 
-
     def AddNew(self):
-        if  self.maxim  > 0:
+        if self.maxim > 0:
             itemek = QListWidgetItem2()
             self.number_of_layouts += 1
-
-
 
             name = self.get_text()
             value = self.get_value()
             color = self.get_color()
 
-
-            my_itemek = MyWidget(name,value,color,"deleting.png",self.number_of_layouts,itm=itemek)
+            my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek)
             itemek.setSizeHint(my_itemek.sizeHint())
 
             self.LIST.addItem(itemek)
-            self.LIST.setItemWidget(itemek,my_itemek)
-
+            self.LIST.setItemWidget(itemek, my_itemek)
 
             self.LIST_OF_GOD[self.names][self.number_of_layouts] = name
             self.LIST_OF_GOD[self.values][name] = value
@@ -461,11 +455,12 @@ class Window__Wykr(QWidget):
             QMessageBox().warning(self, '!!! LIMIT !!!',
                                   '!!!       wykorzystano sumę 100 %      !!! \n możesz zmiejszyć procent innego elementu',
                                   QMessageBox.Ok)
+
     def get_value(self):
         i, ok_pressed = QInputDialog.getDouble(self, 'Podaj wartość',
-                                             'Podaj wartość elementu na wykresie (%) : ',1,0.1,100,2 )
+                                               'Podaj wartość elementu na wykresie (%) : ', 1, 0.1, 100, 2)
 
-        if ok_pressed and self.maxim-i >= 0 :
+        if ok_pressed and self.maxim - i >= 0:
             return i
         elif self.maxim - i < 0:
             QMessageBox().warning(self, '!!! LIMIT !!!',
@@ -484,6 +479,7 @@ class Window__Wykr(QWidget):
             j = i
         print([i, j])
         return [i, j]
+
     def get_text(self):
         text, okPressed = QInputDialog.getText(self, 'Podaj nazwę elementu', 'NAZWA:', QLineEdit.Normal, '')
 
@@ -494,13 +490,13 @@ class Window__Wykr(QWidget):
                                   '!!!       Wypełnij nazwę      !!! \n ',
                                   QMessageBox.Ok)
             self.get_text()
-    def loadCOLORS(self):
 
-        with open(os.path.join(os.pardir, 'files','colors.txt')) as f:
+    def loadCOLORS(self):
+        with open(os.path.join(os.pardir, 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()
         self.list_of_colors = [x.strip() for x in self.list_of_colors]
 
-        with open(os.path.join(os.pardir, 'files','colorsPOLISH.txt')) as f:
+        with open(os.path.join(os.pardir, 'files', 'colorsPOLISH.txt')) as f:
             self.list_of_colors_P = f.readlines()
         self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
 
@@ -516,17 +512,18 @@ class Window__Wykr(QWidget):
 
         return summ
 
-
     def get_color(self):
         if not self.czyP:
             self.List_of_colors = self.list_of_colors
         else:
             self.List_of_colors = self.list_of_colors_P
 
-
-        item, okPressed = QInputDialog.getItem(self, "wybierz kolor", "KOLOR ELEMENTU NA WYKRESIE: ", self.List_of_colors, 0, False)
+        item, okPressed = QInputDialog.getItem(self, "wybierz kolor", "KOLOR ELEMENTU NA WYKRESIE: ",
+                                               self.List_of_colors, 0, False)
         if okPressed and item:
             return item
+
+
 class Window3(QWidget):
     """
     user generates his card averse
@@ -569,9 +566,11 @@ class Window3(QWidget):
         chart_btn.clicked.connect(self.chart_btn_act)
 
         self.show()
+
     def chart_btn_act(self):
         windowWYKR.isCreatingChart = True
         windowWYKR.init_ui()
+
     def color_btn_act(self):
         color = self.get_color()
         self.card.change_color_ave(color)
@@ -605,7 +604,6 @@ class Window3(QWidget):
         self.card.add_text_ave(coords, text, color, font, size)
         self.update_preview()
 
-
     def finish_btn_act(self):
         if not windowWYKR.isCreatingChart:
             self.card.save_ave_cmd_buf()
@@ -615,6 +613,7 @@ class Window3(QWidget):
             QMessageBox().warning(self, 'W TRAKCIE CZYNNOŚCI',
                                   'Jesteś w trakcie dodawania wykresu',
                                   QMessageBox.Ok)
+
     def get_color(self):
         color = QColorDialog()
         color.setFocus()
@@ -895,14 +894,18 @@ def adding_chart(coords):
 def rescale(size):
     pass
 
+
 def center(window):
     qr = window.frameGeometry()
 
     qr.moveCenter(QDesktopWidget().availableGeometry().center())
     window.move(qr.topLeft())
 
+
 def czyPol():
     question1 = quesTion()
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     windowWYKR = Window__Wykr()

@@ -259,6 +259,7 @@ class Window3(QWidget):
     def init_ui(self):
         self.path = fs_interaction.project_location(window0.project, "obverse_preview.png")
         self.card = obverse.CardObverse(window0.project, window1.filename)
+        self.card.save_preview()
         self.preview = QLabel(self)
         self.pixmap = QPixmap(self.path)
         self.preview.setPixmap(self.pixmap)
@@ -267,6 +268,7 @@ class Window3(QWidget):
         self.show()
 
     def update_preview(self):
+        self.card.save_preview()
         self.pixmap = QPixmap(self.path)
         self.preview.setPixmap(self.pixmap)
         self.update()

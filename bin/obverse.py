@@ -50,7 +50,7 @@ def generate(name, data_path, config_path):
             elif i[0] == "txt":
                 j.add_text((i[1], i[2]), i[3], i[5], i[6], i[4], False)
     for i, obv in enumerate(obverses):
-        obv.obverse.save(fs_interaction.project_location(name, fname="obverse{}.png".format(i)))
+        obv.obverse.save(fs_interaction.project_location(name, "obverse{}.png".format(i)))
 
 
 class CardObverse(object):
@@ -65,7 +65,6 @@ class CardObverse(object):
         self.number = number
         self.obverse = Image.new("RGB", (1500, 2100), 0)
         self.obverse_draw = ImageDraw.Draw(self.obverse)
-        self.save_preview()
 
     def save_preview(self):
         """ saves scaled preview of obverse (the first one) """
@@ -84,7 +83,6 @@ class CardObverse(object):
         self.obverse_draw = ImageDraw.Draw(self.obverse)
         if gen_cnfg:
             add_command("col^^{}\n".format(color), self.config_path)
-        self.save_preview()
 
     def paste(self, image, coords, gen_cnfg=True):
         """
@@ -93,12 +91,11 @@ class CardObverse(object):
         :param coords: coords of the pasted image on card
         :param gen_cnfg: if True will save a command
         """
-        image = Image.open(image).convert("RGBA")
-        coords = process_coords(coords, self.obverse.size, image.size)
-        self.obverse.paste(image, coords, image)
+        pimage = Image.open(image).convert("RGBA")
+        coords = process_coords(coords, self.obverse.size, pimage.size)
+        self.obverse.paste(pimage, coords, pimage)
         if gen_cnfg:
             add_command("img^^{}^^{}^^{}\n".format(image, coords[0], coords[1]), self.config_path)
-        self.save_preview()
 
     def add_image_folder(self, folder_path, column, coords, gen_cnfg=True):
         row = fs_interaction.read_csv_line(self.data_path, self.number)
@@ -125,4 +122,3 @@ class CardObverse(object):
         if coords[0] < 0 or coords[1] < 0:
             return 1
         self.obverse_draw.text(coords, text, fill, font)
-        self.save_preview()

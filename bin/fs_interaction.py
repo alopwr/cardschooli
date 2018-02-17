@@ -45,7 +45,12 @@ def read_config(path):
     """
     commands = []
     with open(path) as f:
-        for i in f:
-            i.split("^^")
+        for i in f.readlines():
+            i = i[:-1].split("^^")
+            for j in range(len(i)):
+                try:
+                    i[j] = int(i[j])
+                except ValueError:
+                    pass
             commands.append(i)
     return commands

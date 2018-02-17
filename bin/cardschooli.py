@@ -586,6 +586,31 @@ class Window__Wykr(QWidget):
         new_img.putdata(newData)
         new_img.save(os.path.join(os.pardir, "cards", window0.project, "wykres.png"), 'png')
 
+    def FONT(self, texts, size):
+
+        newTEXTS = []
+        if size[0] > 300 or size[1] > 300:
+            for txt in texts:
+                txt.set_fontsize(8)
+                newTEXTS.append(txt)
+        elif size[0] >= 100 or size[1] >= 100:
+            for txt in texts:
+                txt.set_fontsize(4)
+                newTEXTS.append(txt)
+        elif size[0] < 40 or size[1] < 40:
+            for txt in texts:
+                txt.set_fontsize(1)
+                newTEXTS.append(txt)
+        elif size[0] < 10 or size[1] < 10:
+            for txt in texts:
+                txt.set_fontsize(0.6)
+                newTEXTS.append(txt)
+        else:
+            for txt in texts:
+                txt.set_fontsize(2)
+                newTEXTS.append(txt)
+
+        return newTEXTS
     def generating_chart(self, LIST_OF_GOD, size):
         if not windowWYKR.czyPer:
             names = []
@@ -613,6 +638,8 @@ class Window__Wykr(QWidget):
             plt.figure(figsize=(size[0] / 100, size[1] / 100))
             patches, texts = plt.pie(sizes, labels=labels, colors=colors, shadow=False, startangle=90,
                                      labeldistance=0.5)
+
+            texts = self.FONT(texts, size)
             plt.axis('equal')
             plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"), dpi=600)
             x, y = self.calculate(names)

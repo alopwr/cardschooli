@@ -4,7 +4,6 @@ import os.path
 import sys
 
 import matplotlib.pyplot as plt
-from math import ceil
 from PIL import Image, ImageDraw, ImageFont
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
@@ -260,7 +259,6 @@ class MyWidget(QWidget):
 
         windowWYKR.LIST_OF_GOD[windowWYKR.values][self.name] = newvalue
 
-
     def comboCHANGE(self, value):
         windowWYKR.LIST_OF_GOD[windowWYKR.colors][self.name] = value
 
@@ -306,6 +304,7 @@ class Window__Wykr(QWidget):
         self.X = 0
         self.Y = 0
         self.czyPer = False
+
     def init_ui(self):
         czyPol()
         self.loadCOLORS()
@@ -448,6 +447,7 @@ class Window__Wykr(QWidget):
             return self.maxim
         else:
             return 999
+
     def AddNew(self):
         if self.smaxim() > 0:
             itemek = QListWidgetItem2()
@@ -497,6 +497,7 @@ class Window__Wykr(QWidget):
                                                    'Podaj wartość elementu na wykresie (q) : ', 1, 1, 999999999, 1)
             if ok_pressed:
                 return i
+
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
                                              'Podaj szerokość diagramu. \n(piksele)',
@@ -546,6 +547,7 @@ class Window__Wykr(QWidget):
 
         else:
             return 100.0
+
     def get_color(self):
         if not self.czyP:
             self.List_of_colors = self.list_of_colors
@@ -558,12 +560,9 @@ class Window__Wykr(QWidget):
             return item
 
     def adding_chart(self, coords):
-
-        """
-        imported = Image.open(os.path.join(os.pardir, "cards", window0.project, "wykres.png"))
+        imported = os.path.join(os.pardir, "cards", window0.project, "wykres.png")
         window3.card.paste_in_ave(imported, coords)
         window3.update_preview()
-        """
 
     def calculate(self, names):
         dlugosci = []
@@ -648,6 +647,8 @@ class Window__Wykr(QWidget):
                     autopct='%1.1f%%', shadow=True, startangle=140)
             plt.axis('equal')
             plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
+
+
 class Window3(QWidget):
     """
     user generates his card averse
@@ -987,6 +988,7 @@ class Card(object):
                 coords[1] = int((self.prev_ave.height - self.check_txt_size_ave(text, font)[1]) / 2)
         self.prev_ave_draw.text(coords, text, fill, font)
         self.preview_ave()
+
 
 def center(window):
     qr = window.frameGeometry()

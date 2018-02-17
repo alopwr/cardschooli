@@ -4,6 +4,7 @@ import os.path
 import sys
 
 import matplotlib.pyplot as plt
+from math import ceil
 from PIL import Image, ImageDraw, ImageFont
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
@@ -203,7 +204,7 @@ class Window2(QWidget):
 
 
 class MyWidget(QWidget):
-    def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, parent=None):
+    def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
         super(MyWidget, self).__init__(parent)
 
         self.color = color
@@ -220,11 +221,12 @@ class MyWidget(QWidget):
 
         label = QLabel(txt)
         label2 = QLabel(" % ")
-
+        label3 = QLabel("g")
         spiinbox = QDoubleSpinBox()
         spiinbox.setMinimum(0.01)
         spiinbox.setMaximum(maxx)
         spiinbox.setValue(value)
+        spiinbox.setDecimals(dok)
 
         combobox = QComboBox()
         combobox = self.adding_to_combo(combobox)
@@ -236,7 +238,10 @@ class MyWidget(QWidget):
         layout = QHBoxLayout()
         layout.addWidget(label)
         layout.addWidget(spiinbox)
-        layout.addWidget(label2)
+        if windowWYKR.czyPer:
+            layout.addWidget(label2)
+        else:
+            layout.addWidget(label3)
         layout.addWidget(combobox)
         layout.addWidget(delt_btn)
 
@@ -245,14 +250,16 @@ class MyWidget(QWidget):
     def spiinCHANGE(self, newvalue):
 
         newvalue = windowWYKR.spin_str_2_float(newvalue)
-        oldvalue = windowWYKR.LIST_OF_GOD[windowWYKR.values][self.name]
+        if windowWYKR.czyPer:
+            oldvalue = windowWYKR.LIST_OF_GOD[windowWYKR.values][self.name]
+            if not windowWYKR.maxim - (newvalue - oldvalue) >= 0:
+                QMessageBox().warning(self, '!!! LIMIT !!!',
+                                      '!!!       Przekroczono sumę 100 %      !!! \n zmniejsz procent innego elementu',
+                                      QMessageBox.Ok)
+            windowWYKR.maxim += (oldvalue - newvalue)
 
-        if not windowWYKR.maxim - (newvalue - oldvalue) >= 0:
-            QMessageBox().warning(self, '!!! LIMIT !!!',
-                                  '!!!       Przekroczono sumę 100 %      !!! \n zmniejsz procent innego elementu',
-                                  QMessageBox.Ok)
         windowWYKR.LIST_OF_GOD[windowWYKR.values][self.name] = newvalue
-        windowWYKR.maxim += (oldvalue - newvalue)
+
 
     def comboCHANGE(self, value):
         windowWYKR.LIST_OF_GOD[windowWYKR.colors][self.name] = value
@@ -298,7 +305,7 @@ class Window__Wykr(QWidget):
         self.maxim = 100
         self.X = 0
         self.Y = 0
-
+        self.czyPer = False
     def init_ui(self):
         czyPol()
         self.loadCOLORS()
@@ -401,7 +408,8 @@ class Window__Wykr(QWidget):
         xd = self.LIST_OF_GOD[self.values].pop(name)
         xd1 = self.LIST_OF_GOD[self.colors].pop(name)
         xd2 = self.LIST_OF_GOD[self.explodings].pop(name)
-        self.maxim += float(xd)
+        if self.czyPer:
+            self.maxim += float(xd)
 
     def ok_act(self):
         if self.LIST.count() > 0 and self.suma() == 100.0:
@@ -409,7 +417,7 @@ class Window__Wykr(QWidget):
                 self.exchange()
             size = self.get_size()
             generating_chart(self.LIST_OF_GOD)
-            rescale(size)
+            rescale_and_transp(size)
             adding_chart([self.X, self.Y])
             self.isCreatingChart = False
             self.close()
@@ -421,25 +429,34 @@ class Window__Wykr(QWidget):
                                   '!!!       Przekroczono sumę 100 %      !!! \n',
                                   QMessageBox.Ok)
         else:
-            QMessageBox().warning(self, '!!! ZA MAŁO !!!',
-                                  '!!!       brakuje do sumy 100%      !!! \n',
-                                  QMessageBox.Ok)
+            if self.czyPer:
+                QMessageBox().warning(self, '!!! ZA MAŁO !!!',
+                                      '!!!       brakuje do sumy 100%      !!! \n',
+                                      QMessageBox.Ok)
 
     def exchange(self):
         for name in self.LIST_OF_GOD[self.colors]:
             color = self.LIST_OF_GOD[self.colors][name]
             self.LIST_OF_GOD[self.colors][name] = self.dict_of_colors[color]
 
+    def smaxim(self):
+        if self.czyPer:
+            return self.maxim
+        else:
+            return 999
     def AddNew(self):
-        if self.maxim > 0:
+        if self.smaxim() > 0:
             itemek = QListWidgetItem2()
             self.number_of_layouts += 1
 
             name = self.get_text()
             value = self.get_value()
             color = self.get_color()
-
-            my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek)
+            if self.czyPer:
+                my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek, dok=2)
+            else:
+                my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek,
+                                     maxx=999999999, dok=1)
             itemek.setSizeHint(my_itemek.sizeHint())
 
             self.LIST.addItem(itemek)
@@ -449,7 +466,8 @@ class Window__Wykr(QWidget):
             self.LIST_OF_GOD[self.values][name] = value
             self.LIST_OF_GOD[self.colors][name] = color
             self.LIST_OF_GOD[self.explodings][name] = 0
-            self.maxim -= value
+            if self.czyPer:
+                self.maxim -= value
 
         else:
             QMessageBox().warning(self, '!!! LIMIT !!!',
@@ -457,26 +475,35 @@ class Window__Wykr(QWidget):
                                   QMessageBox.Ok)
 
     def get_value(self):
-        i, ok_pressed = QInputDialog.getDouble(self, 'Podaj wartość',
-                                               'Podaj wartość elementu na wykresie (%) : ', 1, 0.1, 100, 2)
+        if self.czyPer:
+            i, ok_pressed = QInputDialog.getDouble(self, 'Podaj wartość',
+                                                   'Podaj wartość elementu na wykresie (%) : ', 1, 0.1, 100, 2)
 
-        if ok_pressed and self.maxim - i >= 0:
+            if ok_pressed and self.maxim - i >= 0:
+                return i
+            elif self.maxim - i < 0:
+                QMessageBox().warning(self, '!!! LIMIT !!!',
+                                      '!!!       Przekroczono sumę 100 %      !!! \n spróbuj ponownie',
+                                      QMessageBox.Ok)
+                self.get_value()
+
             return i
-        elif self.maxim - i < 0:
-            QMessageBox().warning(self, '!!! LIMIT !!!',
-                                  '!!!       Przekroczono sumę 100 %      !!! \n spróbuj ponownie',
-                                  QMessageBox.Ok)
-            self.get_value()
-
-        return i
-
+        else:
+            i, ok_pressed = QInputDialog.getDouble(self, 'Podaj wartość',
+                                                   'Podaj wartość elementu na wykresie (q) : ', 1, 1, 999999999, 1)
+            if ok_pressed:
+                return i
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
-                                             'Podaj szerokość diagramu. \n(piksele)', min=1)
+                                             'Podaj szerokość diagramu. \n(piksele)\n wysokość zostanie wygenerowana z zachowaniem odpowiednich proporcji',
+                                             min=1)
+        """
         j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
                                              'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', min=1)
         if not ok_pressed1:
             j = i
+        """
+        j = ceil(i * 0.75)
         print([i, j])
         return [i, j]
 
@@ -505,13 +532,17 @@ class Window__Wykr(QWidget):
             self.dict_of_colors[self.list_of_colors_P[i]] = self.list_of_colors[i]
 
     def suma(self):
-        summ = 0
 
-        for i in self.LIST_OF_GOD[self.values].values():
-            summ += i
+        if self.czyPer:
+            summ = 0
 
-        return summ
+            for i in self.LIST_OF_GOD[self.values].values():
+                summ += i
+            print(summ)
+            return summ
 
+        else:
+            return 100.0
     def get_color(self):
         if not self.czyP:
             self.List_of_colors = self.list_of_colors
@@ -864,35 +895,91 @@ class Card(object):
 
 
 def generating_chart(LIST_OF_GOD):
-    labels = []
-    for name in LIST_OF_GOD[0].values():  # names = 0
-        labels.append(name)
+    if not windowWYKR.czyPer:
+        names = []
+        for name in LIST_OF_GOD[0].values():  # names = 0
+            names.append(name)
 
-    sizes = []
-    for value in LIST_OF_GOD[1].values():  # values = 1
-        sizes.append(value)
+        labels = []
+        for name in LIST_OF_GOD[1].values():  # values = 1
+            labels.append((str(name) + " g"))
 
-    colors = []
-    for color in LIST_OF_GOD[2].values():  # colors = 2
-        colors.append(color)
+        sizes = []
+        for value in LIST_OF_GOD[1].values():  # values = 1
+            sizes.append(value)
 
-    explode = []
-    for expld in LIST_OF_GOD[3].values():  # explode = 3
-        explode.append(expld)
+        colors = []
+        for color in LIST_OF_GOD[2].values():  # colors = 2
+            colors.append(color)
 
-    plt.pie(sizes, explode=explode, labels=labels, colors=colors,
-            autopct='%1.1f%%', shadow=True, startangle=140)
+        explode = []
+        for expld in LIST_OF_GOD[3].values():  # explode = 3
+            explode.append(expld)
 
-    plt.axis('equal')
-    plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykres.png"))
+        patches, texts = plt.pie(sizes, labels=labels, colors=colors, shadow=True, startangle=90, labeldistance=0.5)
+        plt.axis('equal')
+        plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
+
+        x, y = calculate(names)
+        figlegend = plt.figure(figsize=(x, y))
+        figlegend.legend(patches, names)
+        figlegend.savefig(os.path.join(os.pardir, "cards", window0.project, "legend.png"))
 
 
+    else:
+        labels = []
+        for name in LIST_OF_GOD[0].values():  # names = 0
+            labels.append(name)
+
+        sizes = []
+        for value in LIST_OF_GOD[1].values():  # values = 1
+            sizes.append(value)
+
+        colors = []
+        for color in LIST_OF_GOD[2].values():  # colors = 2
+            colors.append(color)
+
+        explode = []
+        for expld in LIST_OF_GOD[3].values():  # explode = 3
+            explode.append(expld)
+
+        plt.pie(sizes, explode=explode, colors=colors, labels=labels,
+                autopct='%1.1f%%', shadow=True, startangle=140)
+
+        plt.axis('equal')
+        plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
 def adding_chart(coords):
     pass
 
 
-def rescale(size):
-    pass
+def calculate(names):
+    dlugosci = []
+    for name in names:
+        dlugosci.append(len(name))
+    dl = max(dlugosci)
+    DL = (dl * 0.1 + 0.5)
+    wys = len(names)
+    WYS = (wys * 0.25) + 0.11
+    return (DL, WYS)
+
+
+def rescale_and_transp(size):
+    img = Image.open(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
+    new_img = img.resize(size)
+    new_img.save(os.path.join(os.pardir, "cards", window0.project, "wykres.png"), 'png')
+
+    new_img = Image.open(os.path.join(os.pardir, "cards", window0.project, "wykres.png"))
+    new_img.convert("RGBA")
+    datas = new_img.getdata()
+    newData = []
+    for item in datas:
+        if item[0] == 255 and item[1] == 255 and item[2] == 255:
+            newData.append((255, 255, 255, 0))
+        else:
+            newData.append(item)
+    new_img.putdata(newData)
+    new_img.save(os.path.join(os.pardir, "cards", window0.project, "wykresnew.png"), 'png')
+
 
 
 def center(window):

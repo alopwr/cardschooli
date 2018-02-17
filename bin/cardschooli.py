@@ -419,7 +419,6 @@ class Window__Wykr(QWidget):
             self.generating_chart(self.LIST_OF_GOD, size)
 
             self.transp()
-            print("xd")
             self.adding_chart([self.X, self.Y])
 
             self.isCreatingChart = False
@@ -612,15 +611,12 @@ class Window__Wykr(QWidget):
             for expld in LIST_OF_GOD[3].values():  # explode = 3
                 explode.append(expld)
             plt.figure(figsize=(size[0] / 100, size[1] / 100))
-            print("0")
-            patches, texts = plt.pie(sizes, labels=labels, colors=colors, shadow=True, startangle=90, labeldistance=0.5)
-            print("1")
+            patches, texts = plt.pie(sizes, labels=labels, colors=colors, shadow=False, startangle=90,
+                                     labeldistance=0.5)
             plt.axis('equal')
             plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"), dpi=600)
-
             x, y = self.calculate(names)
             figlegend = plt.figure(figsize=(x, y))
-            print("2")
             figlegend.legend(patches, names)
             figlegend.savefig(os.path.join(os.pardir, "cards", window0.project, "legend.png"), dpi=600)
 
@@ -644,7 +640,7 @@ class Window__Wykr(QWidget):
 
             plt.figure(figsize=(size[0] / 100, size[1] / 100))
             plt.pie(sizes, explode=explode, colors=colors, labels=labels,
-                    autopct='%1.1f%%', shadow=True, startangle=140)
+                    autopct='%1.1f%%', shadow=False, startangle=140)
             plt.axis('equal')
             plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
 

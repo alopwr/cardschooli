@@ -416,9 +416,13 @@ class Window__Wykr(QWidget):
             if self.czyP:
                 self.exchange()
             size = self.get_size()
-            generating_chart(self.LIST_OF_GOD)
-            rescale_and_transp(size)
-            adding_chart([self.X, self.Y])
+
+            self.generating_chart(self.LIST_OF_GOD, size)
+
+            self.transp()
+            print("xd")
+            self.adding_chart([self.X, self.Y])
+
             self.isCreatingChart = False
             self.close()
         elif self.LIST.count() == 0:
@@ -495,15 +499,14 @@ class Window__Wykr(QWidget):
                 return i
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
-                                             'Podaj szerokość diagramu. \n(piksele)\n wysokość zostanie wygenerowana z zachowaniem odpowiednich proporcji',
+                                             'Podaj szerokość diagramu. \n(piksele)',
                                              min=1)
-        """
+
         j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
                                              'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', min=1)
         if not ok_pressed1:
             j = i
-        """
-        j = ceil(i * 0.75)
+
         print([i, j])
         return [i, j]
 
@@ -554,7 +557,97 @@ class Window__Wykr(QWidget):
         if okPressed and item:
             return item
 
+    def adding_chart(self, coords):
 
+        """
+        imported = Image.open(os.path.join(os.pardir, "cards", window0.project, "wykres.png"))
+        window3.card.paste_in_ave(imported, coords)
+        window3.update_preview()
+        """
+
+    def calculate(self, names):
+        dlugosci = []
+        for name in names:
+            dlugosci.append(len(name))
+        dl = max(dlugosci)
+        DL = (dl * 0.1 + 0.5)
+        wys = len(names)
+        WYS = (wys * 0.25) + 0.11
+        return (DL, WYS)
+
+    def transp(self):
+        new_img = Image.open(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
+        new_img.convert("RGBA")
+        datas = new_img.getdata()
+        newData = []
+        for item in datas:
+            if item[0] == 255 and item[1] == 255 and item[2] == 255:
+                newData.append((255, 255, 255, 0))
+            else:
+                newData.append(item)
+        new_img.putdata(newData)
+        new_img.save(os.path.join(os.pardir, "cards", window0.project, "wykres.png"), 'png')
+
+    def generating_chart(self, LIST_OF_GOD, size):
+        if not windowWYKR.czyPer:
+            names = []
+            for name in LIST_OF_GOD[0].values():  # names = 0
+                names.append(name)
+
+            labels = []
+            for name in LIST_OF_GOD[1].values():  # values = 1
+                if int(name) == name:
+                    labels.append((str(name)[::2] + " g"))
+                else:
+                    labels.append((str(name) + " g"))
+
+            sizes = []
+            for value in LIST_OF_GOD[1].values():  # values = 1
+                sizes.append(value)
+
+            colors = []
+            for color in LIST_OF_GOD[2].values():  # colors = 2
+                colors.append(color)
+
+            explode = []
+            for expld in LIST_OF_GOD[3].values():  # explode = 3
+                explode.append(expld)
+            plt.figure(figsize=(size[0] / 100, size[1] / 100))
+            print("0")
+            patches, texts = plt.pie(sizes, labels=labels, colors=colors, shadow=True, startangle=90, labeldistance=0.5)
+            print("1")
+            plt.axis('equal')
+            plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"), dpi=600)
+
+            x, y = self.calculate(names)
+            figlegend = plt.figure(figsize=(x, y))
+            print("2")
+            figlegend.legend(patches, names)
+            figlegend.savefig(os.path.join(os.pardir, "cards", window0.project, "legend.png"), dpi=600)
+
+
+        else:
+            labels = []
+            for name in LIST_OF_GOD[0].values():  # names = 0
+                labels.append(name)
+
+            sizes = []
+            for value in LIST_OF_GOD[1].values():  # values = 1
+                sizes.append(value)
+
+            colors = []
+            for color in LIST_OF_GOD[2].values():  # colors = 2
+                colors.append(color)
+
+            explode = []
+            for expld in LIST_OF_GOD[3].values():  # explode = 3
+                explode.append(expld)
+
+            plt.figure(figsize=(size[0] / 100, size[1] / 100))
+            plt.pie(sizes, explode=explode, colors=colors, labels=labels,
+                    autopct='%1.1f%%', shadow=True, startangle=140)
+            plt.axis('equal')
+            plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
 class Window3(QWidget):
     """
     user generates his card averse
@@ -664,6 +757,8 @@ class Window3(QWidget):
         filename = \
             QFileDialog.getOpenFileName(self, 'Wybierz obrazek do zaimportowania na rewers:', filter='PNG (*.png)',
                                         options=options)[0]
+        print("xd")
+        print(filename)
         return filename
 
     def get_size(self):
@@ -892,95 +987,6 @@ class Card(object):
                 coords[1] = int((self.prev_ave.height - self.check_txt_size_ave(text, font)[1]) / 2)
         self.prev_ave_draw.text(coords, text, fill, font)
         self.preview_ave()
-
-
-def generating_chart(LIST_OF_GOD):
-    if not windowWYKR.czyPer:
-        names = []
-        for name in LIST_OF_GOD[0].values():  # names = 0
-            names.append(name)
-
-        labels = []
-        for name in LIST_OF_GOD[1].values():  # values = 1
-            labels.append((str(name) + " g"))
-
-        sizes = []
-        for value in LIST_OF_GOD[1].values():  # values = 1
-            sizes.append(value)
-
-        colors = []
-        for color in LIST_OF_GOD[2].values():  # colors = 2
-            colors.append(color)
-
-        explode = []
-        for expld in LIST_OF_GOD[3].values():  # explode = 3
-            explode.append(expld)
-
-        patches, texts = plt.pie(sizes, labels=labels, colors=colors, shadow=True, startangle=90, labeldistance=0.5)
-        plt.axis('equal')
-        plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
-
-        x, y = calculate(names)
-        figlegend = plt.figure(figsize=(x, y))
-        figlegend.legend(patches, names)
-        figlegend.savefig(os.path.join(os.pardir, "cards", window0.project, "legend.png"))
-
-
-    else:
-        labels = []
-        for name in LIST_OF_GOD[0].values():  # names = 0
-            labels.append(name)
-
-        sizes = []
-        for value in LIST_OF_GOD[1].values():  # values = 1
-            sizes.append(value)
-
-        colors = []
-        for color in LIST_OF_GOD[2].values():  # colors = 2
-            colors.append(color)
-
-        explode = []
-        for expld in LIST_OF_GOD[3].values():  # explode = 3
-            explode.append(expld)
-
-        plt.pie(sizes, explode=explode, colors=colors, labels=labels,
-                autopct='%1.1f%%', shadow=True, startangle=140)
-
-        plt.axis('equal')
-        plt.savefig(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
-def adding_chart(coords):
-    pass
-
-
-def calculate(names):
-    dlugosci = []
-    for name in names:
-        dlugosci.append(len(name))
-    dl = max(dlugosci)
-    DL = (dl * 0.1 + 0.5)
-    wys = len(names)
-    WYS = (wys * 0.25) + 0.11
-    return (DL, WYS)
-
-
-def rescale_and_transp(size):
-    img = Image.open(os.path.join(os.pardir, "cards", window0.project, "wykresOLD.png"))
-    new_img = img.resize(size)
-    new_img.save(os.path.join(os.pardir, "cards", window0.project, "wykres.png"), 'png')
-
-    new_img = Image.open(os.path.join(os.pardir, "cards", window0.project, "wykres.png"))
-    new_img.convert("RGBA")
-    datas = new_img.getdata()
-    newData = []
-    for item in datas:
-        if item[0] == 255 and item[1] == 255 and item[2] == 255:
-            newData.append((255, 255, 255, 0))
-        else:
-            newData.append(item)
-    new_img.putdata(newData)
-    new_img.save(os.path.join(os.pardir, "cards", window0.project, "wykresnew.png"), 'png')
-
-
 
 def center(window):
     qr = window.frameGeometry()

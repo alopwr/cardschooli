@@ -102,3 +102,4 @@ ENV/
 
 #PyCharm shit
 .idea/
+.idea

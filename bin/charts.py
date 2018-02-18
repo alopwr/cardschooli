@@ -221,6 +221,7 @@ class Window_Wykr(QWidget):
             else:
                 newvalue += l
         newvalue = float(newvalue)
+
         return newvalue
 
     def xSPINchange(self, newvalue):
@@ -338,11 +339,12 @@ class Window_Wykr(QWidget):
 
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
-                                             'Podaj szerokość diagramu. \n(piksele)',
+                                             'Podaj szerokość diagramu. \n(piksele)', 100,
                                              min=1)
 
         j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
-                                             'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', min=1)
+                                             'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', i,
+                                             min=1)
         if not ok_pressed1:
             j = i
 
@@ -460,8 +462,9 @@ class Window_Wykr(QWidget):
 
             labels = []
             for name in LIST_OF_GOD[1].values():  # values = 1
+                print(name)
                 if int(name) == name:
-                    labels.append((str(name)[::2] + " g"))
+                    labels.append((str(name)[:2] + " g"))
                 else:
                     labels.append((str(name) + " g"))
 

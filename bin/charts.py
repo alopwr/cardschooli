@@ -4,14 +4,15 @@ from PIL import Image
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
 import platform
-from PyQt5.QtCore import QSize
+
+from PyQt5.QtCore import QSize, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QMainWindow, QTabWidget
 
 import fs_interaction
-import gui
+import gui, obverse
 
 
 def czyPol():
@@ -141,7 +142,8 @@ class Window_Wykr(QWidget):
         self.Y = 0
         self.czy_per = False
         self.project = ""
-        self.window3 = None
+        self.filename = ""
+        self.card3 = None
         play_()
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
@@ -473,7 +475,7 @@ class Window_Wykr(QWidget):
             for expld in LIST_OF_GOD[3].values():  # explode = 3
                 explode.append(expld)
             plt.figure(figsize=(size[0] / 100, size[1] / 100))
-            patches, texts = plt.pie(sizes, labels=labels, colors=colors, shadow=False, startangle=90,
+            patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
                                      labeldistance=0.5)
 
             texts = self.dym_font(texts, size)
@@ -517,28 +519,101 @@ def choose_colum(parent, caption, text, selections):
 
 class My_Cool_Widget(QWidget):
     def __init__(self):
-        super(QWidget, self).__init__(parent)
-        self.layout = QVBoxLayout(self)
-        """
-        self.tabs = QTabWidget()
-        self.tab1 = QWidget()
-        self.tab2 = QWidget()
-        """
 
+        super().__init__()
+
+        self.columnlist = window_seria_wykr.columnlist
+        self.load_rows()
+
+        self.load_labels()
+
+        self.LIST_OF_TABS = {}
+
+        self.layout = QVBoxLayout(self)
+
+        self.tabs = QTabWidget()
+        print(self.labels)
+
+        for label in self.labels:
+            tab = QWidget()
+            self.tabs.addTab(tab, label)
+            self.LIST_OF_TABS[label] = tab
+
+        print(self.LIST_OF_TABS)
+
+        self.layout.addWidget(self.tabs)
+        self.setLayout(self.layout)
+
+    @pyqtSlot()
+    def on_click(self):
+        print("\n")
+        for currentQTableWidgetItem in self.tableWidget.selectedItems():
+            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
+
+    def load_labels(self):
+        print(self.columnlist[1])
+        labels = []
+        for row in self.rows:
+            labels.append(row[self.columnlist[1]])
+        self.labels = labels
+
+    def load_rows(self):
+        numb_r = obverse.get_numb_rows(window_wykr.project, window_wykr.filename) + 1
+        rows = []
+        for i in range(numb_r):
+            row = fs_interaction.read_csv_line(window_wykr.card3.data_path, i)
+            rows.append(row)
+        self.rows = rows[1::]
+        self.row0 = rows[0]
 
 class Window_Seria_Wykr(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("cardschooli wykres seryjne")
+        self.setWindowTitle("cardschooli wykresy seryjne")
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         gui.center(self)
         self.resize(800, 600)
+        self.liczbapoz = 0
 
-    def init_ui(self, column):
-        pass
+    def init_ui(self, columnlist):
+        self.loadCOLORS()
+        self.columnlist = columnlist
 
+        self.coolWidget = My_Cool_Widget()
 
+        add_btn = QPushButton("ADD", self)
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')))
+        add_btn.setGeometry(30, 30, 50, 50)
+        add_btn.clicked.connect(self.AddNew)
+        add_btn.setToolTip("dodaje element do wykresu")
 
+        self.layout = QHBoxLayout(self)
+        self.layout.addWidget(add_btn)
+        self.layout.addWidget(self.coolWidget)
+        self.setLayout(self.layout)
+        self.show()
+
+    def AddNew(self):
+        self.liczbapoz += 1
+        column = choose_colum(self, "wybierz pozycję", "wybierz kolumnę z wartościami na pierwsze pozycje na wykresach",
+                              self.coolWidget.row0)
+        column_nr = self.columnlist[2].index(column)
+        print(column_nr)
+
+    def loadCOLORS(self):
+        with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
+            self.list_of_colors = f.readlines()
+        self.list_of_colors = [x.strip() for x in self.list_of_colors]
+        self.list_of_colors[0] = "automatically generated"
+
+        with open(os.path.join(os.pardir, 'res', 'files', 'colorsPOLISH.txt')) as f:
+            self.list_of_colors_P = f.readlines()
+        self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
+        self.list_of_colors_P[0] = "automatycznie generowane"
+
+        self.dict_of_colors = {}
+        for i in range(len(self.list_of_colors)):
+            self.dict_of_colors[self.list_of_colors_P[i]] = self.list_of_colors[i]
 
 
 

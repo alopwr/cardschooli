@@ -6,6 +6,7 @@ allows user creating his deck of cards
 import os
 import sys
 
+
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
@@ -146,6 +147,7 @@ class Window1(QWidget):
                           "Nie wybrałeś pliku, bądź ma on nieodpowiedni format. Użyj pliku .csv!")
             return None
         self.close()
+        charts.window_wykr.filename = window1.filename
         window2.init_ui()
 
 
@@ -281,8 +283,8 @@ class Window3(QWidget):
 
         column_data = fs_interaction.read_csv_line(window1.filename, 0)
         column_nr = column_data.index(column)
-        # row = fs_interaction.read_csv_line(self.card.data_path, 2)
-        charts.window_seria_wykr.init_ui(column, column_nr, column_data)
+
+        charts.window_seria_wykr.init_ui([column, column_nr, column_data])
 
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
@@ -295,7 +297,7 @@ class Window3(QWidget):
         self.preview.setGeometry(25, (self.height() - self.pixmap.height()) / 2,
                                  self.pixmap.width(), self.pixmap.height())
         self.show()
-
+        charts.window_wykr.card3 = self.card
     def update_preview(self):
         self.card.save_preview()
         self.pixmap = QPixmap(self.path)

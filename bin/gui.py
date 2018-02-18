@@ -5,18 +5,15 @@ allows user creating his deck of cards
 """
 import os
 import sys
+
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
 
+import charts
 import fs_interaction
 import obverse
 import reverse
-import charts
-import music
-
-
-
 
 
 def center(window):
@@ -104,6 +101,7 @@ class Window0(QWidget):
         self.show()
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
+
     def next(self):
         self.project = self.project_name.text()
         charts.window_wykr.project = self.project
@@ -272,6 +270,7 @@ class Window3(QWidget):
     def chart_btn_act(self):
         charts.window_wykr.isCreatingChart = True
         charts.window_wykr.init_ui()
+
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         self.path = fs_interaction.project_location(window0.project, "obverse_preview.png")
@@ -350,6 +349,7 @@ class Window3(QWidget):
                                   'Jesteś w trakcie dodawania wykresu',
                                   QMessageBox.Ok)
 
+
 class Window4(QWidget):
     def __init__(self):
         super().__init__()
@@ -385,7 +385,5 @@ if __name__ == "__main__":
 
     charts.create_window_wykr()
     charts.window_wykr.window3 = window3
-
-    music.play_music()
 
     sys.exit(app.exec_())

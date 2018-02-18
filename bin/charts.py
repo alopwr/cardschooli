@@ -1,16 +1,15 @@
-import csv
 import os.path
-
-import sys
 
 import matplotlib.pyplot as plt
 from PIL import Image
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, \
-    QInputDialog, QMessageBox, QAction, QListWidget, QVBoxLayout, QListWidgetItem, \
+from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
+    QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox
-import gui, fs_interaction
+
+import fs_interaction
+import gui
 
 
 def czyPol():
@@ -344,11 +343,11 @@ class Window_Wykr(QWidget):
             self.get_text()
 
     def loadCOLORS(self):
-        with open(os.path.join(os.pardir, 'files', 'colors.txt')) as f:
+        with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()
         self.list_of_colors = [x.strip() for x in self.list_of_colors]
 
-        with open(os.path.join(os.pardir, 'files', 'colorsPOLISH.txt')) as f:
+        with open(os.path.join(os.pardir, 'res', 'files', 'colorsPOLISH.txt')) as f:
             self.list_of_colors_P = f.readlines()
         self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
 

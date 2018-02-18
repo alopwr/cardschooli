@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, 
 import fs_interaction
 import obverse
 import reverse
+import charts
 
 
 def center(window):
@@ -101,12 +102,16 @@ class Window0(QWidget):
         self.start_btn.clicked.connect(self.next)
 
     def next(self):
+        self.project = self.project_name.text()
+        charts.window_wykr.project = self.project
+        print(charts.window_wykr.project)
         if not fs_interaction.project_location(self.project_name.text()):
             raise_warning(self, "Tylko znaki alfanumeryczne!",
                           "W nazwie projektu wykorzystałeś znaki niealfanumeryczne. Spróbuj jeszcze raz!")
             return None
-        self.project = self.project_name.text()
+
         self.close()
+
         window1.init_ui()
 
 
@@ -245,17 +250,23 @@ class Window3(QWidget):
         image_var_btn = QPushButton("Zaimportuj folder z grafikami PNG", self)
         text_btn = QPushButton("Dodaj tekst", self)
         finish_btn = QPushButton("Zakończ >>>", self)
+        chart_btn = QPushButton('dodaj wykres kołowy', self)
         color_btn.setGeometry(490, 60, 235, 35)
         image_btn.setGeometry(490, 115, 235, 35)
         image_var_btn.setGeometry(490, 170, 235, 35)
         text_btn.setGeometry(490, 225, 235, 35)
         finish_btn.setGeometry(490, 475, 235, 70)
+        chart_btn.setGeometry(490, 325, 235, 35)
         color_btn.clicked.connect(self.color_btn_act)
         image_btn.clicked.connect(self.image_btn_act)
         image_var_btn.clicked.connect(self.image_folder_btn_act)
         text_btn.clicked.connect(self.text_btn_act)
         finish_btn.clicked.connect(self.finish_btn_act)
+        chart_btn.clicked.connect(self.chart_btn_act)
 
+    def chart_btn_act(self):
+        charts.window_wykr.isCreatingChart = True
+        charts.window_wykr.init_ui()
     def init_ui(self):
         self.path = fs_interaction.project_location(window0.project, "obverse_preview.png")
         self.card = obverse.CardObverse(window0.project, window1.filename)
@@ -325,14 +336,17 @@ class Window3(QWidget):
         self.update_preview()
 
     def finish_btn_act(self):
-        self.close()
-        window4.init_ui()
-
+        if not charts.window_wykr.isCreatingChart:
+            self.close()
+            window4.init_ui()
+        else:
+            QMessageBox().warning(self, 'W TRAKCIE CZYNNOŚCI',
+                                  'Jesteś w trakcie dodawania wykresu',
+                                  QMessageBox.Ok)
 
 class Window4(QWidget):
     def __init__(self):
         super().__init__()
-
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - krok 4")
         center(self)
@@ -359,5 +373,9 @@ if __name__ == "__main__":
     window1 = Window1()
     window2 = Window2()
     window3 = Window3()
+
+    charts.create_window_wykr()
+    charts.window_wykr.window3 = window3
+
     window4 = Window4()
     sys.exit(app.exec_())

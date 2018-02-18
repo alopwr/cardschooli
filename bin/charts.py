@@ -6,15 +6,16 @@ import sys
 import matplotlib.pyplot as plt
 from PIL import Image
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import  QIcon
-from PyQt5.QtWidgets import  QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, \
-     QInputDialog, QMessageBox, QAction, QListWidget, QVBoxLayout, QListWidgetItem, \
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, \
+    QInputDialog, QMessageBox, QAction, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox
 import gui, fs_interaction
 
-def czyPol():
 
+def czyPol():
     question1 = quesTion()
+
 
 class QListWidgetItem2(QListWidgetItem):
     def __init__(self, number=0):
@@ -23,6 +24,8 @@ class QListWidgetItem2(QListWidgetItem):
 
     def changeNUMB(self, new_number):
         self.number = new_number
+
+
 class MyWidget(QWidget):
     def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
         super(MyWidget, self).__init__(parent)
@@ -94,6 +97,8 @@ class MyWidget(QWidget):
         combobox.addItems(List_of_colors)
         combobox.setCurrentText(self.color)
         return combobox
+
+
 class quesTion(QMessageBox):
     def __init__(self):
         super().__init__()
@@ -108,6 +113,7 @@ class quesTion(QMessageBox):
             window_wykr.changeczyP(False)
 
         self.show()
+
 
 class Window_Wykr(QWidget):
     def __init__(self):
@@ -126,6 +132,7 @@ class Window_Wykr(QWidget):
         self.czy_per = False
         self.project = ""
         self.window3 = None
+
     def init_ui(self):
         czyPol()
 
@@ -144,12 +151,6 @@ class Window_Wykr(QWidget):
         self.setWindowTitle('cardschooli wykresy')
 
         gui.center(self)
-
-
-
-
-
-
 
         xSPIN = QSpinBox()
         ySPIN = QSpinBox()
@@ -190,8 +191,10 @@ class Window_Wykr(QWidget):
         self.setLayout(LAJ)
 
         self.show()
-    def changeczyP(self,new):
+
+    def changeczyP(self, new):
         self.czyP = new
+
     def spin_str_2_float(self, newvalueSTR):
         newvalue = ""
         for l in newvalueSTR:
@@ -390,6 +393,7 @@ class Window_Wykr(QWidget):
 
         self.window3.update_preview()
         print("typol3")
+
     def calculate(self, names):
         dlugosci = []
         for name in names:
@@ -417,7 +421,7 @@ class Window_Wykr(QWidget):
     def dym_font(self, texts, size):
 
         newTEXTS = []
-        if size[0] >= 300 or size[1] >=300:
+        if size[0] >= 300 or size[1] >= 300:
             for txt in texts:
                 txt.set_fontsize(8)
                 newTEXTS.append(txt)
@@ -439,6 +443,7 @@ class Window_Wykr(QWidget):
                 newTEXTS.append(txt)
 
         return newTEXTS
+
     def generating_chart(self, LIST_OF_GOD, size):
         if not self.czy_per:
             names = []
@@ -501,5 +506,5 @@ class Window_Wykr(QWidget):
 
 
 def create_window_wykr():
-    global window_wykr,window3
+    global window_wykr, window3
     window_wykr = Window_Wykr()

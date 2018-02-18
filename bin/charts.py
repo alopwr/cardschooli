@@ -8,7 +8,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
-    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox
+    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QMainWindow, QTabWidget
 
 import fs_interaction
 import gui
@@ -17,7 +17,6 @@ import gui
 def czyPol():
     question1 = quesTion()
 
-
 class QListWidgetItem2(QListWidgetItem):
     def __init__(self, number=0):
         super().__init__()
@@ -25,8 +24,6 @@ class QListWidgetItem2(QListWidgetItem):
 
     def changeNUMB(self, new_number):
         self.number = new_number
-
-
 class MyWidget(QWidget):
     def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
         super(MyWidget, self).__init__(parent)
@@ -99,7 +96,6 @@ class MyWidget(QWidget):
         combobox.setCurrentText(self.color)
         return combobox
 
-
 class quesTion(QMessageBox):
     def __init__(self):
         super().__init__()
@@ -115,8 +111,6 @@ class quesTion(QMessageBox):
             window_wykr.changeczyP(False)
 
         self.show()
-
-
 def play_():
     try:
         if platform.system() == "Windows":
@@ -131,7 +125,6 @@ def play_():
             player.play()
     except:
         pass
-
 class Window_Wykr(QWidget):
     def __init__(self):
         super().__init__()
@@ -516,6 +509,51 @@ class Window_Wykr(QWidget):
             plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"))
 
 
+def choose_colum(parent, caption, text, selections):
+    response = QInputDialog.getItem(parent, caption, text, selections)
+    if response[1]:
+        return response[0]
+
+
+class My_Cool_Widget(QWidget):
+    def __init__(self):
+        super(QWidget, self).__init__(parent)
+        self.layout = QVBoxLayout(self)
+        """
+        self.tabs = QTabWidget()
+        self.tab1 = QWidget()
+        self.tab2 = QWidget()
+        """
+
+
+class Window_Seria_Wykr(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("cardschooli wykres seryjne")
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        gui.center(self)
+        self.resize(800, 600)
+
+    def init_ui(self, column):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def create_window_wykr():
-    global window_wykr, window3
+    global window_wykr, window_seria_wykr
     window_wykr = Window_Wykr()
+    window_seria_wykr = Window_Seria_Wykr()

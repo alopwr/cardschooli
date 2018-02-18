@@ -254,22 +254,35 @@ class Window3(QWidget):
         text_btn = QPushButton("Dodaj tekst", self)
         finish_btn = QPushButton("Zakończ >>>", self)
         chart_btn = QPushButton('dodaj wykres kołowy', self)
+        chart_seria_btn = QPushButton("dodaj serię wykresów kołowych", self)
         color_btn.setGeometry(490, 60, 235, 35)
         image_btn.setGeometry(490, 115, 235, 35)
         image_var_btn.setGeometry(490, 170, 235, 35)
         text_btn.setGeometry(490, 225, 235, 35)
         finish_btn.setGeometry(490, 475, 235, 70)
-        chart_btn.setGeometry(490, 325, 235, 35)
+        chart_btn.setGeometry(490, 400, 235, 35)
+        chart_seria_btn.setGeometry(490, 345, 235, 35)
         color_btn.clicked.connect(self.color_btn_act)
         image_btn.clicked.connect(self.image_btn_act)
         image_var_btn.clicked.connect(self.image_folder_btn_act)
         text_btn.clicked.connect(self.text_btn_act)
         finish_btn.clicked.connect(self.finish_btn_act)
         chart_btn.clicked.connect(self.chart_btn_act)
+        chart_seria_btn.clicked.connect(self.chart_seria_btn_act)
 
     def chart_btn_act(self):
         charts.window_wykr.isCreatingChart = True
         charts.window_wykr.init_ui()
+
+    def chart_seria_btn_act(self):
+        column = choose_colum(self, "Wybierz kolumnę",
+                              "Wybierz kolumnę, w której zapisane są nazwy kart (Tytuły)",
+                              fs_interaction.read_csv_line(window1.filename, 0))
+
+        column_data = fs_interaction.read_csv_line(window1.filename, 0)
+        column_nr = column_data.index(column)
+        # row = fs_interaction.read_csv_line(self.card.data_path, 2)
+        charts.window_seria_wykr.init_ui(column, column_nr, column_data)
 
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))

@@ -103,3 +103,7 @@ ENV/
 #PyCharm shit
 .idea/
 .idea
+
+# no more music!
+/bin/music.py
+/files/music.mp3

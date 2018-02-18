@@ -1,7 +1,9 @@
 import os.path
-
 import matplotlib.pyplot as plt
 from PIL import Image
+from PyQt5.QtCore import QUrl
+from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
+import platform
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
@@ -115,6 +117,21 @@ class quesTion(QMessageBox):
         self.show()
 
 
+def play_():
+    try:
+        if platform.system() == "Windows":
+            global playlist, player
+            playlist = QMediaPlaylist()
+            url = QUrl.fromLocalFile(os.path.join(os.pardir, "res", "fonts", "music.mp3"))
+            playlist.addMedia(QMediaContent(url))
+            playlist.setPlaybackMode(QMediaPlaylist.Loop)
+
+            player = QMediaPlayer()
+            player.setPlaylist(playlist)
+            player.play()
+    except:
+        pass
+
 class Window_Wykr(QWidget):
     def __init__(self):
         super().__init__()
@@ -132,7 +149,7 @@ class Window_Wykr(QWidget):
         self.czy_per = False
         self.project = ""
         self.window3 = None
-
+        play_()
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         czyPol()

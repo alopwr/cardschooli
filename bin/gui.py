@@ -5,7 +5,7 @@ allows user creating his deck of cards
 """
 import os
 import sys
-from PyQt5.QtGui import QPixmap, QMovie
+from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
 
@@ -91,6 +91,7 @@ class Window0(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         self.setWindowTitle("cardschooli - witaj!")
         self.resize(800, 600)
         center(self)
@@ -133,6 +134,7 @@ class Window1(QWidget):
         open_btn.clicked.connect(self.open_file)
 
     def init_ui(self):
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         QLabel(
             "Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony. \nKoniecznie "
             "użyj nagłówków!".format(
@@ -178,6 +180,7 @@ class Window2(QWidget):
         finish_btn.clicked.connect(self.finish_btn_act)
 
     def init_ui(self):
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         self.path = fs_interaction.project_location(window0.project, "reverse_preview.png")
         self.card = reverse.CardReverse(window0.project)
         self.preview = QLabel(self)
@@ -270,6 +273,7 @@ class Window3(QWidget):
         charts.window_wykr.isCreatingChart = True
         charts.window_wykr.init_ui()
     def init_ui(self):
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         self.path = fs_interaction.project_location(window0.project, "obverse_preview.png")
         self.card = obverse.CardObverse(window0.project, window1.filename)
         self.card.save_preview()
@@ -349,6 +353,7 @@ class Window3(QWidget):
 class Window4(QWidget):
     def __init__(self):
         super().__init__()
+
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - krok 4")
         center(self)
@@ -361,6 +366,7 @@ class Window4(QWidget):
         self.preloader.setGeometry(336, 236, 128, 128)
 
     def init_ui(self):
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         self.compile()
         self.show()
 

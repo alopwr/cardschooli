@@ -102,6 +102,7 @@ class MyWidget(QWidget):
 class quesTion(QMessageBox):
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         gui.center(self)
         buttonReply = QMessageBox.question(self, 'language',
                                            "Czy przedłumaczyć nazwy kolorów na polski? (słabe tłumaczenie)",
@@ -134,6 +135,7 @@ class Window_Wykr(QWidget):
         self.window3 = None
 
     def init_ui(self):
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         czyPol()
 
         self.loadCOLORS()

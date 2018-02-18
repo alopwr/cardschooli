@@ -328,7 +328,6 @@ class Window_Wykr(QWidget):
         if not ok_pressed1:
             j = i
 
-        print([i, j])
         return [i, j]
 
     def get_text(self):
@@ -362,7 +361,7 @@ class Window_Wykr(QWidget):
 
             for i in self.LIST_OF_GOD[self.values].values():
                 summ += i
-            print(summ)
+
             return summ
 
         else:
@@ -382,17 +381,8 @@ class Window_Wykr(QWidget):
     def adding_chart(self, coords):
 
         imported = fs_interaction.project_location(window_wykr.project, "wykres.png")
-
-        print("typol")
-        print(imported)
-        print(type(self.window3))
-
         self.window3.card.paste(imported, coords)
-
-        print("typol2")
-
         self.window3.update_preview()
-        print("typol3")
 
     def calculate(self, names):
         dlugosci = []

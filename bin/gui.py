@@ -5,7 +5,6 @@ allows user creating his deck of cards
 """
 import os
 import sys
-
 from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
@@ -14,6 +13,10 @@ import fs_interaction
 import obverse
 import reverse
 import charts
+import music
+
+
+
 
 
 def center(window):
@@ -100,7 +103,6 @@ class Window0(QWidget):
         self.show()
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
-
     def next(self):
         self.project = self.project_name.text()
         charts.window_wykr.project = self.project
@@ -373,9 +375,11 @@ if __name__ == "__main__":
     window1 = Window1()
     window2 = Window2()
     window3 = Window3()
+    window4 = Window4()
 
     charts.create_window_wykr()
     charts.window_wykr.window3 = window3
 
-    window4 = Window4()
+    music.play_music()
+
     sys.exit(app.exec_())

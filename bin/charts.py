@@ -521,14 +521,14 @@ class My_Cool_Widget(QWidget):
     def __init__(self):
 
         super().__init__()
-
+        self.czyP = False
         self.columnlist = window_seria_wykr.columnlist
         self.load_rows()
 
         self.load_labels()
 
         self.LIST_OF_TABS = {}
-
+        self.LIST = {}
         self.layout = QVBoxLayout(self)
 
         self.tabs = QTabWidget()
@@ -539,8 +539,10 @@ class My_Cool_Widget(QWidget):
             self.tabs.addTab(tab, label)
             self.LIST_OF_TABS[label] = tab
 
-        print(self.LIST_OF_TABS)
+            lista = [{}, {}, {}, {}]
+            window_seria_wykr.LIST_OF_GOD[label] = lista
 
+            self.LIST[label] = QListWidget()
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
@@ -574,7 +576,12 @@ class Window_Seria_Wykr(QWidget):
         gui.center(self)
         self.resize(800, 600)
         self.liczbapoz = 0
-
+        self.LIST_OF_GOD = {}
+        self.names = 0
+        self.values = 1
+        self.colors = 2
+        self.explodings = 3
+        self.number_of_layouts = -1
     def init_ui(self, columnlist):
         self.loadCOLORS()
         self.columnlist = columnlist
@@ -594,12 +601,64 @@ class Window_Seria_Wykr(QWidget):
         self.show()
 
     def AddNew(self):
+
         self.liczbapoz += 1
+        self.number_of_layouts += 1
         column = choose_colum(self, "wybierz pozycję", "wybierz kolumnę z wartościami na pierwsze pozycje na wykresach",
                               self.coolWidget.row0)
         column_nr = self.columnlist[2].index(column)
-        print(column_nr)
 
+        data = []
+        for row in self.coolWidget.rows:
+            data.append(row[column_nr])
+
+        namess, valuess = [], []
+        for dat in data:
+            czyprzed = True
+            name = ""
+            val = ""
+            for lit in dat:
+                if czyprzed and lit != ":":
+                    name += (lit)
+                elif not czyprzed and lit != " " and lit != ":":
+                    val += (lit)
+                elif lit == ":":
+                    czyprzed = False
+            namess.append(name)
+            valuess.append(val)
+
+        if self.coolWidget.czyP:
+            listofcolors = self.list_of_colors_P
+        else:
+            listofcolors = self.list_of_colors
+
+        i = 0
+        for thing in self.LIST_OF_GOD:
+            if not namess[i] == "":
+                self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
+                self.LIST_OF_GOD[thing][self.values][namess[i]] = valuess[i]
+                self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
+                self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
+            i += 1
+
+        for thing in self.LIST_OF_GOD:
+            itemek = QListWidgetItem2()
+
+            print("XD")
+            name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
+
+            my_itemek = MyWidget2(name,
+                                  self.LIST_OF_GOD[thing][self.values][name],
+                                  self.LIST_OF_GOD[thing][self.colors][name],
+                                  "deleting.png", self.number_of_layouts, itm=itemek,
+                                  maxx=999999999, dok=1)
+            print("XD2")
+            itemek.setSizeHint(my_itemek.sizeHint())
+            print("XD3")
+            self.coolWidget.LIST[thing].addItem(itemek)
+            print("XD4")
+            self.coolWidget.LIST[thing].setItemWidget(itemek, my_itemek)
+            print("XD5")
     def loadCOLORS(self):
         with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()
@@ -616,17 +675,80 @@ class Window_Seria_Wykr(QWidget):
             self.dict_of_colors[self.list_of_colors_P[i]] = self.list_of_colors[i]
 
 
+class MyWidget2(QWidget):
+    def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
+        print("xd")
+        super().__init__()
 
+        self.color = color
+        self.number = number
+        self.value = value
+        self.name = txt
+        itm.changeNUMB(self.number)
 
+        delt_btn = QPushButton()
+        delt_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', image)))
+        delt_btn.setIconSize(QSize(35, 35))
+        delt_btn.resize(10, 10)
+        # delt_btn.clicked.connect(self.delt_btn_act)
 
+        label = QLabel(txt)
+        label2 = QLabel(" % ")
+        label3 = QLabel("g")
 
+        spiinbox = QDoubleSpinBox()
+        spiinbox.setMinimum(0.01)
+        spiinbox.setMaximum(maxx)
+        # spiinbox.setValue(value)
+        spiinbox.setDecimals(dok)
 
+        combobox = QComboBox()
+        print("elo")
+        combobox = self.adding_to_combo(combobox)
 
+        # spiinbox.valueChanged[str].connect(self.spiinCHANGE)
 
+        # combobox.currentIndexChanged[str].connect(self.comboCHANGE)
 
+        layout = QHBoxLayout()
 
+        layout.addWidget(label)
+        layout.addWidget(spiinbox)
 
+        layout.addWidget(label3)
 
+        layout.addWidget(combobox)
+        layout.addWidget(delt_btn)
+
+        self.setLayout(layout)
+
+    def spiinCHANGE(self, newvalue):
+
+        newvalue = window_wykr.spin_str_2_float(newvalue)
+        if window_wykr.czy_per:
+            oldvalue = window_wykr.LIST_OF_GOD[window_wykr.values][self.name]
+            if not window_wykr.maxim - (newvalue - oldvalue) >= 0:
+                QMessageBox().warning(self, '!!! LIMIT !!!',
+                                      '!!!       Przekroczono sumę 100 %      !!! \n zmniejsz procent innego elementu',
+                                      QMessageBox.Ok)
+                window_wykr.maxim += (oldvalue - newvalue)
+
+                window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
+
+    def comboCHANGE(self, value):
+        window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = value
+
+    def delt_btn_act(self):
+        window_wykr.deleting(self.number)
+
+    def adding_to_combo(self, combobox):
+        if not window_seria_wykr.coolWidget.czyP:
+            List_of_colors = window_seria_wykr.list_of_colors
+        else:
+            List_of_colors = window_seria_wykr.list_of_colors_P
+        combobox.addItems(List_of_colors)
+        combobox.setCurrentText(self.color)
+        return combobox
 
 def create_window_wykr():
     global window_wykr, window_seria_wykr

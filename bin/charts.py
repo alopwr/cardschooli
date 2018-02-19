@@ -36,7 +36,7 @@ class MyWidget(QWidget):
         itm.changeNUMB(self.number)
 
         delt_btn = QPushButton()
-        delt_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', image)))
+        delt_btn.setIcon(QIcon(os.path.join(os.pardir, "img", image)))
         delt_btn.setIconSize(QSize(35, 35))
         delt_btn.resize(10, 10)
         delt_btn.clicked.connect(self.delt_btn_act)
@@ -100,7 +100,7 @@ class MyWidget(QWidget):
 class quesTion(QMessageBox):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'iconka.png')))
         gui.center(self)
         buttonReply = QMessageBox.question(self, 'language',
                                            "Czy przedłumaczyć nazwy kolorów na polski? (słabe tłumaczenie)",

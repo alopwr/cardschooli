@@ -186,8 +186,7 @@ class Window2(QWidget):
         self.preview = QLabel(self)
         self.pixmap = QPixmap(self.path)
         self.preview.setPixmap(self.pixmap)
-        self.preview.setGeometry(25, (self.height() - self.pixmap.height()) / 2,
-                                 self.pixmap.width(), self.pixmap.height())
+        self.preview.setGeometry(25, 60, self.pixmap.width(), self.pixmap.height())
         self.show()
 
     def update_preview(self):
@@ -254,6 +253,7 @@ class Window3(QWidget):
         image_btn = QPushButton("Zaimportuj grafikę PNG", self)
         image_var_btn = QPushButton("Zaimportuj folder z grafikami PNG", self)
         text_btn = QPushButton("Dodaj tekst", self)
+        chart_btn = QPushButton('Dodaj wykres kołowy', self)
         finish_btn = QPushButton("Zakończ >>>", self)
         chart_btn = QPushButton('dodaj wykres kołowy', self)
         chart_seria_btn = QPushButton("dodaj serię wykresów kołowych", self)
@@ -261,9 +261,9 @@ class Window3(QWidget):
         image_btn.setGeometry(490, 115, 235, 35)
         image_var_btn.setGeometry(490, 170, 235, 35)
         text_btn.setGeometry(490, 225, 235, 35)
+        chart_btn.setGeometry(490, 280, 235, 35)
         finish_btn.setGeometry(490, 475, 235, 70)
-        chart_btn.setGeometry(490, 400, 235, 35)
-        chart_seria_btn.setGeometry(490, 345, 235, 35)
+        chart_btn.setGeometry(490, 325, 235, 35)
         color_btn.clicked.connect(self.color_btn_act)
         image_btn.clicked.connect(self.image_btn_act)
         image_var_btn.clicked.connect(self.image_folder_btn_act)
@@ -294,8 +294,7 @@ class Window3(QWidget):
         self.preview = QLabel(self)
         self.pixmap = QPixmap(self.path)
         self.preview.setPixmap(self.pixmap)
-        self.preview.setGeometry(25, (self.height() - self.pixmap.height()) / 2,
-                                 self.pixmap.width(), self.pixmap.height())
+        self.preview.setGeometry(25, 60, self.pixmap.width(), self.pixmap.height())
         self.show()
         charts.window_wykr.card3 = self.card
     def update_preview(self):

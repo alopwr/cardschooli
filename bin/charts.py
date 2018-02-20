@@ -556,12 +556,13 @@ class My_Cool_Widget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
+    """
     @pyqtSlot()
     def on_click(self):
         print("\n")
         for currentQTableWidgetItem in self.tableWidget.selectedItems():
             print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
-
+    """
     def load_labels(self):
         labels = []
         for row in self.rows:
@@ -591,6 +592,8 @@ class Window_Seria_Wykr(QWidget):
         self.colors = 2
         self.explodings = 3
         self.number_of_layouts = -1
+        self.X = 0
+        self.Y = 0
     def init_ui(self, columnlist):
         self.loadCOLORS()
         self.columnlist = columnlist
@@ -603,12 +606,60 @@ class Window_Seria_Wykr(QWidget):
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
 
-        self.layout = QHBoxLayout(self)
-        self.layout.addWidget(add_btn)
+        OK_btn = QPushButton('Dodaj wykres na karte >>>')
+        OK_btn.setGeometry(450, 450, 300, 70)
+        # OK_btn.clicked.connect(self.ok_act)
+
+        xSPIN = QSpinBox()
+        ySPIN = QSpinBox()
+        xSPIN.setRange(0, 9999)
+        xSPIN.setValue(self.X)
+        ySPIN.setRange(0, 9999)
+        ySPIN.setValue(self.Y)
+
+        laj3 = QHBoxLayout()
+        laj4 = QHBoxLayout()
+
+        laj3.addWidget(QLabel("X: "))
+        laj3.addWidget(xSPIN)
+        laj4.addWidget(QLabel("Y: "))
+        laj4.addWidget(ySPIN)
+
+        lajout = QVBoxLayout()
+        lajout.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
+
+        lajout.addLayout(laj3)
+
+        lajout.addLayout(laj4)
+
+        layout2 = QVBoxLayout()
+        layout2.addWidget(add_btn)
+        layout2.addWidget(OK_btn)
+
+        self.layout = QHBoxLayout()
+        self.layout.addLayout(layout2)
         self.layout.addWidget(self.coolWidget)
+        self.layout.addLayout(lajout)
         self.setLayout(self.layout)
         self.show()
 
+    def deleting(self, number, Cname):
+        i = 0
+        i2 = self.coolWidget.LIST_OF_TABS[Cname].list.count()
+        while i < i2:
+            iitem = self.coolWidget.LIST_OF_TABS[Cname].list.item(i)
+            if iitem.number == number:
+                self.removing(i, Cname)
+                self.coolWidget.LIST_OF_TABS[Cname].list.removeItemWidget(iitem)
+
+            i += 1
+
+    def removing(self, numbeer, Cname):
+        name = self.LIST_OF_GOD[Cname][self.names].pop(numbeer)
+
+        xd = self.LIST_OF_GOD[Cname][self.values].pop(name)
+        xd1 = self.LIST_OF_GOD[Cname][self.colors].pop(name)
+        xd2 = self.LIST_OF_GOD[Cname][self.explodings].pop(name)
     def AddNew(self):
 
         self.liczbapoz += 1
@@ -666,7 +717,12 @@ class Window_Seria_Wykr(QWidget):
                     self.coolWidget.LIST_OF_TABS[thing].list.setItemWidget(itemek, my_itemek)
 
             i += 1
-        print(self.LIST_OF_GOD)
+
+    def xSPINchange(self, newvalue):
+        self.X = self.spin_str_2_float(newvalue)
+
+    def ySPINchange(self, newvalue):
+        self.Y = self.spin_str_2_float(newvalue)
     def loadCOLORS(self):
         with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()
@@ -691,13 +747,14 @@ class MyWidget2(QWidget):
         self.number = number
         self.value = value
         self.name = txt
-        itm.changeNUMB(self.number)
+        self.itm = itm
+        self.itm.changeNUMB(self.number)
 
         delt_btn = QPushButton()
         delt_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', image)))
         delt_btn.setIconSize(QSize(35, 35))
         delt_btn.resize(10, 10)
-        # delt_btn.clicked.connect(self.delt_btn_act)
+        delt_btn.clicked.connect(self.delt_btn_act)
 
         label = QLabel(txt)
         label2 = QLabel(" % ")
@@ -718,9 +775,8 @@ class MyWidget2(QWidget):
         combobox = QComboBox()
         combobox = self.adding_to_combo(combobox)
 
-        # spiinbox.valueChanged[str].connect(self.spiinCHANGE)
-
-        # combobox.currentIndexChanged[str].connect(self.comboCHANGE)
+        spiinbox.valueChanged[str].connect(self.spiin_change)
+        combobox.currentIndexChanged[str].connect(self.combo_change)
 
         layout = QHBoxLayout()
 
@@ -734,19 +790,16 @@ class MyWidget2(QWidget):
 
         self.setLayout(layout)
 
-    def spiinCHANGE(self, newvalue):
+    def spiin_change(self, newvalue):
+        window_seria_wykr.LIST_OF_GOD[self.itm.name][window_seria_wykr.values][
+            self.name] = window_wykr.spin_str_2_float(newvalue)
 
-        newvalue = window_wykr.spin_str_2_float(newvalue)
+    def combo_change(self, value):
+        window_seria_wykr.LIST_OF_GOD[self.itm.name][window_seria_wykr.colors][self.name] = value
 
-        oldvalue = window_wykr.LIST_OF_GOD[window_wykr.values][self.name]
-
-        #window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
-
-    def comboCHANGE(self, value):
-        window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = value
 
     def delt_btn_act(self):
-        window_wykr.deleting(self.number)
+        window_seria_wykr.deleting(self.number, self.itm.name)
 
     def adding_to_combo(self, combobox):
         if not window_seria_wykr.coolWidget.czyP:

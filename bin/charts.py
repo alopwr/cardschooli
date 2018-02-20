@@ -19,10 +19,10 @@ def czyPol():
     question1 = quesTion()
 
 class QListWidgetItem2(QListWidgetItem):
-    def __init__(self, number=0):
+    def __init__(self, number=0, imie=""):
         super().__init__()
         self.number = number
-
+        self.name = imie
     def changeNUMB(self, new_number):
         self.number = new_number
 class MyWidget(QWidget):
@@ -457,7 +457,6 @@ class Window_Wykr(QWidget):
 
             labels = []
             for name in LIST_OF_GOD[1].values():  # values = 1
-                print(name)
                 if int(name) == name:
                     labels.append((str(name)[:2] + " g"))
                 else:
@@ -513,13 +512,17 @@ class Window_Wykr(QWidget):
 
 def choose_colum(parent, caption, text, selections):
     response = QInputDialog.getItem(parent, caption, text, selections)
+
     if response[1]:
         return response[0]
-
-
+    """
+    elif not (response[0] in selections):
+        mes = QMessageBox.warning("brak kolumny","podana kolumna nie istnieje",QMessageBox.Ok)
+        mes.show()
+        choose_colum(parent, caption, text, selections)
+    """
 class My_Cool_Widget(QWidget):
     def __init__(self):
-
         super().__init__()
         self.czyP = False
         self.columnlist = window_seria_wykr.columnlist
@@ -532,17 +535,24 @@ class My_Cool_Widget(QWidget):
         self.layout = QVBoxLayout(self)
 
         self.tabs = QTabWidget()
-        print(self.labels)
+
 
         for label in self.labels:
             tab = QWidget()
             self.tabs.addTab(tab, label)
+
+            tab.laj = QVBoxLayout(self)
+
+            tab.list = QListWidget()
+            tab.laj.addWidget(tab.list)
+
+            tab.setLayout(tab.laj)
             self.LIST_OF_TABS[label] = tab
+
 
             lista = [{}, {}, {}, {}]
             window_seria_wykr.LIST_OF_GOD[label] = lista
 
-            self.LIST[label] = QListWidget()
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
@@ -553,7 +563,6 @@ class My_Cool_Widget(QWidget):
             print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
 
     def load_labels(self):
-        print(self.columnlist[1])
         labels = []
         for row in self.rows:
             labels.append(row[self.columnlist[1]])
@@ -633,42 +642,41 @@ class Window_Seria_Wykr(QWidget):
             listofcolors = self.list_of_colors
 
         i = 0
+
         for thing in self.LIST_OF_GOD:
             if not namess[i] == "":
-                self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
-                self.LIST_OF_GOD[thing][self.values][namess[i]] = valuess[i]
-                self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
-                self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
+                if namess[i][0].isalpha():
+                    self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
+                    self.LIST_OF_GOD[thing][self.values][namess[i]] = valuess[i]
+                    self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
+                    self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
+
+                    itemek = QListWidgetItem2(imie=thing)
+                    name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
+
+                    my_itemek = MyWidget2(name,
+                                          self.LIST_OF_GOD[thing][self.values][name],
+                                          self.LIST_OF_GOD[thing][self.colors][name],
+                                          "deleting.png", self.number_of_layouts, itm=itemek,
+                                          maxx=999999999, dok=1)
+
+                    itemek.setSizeHint(my_itemek.sizeHint())
+
+                    self.coolWidget.LIST_OF_TABS[thing].list.addItem(itemek)
+                    self.coolWidget.LIST_OF_TABS[thing].list.setItemWidget(itemek, my_itemek)
+
             i += 1
-
-        for thing in self.LIST_OF_GOD:
-            itemek = QListWidgetItem2()
-
-            print("XD")
-            name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
-
-            my_itemek = MyWidget2(name,
-                                  self.LIST_OF_GOD[thing][self.values][name],
-                                  self.LIST_OF_GOD[thing][self.colors][name],
-                                  "deleting.png", self.number_of_layouts, itm=itemek,
-                                  maxx=999999999, dok=1)
-            print("XD2")
-            itemek.setSizeHint(my_itemek.sizeHint())
-            print("XD3")
-            self.coolWidget.LIST[thing].addItem(itemek)
-            print("XD4")
-            self.coolWidget.LIST[thing].setItemWidget(itemek, my_itemek)
-            print("XD5")
+        print(self.LIST_OF_GOD)
     def loadCOLORS(self):
         with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()
         self.list_of_colors = [x.strip() for x in self.list_of_colors]
-        self.list_of_colors[0] = "automatically generated"
+        self.list_of_colors[0] = "automatically generated color"
 
         with open(os.path.join(os.pardir, 'res', 'files', 'colorsPOLISH.txt')) as f:
             self.list_of_colors_P = f.readlines()
         self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
-        self.list_of_colors_P[0] = "automatycznie generowane"
+        self.list_of_colors_P[0] = "automatycznie generowane koloru"
 
         self.dict_of_colors = {}
         for i in range(len(self.list_of_colors)):
@@ -677,7 +685,6 @@ class Window_Seria_Wykr(QWidget):
 
 class MyWidget2(QWidget):
     def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
-        print("xd")
         super().__init__()
 
         self.color = color
@@ -699,11 +706,16 @@ class MyWidget2(QWidget):
         spiinbox = QDoubleSpinBox()
         spiinbox.setMinimum(0.01)
         spiinbox.setMaximum(maxx)
-        # spiinbox.setValue(value)
+        try:
+            spiinbox.setValue(float(value))
+        except:
+            QMessageBox().warning(self, '!!! WARTOŚĆ NIENUMERYCZNA !!!',
+                                  '!!!   wartość komórki {} w karcie {} jest nienumeryczna    !!!\ \n ustawiono wartość 0 '.format(
+                                      self.name, itm.name),
+                                  QMessageBox.Ok)
         spiinbox.setDecimals(dok)
 
         combobox = QComboBox()
-        print("elo")
         combobox = self.adding_to_combo(combobox)
 
         # spiinbox.valueChanged[str].connect(self.spiinCHANGE)
@@ -725,15 +737,10 @@ class MyWidget2(QWidget):
     def spiinCHANGE(self, newvalue):
 
         newvalue = window_wykr.spin_str_2_float(newvalue)
-        if window_wykr.czy_per:
-            oldvalue = window_wykr.LIST_OF_GOD[window_wykr.values][self.name]
-            if not window_wykr.maxim - (newvalue - oldvalue) >= 0:
-                QMessageBox().warning(self, '!!! LIMIT !!!',
-                                      '!!!       Przekroczono sumę 100 %      !!! \n zmniejsz procent innego elementu',
-                                      QMessageBox.Ok)
-                window_wykr.maxim += (oldvalue - newvalue)
 
-                window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
+        oldvalue = window_wykr.LIST_OF_GOD[window_wykr.values][self.name]
+
+        #window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
 
     def comboCHANGE(self, value):
         window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = value

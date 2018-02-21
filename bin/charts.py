@@ -1,21 +1,22 @@
 import os.path
-
 import matplotlib.pyplot as plt
 from PIL import Image
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QUrl
+from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
+import platform
+
+from PyQt5.QtCore import QSize, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
-    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
+    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QMainWindow, QTabWidget
 
 import fs_interaction
-import gui
-import obverse
+import gui, obverse
 
 
-def czy_pol():
-    question1 = TranslationQuestion()
-
+def czyPol():
+    question1 = quesTion()
 
 class QListWidgetItem2(QListWidgetItem):
     def __init__(self, number=0, imie=""):
@@ -23,22 +24,22 @@ class QListWidgetItem2(QListWidgetItem):
         self.number = number
         self.name = imie
 
-    def change_number(self, new_number):
+    def changeNUMB(self, new_number):
         self.number = new_number
 
 
-class ItemsListWidget(QWidget):
+class MyWidget(QWidget):
     def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
-        super(ItemsListWidget, self).__init__(parent)
+        super(MyWidget, self).__init__(parent)
 
         self.color = color
         self.number = number
         self.value = value
         self.name = txt
-        itm.change_number(self.number)
+        itm.changeNUMB(self.number)
 
         delt_btn = QPushButton()
-        delt_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", image)))
+        delt_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', image)))
         delt_btn.setIconSize(QSize(35, 35))
         delt_btn.resize(10, 10)
         delt_btn.clicked.connect(self.delt_btn_act)
@@ -46,22 +47,22 @@ class ItemsListWidget(QWidget):
         label = QLabel(txt)
         label2 = QLabel(" % ")
         label3 = QLabel("g")
-        spinbox = QDoubleSpinBox()
-        spinbox.setMinimum(0.01)
-        spinbox.setMaximum(maxx)
-        spinbox.setValue(value)
-        spinbox.setDecimals(dok)
+        spiinbox = QDoubleSpinBox()
+        spiinbox.setMinimum(0.01)
+        spiinbox.setMaximum(maxx)
+        spiinbox.setValue(value)
+        spiinbox.setDecimals(dok)
 
         combobox = QComboBox()
         combobox = self.adding_to_combo(combobox)
 
-        spinbox.valueChanged[str].connect(self.spin_change)
+        spiinbox.valueChanged[str].connect(self.spiinCHANGE)
 
-        combobox.currentIndexChanged[str].connect(self.combo_change)
+        combobox.currentIndexChanged[str].connect(self.comboCHANGE)
 
         layout = QHBoxLayout()
         layout.addWidget(label)
-        layout.addWidget(spinbox)
+        layout.addWidget(spiinbox)
         if window_wykr.czy_per:
             layout.addWidget(label2)
         else:
@@ -71,20 +72,20 @@ class ItemsListWidget(QWidget):
 
         self.setLayout(layout)
 
-    def spin_change(self, new_value):
+    def spiinCHANGE(self, newvalue):
 
-        new_value = window_wykr.spin_str_2_float(new_value)
+        newvalue = window_wykr.spin_str_2_float(newvalue)
         if window_wykr.czy_per:
-            old_value = window_wykr.LIST_OF_GOD[window_wykr.values][self.name]
-            if not window_wykr.maxim - (new_value - old_value) >= 0:
-                QMessageBox().warning(self, "Osiągnąłeś limit!",
-                                      "Przekroczyłeś sumę 100%. Zmniejsz wartość lub usuń inny element.",
+            oldvalue = window_wykr.LIST_OF_GOD[window_wykr.values][self.name]
+            if not window_wykr.maxim - (newvalue - oldvalue) >= 0:
+                QMessageBox().warning(self, '!!! LIMIT !!!',
+                                      '!!!       Przekroczono sumę 100 %      !!! \n zmniejsz procent innego elementu',
                                       QMessageBox.Ok)
-                window_wykr.maxim += (old_value - new_value)
+                window_wykr.maxim += (oldvalue - newvalue)
 
-                window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = new_value
+                window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
 
-    def combo_change(self, value):
+    def comboCHANGE(self, value):
         window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = value
 
     def delt_btn_act(self):
@@ -92,36 +93,52 @@ class ItemsListWidget(QWidget):
 
     def adding_to_combo(self, combobox):
         if not window_wykr.czyP:
-            list_of_colors = window_wykr.list_of_colors
+            List_of_colors = window_wykr.list_of_colors
         else:
-            list_of_colors = window_wykr.list_of_colors_P
-        combobox.addItems(list_of_colors)
+            List_of_colors = window_wykr.list_of_colors_P
+        combobox.addItems(List_of_colors)
         combobox.setCurrentText(self.color)
         return combobox
 
 
-class TranslationQuestion(QMessageBox):
+class quesTion(QMessageBox):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         gui.center(self)
-        button_reply = QMessageBox.question(self, "Wybór języka",
-                                            "Czy przedłumaczyć nazwy kolorów na polski? (na własną odpowiedzialność)",
-                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        buttonReply = QMessageBox.question(self, 'language',
+                                           "Czy przedłumaczyć nazwy kolorów na polski? (słabe tłumaczenie)",
+                                           QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
-        if button_reply == QMessageBox.Yes:
-            window_wykr.translate(True)
+        if buttonReply == QMessageBox.Yes:
+            window_wykr.changeczyP(True)
         else:
-            window_wykr.translate(False)
+            window_wykr.changeczyP(False)
 
         self.show()
 
 
-class WindowWykres(QWidget):
+def play_():
+    try:
+        if platform.system() == "Windows":
+            global playlist, player
+            playlist = QMediaPlaylist()
+            url = QUrl.fromLocalFile(os.path.join(os.pardir, "res", "fonts", "music.mp3"))
+            playlist.addMedia(QMediaContent(url))
+            playlist.setPlaybackMode(QMediaPlaylist.Loop)
+
+            player = QMediaPlayer()
+            player.setPlaylist(playlist)
+            player.play()
+    except:
+        pass
+
+
+class Window_Wykr(QWidget):
     def __init__(self):
         super().__init__()
         self.czyP = False
-        self.is_creating_chart = False
+        self.isCreatingChart = False
         self.number_of_layouts = -1
         self.LIST_OF_GOD = [{}, {}, {}, {}]
         self.names = 0
@@ -135,85 +152,85 @@ class WindowWykres(QWidget):
         self.project = ""
         self.filename = ""
         self.card3 = None
-
+        play_()
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
-        czy_pol()
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        czyPol()
 
         self.loadCOLORS()
 
-        add_btn = QPushButton("Dodaj", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "plusik.png")))
+        add_btn = QPushButton("ADD", self)
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
-        add_btn.setToolTip("Dodaje element do wykresu")
+        add_btn.setToolTip("dodaje element do wykresu")
 
         self.LIST = QListWidget()
-        self.LIST.setToolTip("Pozycje na wykresie")
+        self.LIST.setToolTip("pozycje na wykresie")
 
         self.resize(800, 600)
-        self.setWindowTitle('cardschooli - dodawanie wykresu')
+        self.setWindowTitle('cardschooli wykresy')
 
         gui.center(self)
 
-        x_spin = QSpinBox()
-        y_spin = QSpinBox()
-        x_spin.setRange(0, 9999)
-        x_spin.setValue(self.X)
-        y_spin.setRange(0, 9999)
-        y_spin.setValue(self.Y)
+        xSPIN = QSpinBox()
+        ySPIN = QSpinBox()
+        xSPIN.setRange(0, 9999)
+        xSPIN.setValue(self.X)
+        ySPIN.setRange(0, 9999)
+        ySPIN.setValue(self.Y)
 
-        x_spin.valueChanged[str].connect(self.x_spin_change)
-        y_spin.valueChanged[str].connect(self.y_spin_change)
+        xSPIN.valueChanged[str].connect(self.xSPINchange)
+        ySPIN.valueChanged[str].connect(self.ySPINchange)
 
-        ok_btn = QPushButton("Dodaj wykres na kartę >>>")
-        ok_btn.setGeometry(450, 450, 300, 70)
-        ok_btn.clicked.connect(self.ok_act)
-        laj = QVBoxLayout()
+        OK_btn = QPushButton('Dodaj wykres na karte >>>')
+        OK_btn.setGeometry(450, 450, 300, 70)
+        OK_btn.clicked.connect(self.ok_act)
+        LAJ = QVBoxLayout()
         laj = QHBoxLayout()
         laj3 = QHBoxLayout()
         laj4 = QHBoxLayout()
-        laj2 = QVBoxLayout()
+        LAJ2 = QVBoxLayout()
 
-        laj2.addWidget(QLabel("Współrzędne\n wykresu\n na karcie:"))
-        laj2.addLayout(laj3)
-        laj2.addLayout(laj4)
+        LAJ2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
+        LAJ2.addLayout(laj3)
+        LAJ2.addLayout(laj4)
 
         laj.addWidget(add_btn)
         laj.addWidget(self.LIST)
-        laj.addLayout(laj2)
+        laj.addLayout(LAJ2)
 
-        laj.addLayout(laj)
+        LAJ.addLayout(laj)
 
-        laj.addWidget(ok_btn)
+        LAJ.addWidget(OK_btn)
 
         laj3.addWidget(QLabel("X: "))
-        laj3.addWidget(x_spin)
+        laj3.addWidget(xSPIN)
         laj4.addWidget(QLabel("Y: "))
-        laj4.addWidget(y_spin)
+        laj4.addWidget(ySPIN)
 
-        self.setLayout(laj)
+        self.setLayout(LAJ)
 
         self.show()
 
-    def translate(self, new):
+    def changeczyP(self, new):
         self.czyP = new
 
-    def spin_str_2_float(self, new_value_str):
+    def spin_str_2_float(self, newvalueSTR):
         newvalue = ""
-        for i in new_value_str:
-            if i == ",":
+        for l in newvalueSTR:
+            if l == ",":
                 newvalue += "."
             else:
-                newvalue += i
+                newvalue += l
         newvalue = float(newvalue)
 
         return newvalue
 
-    def x_spin_change(self, newvalue):
+    def xSPINchange(self, newvalue):
         self.X = self.spin_str_2_float(newvalue)
 
-    def y_spin_change(self, newvalue):
+    def ySPINchange(self, newvalue):
         self.Y = self.spin_str_2_float(newvalue)
 
     def deleting(self, number):
@@ -229,11 +246,10 @@ class WindowWykres(QWidget):
 
     def removing(self, numbeer):
         name = self.LIST_OF_GOD[self.names].pop(numbeer)
-        ### CHANGE NAMES!!! ###
+
         xd = self.LIST_OF_GOD[self.values].pop(name)
         xd1 = self.LIST_OF_GOD[self.colors].pop(name)
         xd2 = self.LIST_OF_GOD[self.explodings].pop(name)
-        ### CHANGE NAMES!!! ###
         if self.czy_per:
             self.maxim += float(xd)
 
@@ -241,27 +257,26 @@ class WindowWykres(QWidget):
         if self.LIST.count() > 0 and self.suma() == 100.0:
             if self.czyP:
                 self.exchange()
-            size = self.get_size
+            size = self.get_size()
 
             self.generating_chart(self.LIST_OF_GOD, size)
 
             self.transp()
             self.adding_chart([self.X, self.Y])
 
-            self.is_creating_chart = False
+            self.isCreatingChart = False
             self.close()
         elif self.LIST.count() == 0:
-            QMessageBox().warning(self, "Pusty wykres",
-                                  "Twój wykres nie posiada żadnych danych. Dodaj je lub zrezygnuj z tworzenia go.",
-                                  QMessageBox.Ok)
+            QMessageBox().warning(self, '!!! PUSTO !!!',
+                                  '!!!        nie możesz dodać pustego wykresu        !!!', QMessageBox.Ok)
         elif self.suma() > 100.0:
-            QMessageBox().warning(self, "Osiągnąłeś limit!",
-                                  "Przekroczyłeś sumę 100%. Zmniejsz wartość lub usuń inny element.\n",
+            QMessageBox().warning(self, '!!! LIMIT !!!',
+                                  '!!!       Przekroczono sumę 100 %      !!! \n',
                                   QMessageBox.Ok)
         else:
             if self.czyPer:
-                QMessageBox().warning(self, "Za małe wartości!",
-                                      "Brakuje danych do pełnych 100%! Uzupełnij je.\n",
+                QMessageBox().warning(self, '!!! ZA MAŁO !!!',
+                                      '!!!       brakuje do sumy 100%      !!! \n',
                                       QMessageBox.Ok)
 
     def exchange(self):
@@ -280,15 +295,14 @@ class WindowWykres(QWidget):
             itemek = QListWidgetItem2()
             self.number_of_layouts += 1
 
-            name = self.get_text
-            value = self.get_value
+            name = self.get_text()
+            value = self.get_value()
             color = self.get_color()
             if self.czy_per:
-                my_itemek = ItemsListWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek,
-                                            dok=2)
+                my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek, dok=2)
             else:
-                my_itemek = ItemsListWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek,
-                                            maxx=999999999, dok=1)
+                my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek,
+                                     maxx=999999999, dok=1)
             itemek.setSizeHint(my_itemek.sizeHint())
 
             self.LIST.addItem(itemek)
@@ -302,64 +316,60 @@ class WindowWykres(QWidget):
                 self.maxim -= value
 
         else:
-            QMessageBox().warning(self, "!!! LIMIT !!!",
-                                  "!!!       wykorzystano sumę 100 %      !!! \n możesz zmiejszyć procent innego "
-                                  "elementu",
+            QMessageBox().warning(self, '!!! LIMIT !!!',
+                                  '!!!       wykorzystano sumę 100 %      !!! \n możesz zmiejszyć procent innego elementu',
                                   QMessageBox.Ok)
 
-    @property
     def get_value(self):
         if self.czy_per:
-            i, ok_pressed = QInputDialog.getDouble(self, "Podaj wartość:",
-                                                   "Podaj wartość elementu na wykresie (%) : ", 1, 0.1, 100, 2)
+            i, ok_pressed = QInputDialog.getDouble(self, 'Podaj wartość',
+                                                   'Podaj wartość elementu na wykresie (%) : ', 1, 0.1, 100, 2)
 
             if ok_pressed and self.maxim - i >= 0:
                 return i
             elif self.maxim - i < 0:
-                QMessageBox().warning(self, "!!! LIMIT !!!",
-                                      "!!!       Przekroczono sumę 100 %      !!! \n spróbuj ponownie",
+                QMessageBox().warning(self, '!!! LIMIT !!!',
+                                      '!!!       Przekroczono sumę 100 %      !!! \n spróbuj ponownie',
                                       QMessageBox.Ok)
-                self.get_value
+                self.get_value()
 
             return i
         else:
-            i, ok_pressed = QInputDialog.getDouble(self, "Podaj wartość:",
-                                                   "Podaj wartość elementu na wykresie (g) : ", 1, 1, 999999999, 1)
+            i, ok_pressed = QInputDialog.getDouble(self, 'Podaj wartość',
+                                                   'Podaj wartość elementu na wykresie (q) : ', 1, 1, 999999999, 1)
             if ok_pressed:
                 return i
 
-    @property
     def get_size(self):
-        i, ok_pressed0 = QInputDialog.getInt(self, "Podaj szerokość:",
-                                             "Podaj szerokość diagramu. \n(px)", 100,
+        i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
+                                             'Podaj szerokość diagramu. \n(piksele)', 100,
                                              min=1)
 
-        j, ok_pressed1 = QInputDialog.getInt(self, "Podaj wysokość:",
-                                             "Podaj wysokość diagramu \n(px)\n Anuluj by stworzyć kwadrat", i,
+        j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
+                                             'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', i,
                                              min=1)
         if not ok_pressed1:
             j = i
 
         return [i, j]
 
-    @property
     def get_text(self):
-        text, okPressed = QInputDialog.getText(self, "Podaj nazwę elementu", "Podaj nazwę:", QLineEdit.Normal, "")
+        text, okPressed = QInputDialog.getText(self, 'Podaj nazwę elementu', 'NAZWA:', QLineEdit.Normal, '')
 
-        if okPressed and (text != "" or text != " " or text):
+        if okPressed and (text != '' or text != " " or text != None):
             return text
         else:
             QMessageBox().warning(self, '!!! PUSTE !!!',
                                   '!!!       Wypełnij nazwę      !!! \n ',
                                   QMessageBox.Ok)
-            self.get_text
+            self.get_text()
 
     def loadCOLORS(self):
-        with open(os.path.join(os.pardir, "res", "files", "colors.txt")) as f:
+        with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()
         self.list_of_colors = [x.strip() for x in self.list_of_colors]
 
-        with open(os.path.join(os.pardir, "res", "files", "colorsPOLISH.txt")) as f:
+        with open(os.path.join(os.pardir, 'res', 'files', 'colorsPOLISH.txt')) as f:
             self.list_of_colors_P = f.readlines()
         self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
 
@@ -519,8 +529,6 @@ def choose_colum(parent, caption, text, selections):
         mes.show()
         choose_colum(parent, caption, text, selections)
     """
-
-
 class My_Cool_Widget(QWidget):
     def __init__(self):
         super().__init__()
@@ -536,6 +544,7 @@ class My_Cool_Widget(QWidget):
 
         self.tabs = QTabWidget()
 
+
         for label in self.labels:
             tab = QWidget()
             self.tabs.addTab(tab, label)
@@ -547,6 +556,7 @@ class My_Cool_Widget(QWidget):
 
             tab.setLayout(tab.laj)
             self.LIST_OF_TABS[label] = tab
+
 
             lista = [{}, {}, {}, {}]
             window_seria_wykr.LIST_OF_GOD[label] = lista
@@ -561,7 +571,6 @@ class My_Cool_Widget(QWidget):
         for currentQTableWidgetItem in self.tableWidget.selectedItems():
             print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
     """
-
     def load_labels(self):
         labels = []
         for row in self.rows:
@@ -577,12 +586,11 @@ class My_Cool_Widget(QWidget):
         self.rows = rows[1::]
         self.row0 = rows[0]
 
-
 class Window_Seria_Wykr(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("cardschooli wykresy seryjne")
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
         gui.center(self)
         self.resize(800, 600)
         self.liczbapoz = 0
@@ -594,7 +602,6 @@ class Window_Seria_Wykr(QWidget):
         self.number_of_layouts = -1
         self.X = 0
         self.Y = 0
-
     def init_ui(self, columnlist):
         self.loadCOLORS()
         self.columnlist = columnlist
@@ -602,7 +609,7 @@ class Window_Seria_Wykr(QWidget):
         self.coolWidget = My_Cool_Widget()
 
         add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', 'plusik.png')))
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
@@ -633,15 +640,15 @@ class Window_Seria_Wykr(QWidget):
 
         lajout.addLayout(laj4)
 
-        layout2 = QVBoxLayout()
-        layout2.addWidget(add_btn)
-        layout2.addWidget(OK_btn)
+        layout = QHBoxLayout()
+        layout.addWidget(add_btn)
+        layout.addWidget(self.coolWidget)
+        layout.addLayout(lajout)
 
-        self.layout = QHBoxLayout()
-        self.layout.addLayout(layout2)
-        self.layout.addWidget(self.coolWidget)
-        self.layout.addLayout(lajout)
-        self.setLayout(self.layout)
+        self.layout_master = QVBoxLayout()
+        self.layout_master.addLayout(layout)
+        self.layout_master.addWidget(OK_btn)
+        self.setLayout(self.layout_master)
         self.show()
 
     def deleting(self, number, Cname):
@@ -661,7 +668,6 @@ class Window_Seria_Wykr(QWidget):
         xd = self.LIST_OF_GOD[Cname][self.values].pop(name)
         xd1 = self.LIST_OF_GOD[Cname][self.colors].pop(name)
         xd2 = self.LIST_OF_GOD[Cname][self.explodings].pop(name)
-
     def AddNew(self):
 
         self.liczbapoz += 1
@@ -675,20 +681,19 @@ class Window_Seria_Wykr(QWidget):
             data.append(row[column_nr])
 
         namess, valuess = [], []
-        for dat in data:
-            czyprzed = True
-            name = ""
-            val = ""
-            for lit in dat:
-                if czyprzed and lit != ":":
-                    name += (lit)
-                elif not czyprzed and lit != " " and lit != ":":
-                    val += (lit)
-                elif lit == ":":
-                    czyprzed = False
-            namess.append(name)
-            valuess.append(val)
 
+        for dat in data:
+            if dat.strip() != "":
+                namess.append(column)
+                try:
+                    valuess.append(float(dat.strip()))
+                except:
+                    QMessageBox.warning(self, "NIENUMERYCZNA xd",
+                                        "podana wartość jest nie numeryczna \n ustawiono na 0")
+                    valuess.append(0.0)
+            else:
+                namess.append("")
+                valuess.append(0.0)
         if self.coolWidget.czyP:
             listofcolors = self.list_of_colors_P
         else:
@@ -697,26 +702,24 @@ class Window_Seria_Wykr(QWidget):
         i = 0
 
         for thing in self.LIST_OF_GOD:
-            if not namess[i] == "":
-                if namess[i][0].isalpha():
-                    self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
-                    self.LIST_OF_GOD[thing][self.values][namess[i]] = valuess[i]
-                    self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
-                    self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
+            self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
+            self.LIST_OF_GOD[thing][self.values][namess[i]] = valuess[i]
+            self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
+            self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
 
-                    itemek = QListWidgetItem2(imie=thing)
-                    name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
+            itemek = QListWidgetItem2(imie=thing)
+            name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
 
-                    my_itemek = MyWidget2(name,
+            my_itemek = MyWidget2(name,
                                           self.LIST_OF_GOD[thing][self.values][name],
                                           self.LIST_OF_GOD[thing][self.colors][name],
                                           "deleting.png", self.number_of_layouts, itm=itemek,
                                           maxx=999999999, dok=1)
 
-                    itemek.setSizeHint(my_itemek.sizeHint())
+            itemek.setSizeHint(my_itemek.sizeHint())
 
-                    self.coolWidget.LIST_OF_TABS[thing].list.addItem(itemek)
-                    self.coolWidget.LIST_OF_TABS[thing].list.setItemWidget(itemek, my_itemek)
+            self.coolWidget.LIST_OF_TABS[thing].list.addItem(itemek)
+            self.coolWidget.LIST_OF_TABS[thing].list.setItemWidget(itemek, my_itemek)
 
             i += 1
 
@@ -725,7 +728,6 @@ class Window_Seria_Wykr(QWidget):
 
     def ySPINchange(self, newvalue):
         self.Y = self.spin_str_2_float(newvalue)
-
     def loadCOLORS(self):
         with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()
@@ -751,7 +753,7 @@ class MyWidget2(QWidget):
         self.value = value
         self.name = txt
         self.itm = itm
-        self.itm.change_number(self.number)
+        self.itm.changeNUMB(self.number)
 
         delt_btn = QPushButton()
         delt_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', image)))
@@ -778,7 +780,7 @@ class MyWidget2(QWidget):
         combobox = QComboBox()
         combobox = self.adding_to_combo(combobox)
 
-        spiinbox.valueChanged[str].connect(self.spin_change)
+        spiinbox.valueChanged[str].connect(self.spiin_change)
         combobox.currentIndexChanged[str].connect(self.combo_change)
 
         layout = QHBoxLayout()
@@ -793,7 +795,7 @@ class MyWidget2(QWidget):
 
         self.setLayout(layout)
 
-    def spin_change(self, newvalue):
+    def spiin_change(self, newvalue):
         window_seria_wykr.LIST_OF_GOD[self.itm.name][window_seria_wykr.values][
             self.name] = window_wykr.spin_str_2_float(newvalue)
 
@@ -812,8 +814,7 @@ class MyWidget2(QWidget):
         combobox.setCurrentText(self.color)
         return combobox
 
-
 def create_window_wykr():
     global window_wykr, window_seria_wykr
-    window_wykr = WindowWykres()
+    window_wykr = Window_Wykr()
     window_seria_wykr = Window_Seria_Wykr()

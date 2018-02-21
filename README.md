@@ -1,5 +1,7 @@
 # cardschooli
 ![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
+
 
 Gamify education with cards!
 

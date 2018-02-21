@@ -6,7 +6,6 @@ allows user creating his deck of cards
 import os
 import sys
 
-
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
@@ -89,7 +88,7 @@ class Window0(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         self.setWindowTitle("cardschooli - witaj!")
         self.resize(800, 600)
         center(self)
@@ -133,7 +132,7 @@ class Window1(QWidget):
         open_btn.clicked.connect(self.open_file)
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         QLabel(
             "Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony. \nKoniecznie "
             "użyj nagłówków!".format(
@@ -180,7 +179,7 @@ class Window2(QWidget):
         finish_btn.clicked.connect(self.finish_btn_act)
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         self.path = fs_interaction.project_location(window0.project, "reverse_preview.png")
         self.card = reverse.CardReverse(window0.project)
         self.preview = QLabel(self)
@@ -287,7 +286,7 @@ class Window3(QWidget):
         charts.window_seria_wykr.init_ui([column, column_nr, column_data])
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         self.path = fs_interaction.project_location(window0.project, "obverse_preview.png")
         self.card = obverse.CardObverse(window0.project, window1.filename)
         self.card.save_preview()
@@ -297,6 +296,7 @@ class Window3(QWidget):
         self.preview.setGeometry(25, 60, self.pixmap.width(), self.pixmap.height())
         self.show()
         charts.window_wykr.card3 = self.card
+
     def update_preview(self):
         self.card.save_preview()
         self.pixmap = QPixmap(self.path)
@@ -380,7 +380,7 @@ class Window4(QWidget):
         self.preloader.setGeometry(336, 236, 128, 128)
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         self.compile()
         self.show()
 

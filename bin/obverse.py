@@ -6,7 +6,7 @@ import os.path
 
 from PIL import Image, ImageDraw, ImageFont
 
-import fs_interaction, gui
+import fs_interaction
 
 
 def process_coords(coords, size, psize):
@@ -57,6 +57,7 @@ def get_numb_rows(name, filename):
     obverses = [CardObverse(name, filename, i) for i in range(fs_interaction.get_file_lenght(filename) - 1)]
 
     return len(obverses)
+
 
 class CardObverse(object):
     """

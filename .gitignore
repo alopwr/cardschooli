@@ -106,4 +106,4 @@ ENV/
 
 # no more music!
 /bin/music.py
-/files/music.mp3
+*.mp3

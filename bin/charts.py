@@ -1,22 +1,24 @@
 import os.path
-import matplotlib.pyplot as plt
-from PIL import Image
-from PyQt5.QtCore import QUrl
-from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
 import platform
 
-from PyQt5.QtCore import QSize, pyqtSlot
+import matplotlib.pyplot as plt
+from PIL import Image
+from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon
+from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
-    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QMainWindow, QTabWidget
+    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
 
 import fs_interaction
-import gui, obverse
+import gui
+import obverse
 
 
 def czyPol():
     question1 = quesTion()
+
 
 class QListWidgetItem2(QListWidgetItem):
     def __init__(self, number=0, imie=""):
@@ -153,14 +155,15 @@ class Window_Wykr(QWidget):
         self.filename = ""
         self.card3 = None
         play_()
+
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'iconka.png')))
         czyPol()
 
         self.loadCOLORS()
 
         add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')))
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'res', 'img', 'plusiik.png')))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
@@ -169,7 +172,7 @@ class Window_Wykr(QWidget):
         self.LIST.setToolTip("pozycje na wykresie")
 
         self.resize(800, 600)
-        self.setWindowTitle('cardschooli wykresy')
+        self.setWindowTitle('cardschooli - dodaj wykres')
 
         gui.center(self)
 
@@ -529,6 +532,8 @@ def choose_colum(parent, caption, text, selections):
         mes.show()
         choose_colum(parent, caption, text, selections)
     """
+
+
 class My_Cool_Widget(QWidget):
     def __init__(self):
         super().__init__()
@@ -544,7 +549,6 @@ class My_Cool_Widget(QWidget):
 
         self.tabs = QTabWidget()
 
-
         for label in self.labels:
             tab = QWidget()
             self.tabs.addTab(tab, label)
@@ -556,7 +560,6 @@ class My_Cool_Widget(QWidget):
 
             tab.setLayout(tab.laj)
             self.LIST_OF_TABS[label] = tab
-
 
             lista = [{}, {}, {}, {}]
             window_seria_wykr.LIST_OF_GOD[label] = lista
@@ -571,6 +574,7 @@ class My_Cool_Widget(QWidget):
         for currentQTableWidgetItem in self.tableWidget.selectedItems():
             print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
     """
+
     def load_labels(self):
         labels = []
         for row in self.rows:
@@ -586,11 +590,12 @@ class My_Cool_Widget(QWidget):
         self.rows = rows[1::]
         self.row0 = rows[0]
 
+
 class Window_Seria_Wykr(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("cardschooli wykresy seryjne")
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowTitle("cardschooli - dodaj wykresy seryjne")
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'iconka.png')))
         gui.center(self)
         self.resize(800, 600)
         self.liczbapoz = 0
@@ -603,6 +608,7 @@ class Window_Seria_Wykr(QWidget):
         self.X = 0
         self.Y = 0
         self.isCreatingChart = False
+
     def init_ui(self, columnlist):
         self.loadCOLORS()
         self.columnlist = columnlist
@@ -610,7 +616,7 @@ class Window_Seria_Wykr(QWidget):
         self.coolWidget = My_Cool_Widget()
 
         add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', 'plusiik.png')))
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'res', 'img', 'plusiik.png')))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
@@ -715,6 +721,7 @@ class Window_Seria_Wykr(QWidget):
         for name in self.LIST_OF_GOD[self.colors]:
             color = self.LIST_OF_GOD[self.colors][name]
             self.LIST_OF_GOD[self.colors][name] = self.dict_of_colors[color]"""
+
     def AddNew(self):
         self.number_of_layouts += 1
         column = choose_colum(self, "wybierz pozycję", "wybierz kolumnę z wartościami na pierwsze pozycje na wykresach",
@@ -815,6 +822,7 @@ class Window_Seria_Wykr(QWidget):
             j = i
 
         return [i, j]
+
     def loadCOLORS(self):
         with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()
@@ -900,6 +908,7 @@ class MyWidget2(QWidget):
         combobox.addItems(List_of_colors)
         combobox.setCurrentText(self.color)
         return combobox
+
 
 def create_window_wykr():
     global window_wykr, window_seria_wykr

@@ -602,6 +602,7 @@ class Window_Seria_Wykr(QWidget):
         self.number_of_layouts = -1
         self.X = 0
         self.Y = 0
+        self.isCreatingChart = False
     def init_ui(self, columnlist):
         self.loadCOLORS()
         self.columnlist = columnlist
@@ -616,7 +617,7 @@ class Window_Seria_Wykr(QWidget):
 
         OK_btn = QPushButton('Dodaj wykres na karte >>>')
         OK_btn.setGeometry(450, 450, 300, 70)
-        # OK_btn.clicked.connect(self.ok_act)
+        OK_btn.clicked.connect(self.ok_act)
 
         xSPIN = QSpinBox()
         ySPIN = QSpinBox()
@@ -668,9 +669,53 @@ class Window_Seria_Wykr(QWidget):
         xd = self.LIST_OF_GOD[Cname][self.values].pop(name)
         xd1 = self.LIST_OF_GOD[Cname][self.colors].pop(name)
         xd2 = self.LIST_OF_GOD[Cname][self.explodings].pop(name)
-    def AddNew(self):
 
-        self.liczbapoz += 1
+    def generating_chart(self, LIST_OF_GOD, size):
+        for thing in LIST_OF_GOD:
+            names = []
+            for name in LIST_OF_GOD[thing][0].values():  # names = 0
+                names.append(name)
+
+            labels = []
+            for name in LIST_OF_GOD[thing][1].values():  # values = 1
+                if int(name) == name:
+                    labels.append((str(name)[:2] + " g"))
+                else:
+                    labels.append((str(name) + " g"))
+
+            sizes = []
+            for value in LIST_OF_GOD[thing][1].values():  # values = 1
+                sizes.append(value)
+
+            colors = []
+            for color in LIST_OF_GOD[thing][2].values():  # colors = 2
+                colors.append(color)
+
+            explode = []
+            for expld in LIST_OF_GOD[thing][3].values():  # explode = 3
+                explode.append(expld)
+
+            plt.figure(figsize=(size[0] / 100, size[1] / 100))
+            patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
+                                     labeldistance=0.5)
+
+            # texts = self.dym_font(texts, size)
+            plt.axis('equal')
+            plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing) + "wykresOLD.png"), dpi=600)
+            """
+            x, y = self.calculate(names)
+            figlegend = plt.figure(figsize=(x, y))
+            figlegend.legend(patches, names)
+            figlegend.savefig(fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600)
+            """
+
+    def exchange(self):
+        pass
+        """
+        for name in self.LIST_OF_GOD[self.colors]:
+            color = self.LIST_OF_GOD[self.colors][name]
+            self.LIST_OF_GOD[self.colors][name] = self.dict_of_colors[color]"""
+    def AddNew(self):
         self.number_of_layouts += 1
         column = choose_colum(self, "wybierz pozycję", "wybierz kolumnę z wartościami na pierwsze pozycje na wykresach",
                               self.coolWidget.row0)
@@ -689,7 +734,7 @@ class Window_Seria_Wykr(QWidget):
                     valuess.append(float(dat.strip()))
                 except:
                     QMessageBox.warning(self, "NIENUMERYCZNA xd",
-                                        "podana wartość jest nie numeryczna \n ustawiono na 0")
+                                        "podana wartość jest nie numeryczna \n ustawiono na 0.0")
                     valuess.append(0.0)
             else:
                 namess.append("")
@@ -700,34 +745,76 @@ class Window_Seria_Wykr(QWidget):
             listofcolors = self.list_of_colors
 
         i = 0
-
         for thing in self.LIST_OF_GOD:
-            self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
-            self.LIST_OF_GOD[thing][self.values][namess[i]] = valuess[i]
-            self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
-            self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
+            if not namess[i] == "":
+                self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
+                self.LIST_OF_GOD[thing][self.values][namess[i]] = valuess[i]
+                self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
+                self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
 
-            itemek = QListWidgetItem2(imie=thing)
-            name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
+                itemek = QListWidgetItem2(imie=thing)
+                name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
 
-            my_itemek = MyWidget2(name,
-                                          self.LIST_OF_GOD[thing][self.values][name],
-                                          self.LIST_OF_GOD[thing][self.colors][name],
-                                          "deleting.png", self.number_of_layouts, itm=itemek,
-                                          maxx=999999999, dok=1)
+                my_itemek = MyWidget2(name,
+                                      self.LIST_OF_GOD[thing][self.values][name],
+                                      self.LIST_OF_GOD[thing][self.colors][name],
+                                      "deleting.png", self.number_of_layouts, itm=itemek,
+                                      maxx=999999999, dok=1)
 
-            itemek.setSizeHint(my_itemek.sizeHint())
+                itemek.setSizeHint(my_itemek.sizeHint())
 
-            self.coolWidget.LIST_OF_TABS[thing].list.addItem(itemek)
-            self.coolWidget.LIST_OF_TABS[thing].list.setItemWidget(itemek, my_itemek)
-
+                self.coolWidget.LIST_OF_TABS[thing].list.addItem(itemek)
+                self.coolWidget.LIST_OF_TABS[thing].list.setItemWidget(itemek, my_itemek)
             i += 1
+
+    def isEmpty(self):
+        puste = []
+        for thing in self.LIST_OF_GOD:
+            dl = len(self.LIST_OF_GOD[thing][self.values])
+            if dl == 0:
+                puste.append(thing)
+        if len(puste) > 0:
+            return True, puste
+        else:
+            return False, puste
+
+    def ok_act(self):
+        pust = self.isEmpty()
+        pustt = pust[0]
+        if not pustt:
+            size = self.get_size()
+            if self.coolWidget.czyP:
+                self.exchange()
+            for thing in self.LIST_OF_GOD:
+                if len(self.LIST_OF_GOD[thing][self.names]) > 0:
+                    print("")
+                    # self.generating_chart(self.LIST_OF_GOD, size)
+                    # self.transp()
+                    # self.adding_chart([self.X, self.Y])
+            self.isCreatingChart = False
+            self.close()
+        else:
+            QMessageBox().warning(self, '!!! PUSTO !!!',
+                                  '!!!        nie możesz dodać pustego wykresu        !!!', QMessageBox.Ok)
 
     def xSPINchange(self, newvalue):
         self.X = self.spin_str_2_float(newvalue)
 
     def ySPINchange(self, newvalue):
         self.Y = self.spin_str_2_float(newvalue)
+
+    def get_size(self):
+        i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
+                                             'Podaj szerokość diagramu. \n(piksele)', 100,
+                                             min=1)
+
+        j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
+                                             'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', i,
+                                             min=1)
+        if not ok_pressed1:
+            j = i
+
+        return [i, j]
     def loadCOLORS(self):
         with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
             self.list_of_colors = f.readlines()

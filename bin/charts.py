@@ -109,7 +109,7 @@ class MyWidget(QWidget):
 class quesTion(QMessageBox):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         gui.center(self)
         buttonReply = QMessageBox.question(self, 'language',
                                            "Czy przedłumaczyć nazwy kolorów na polski? (słabe tłumaczenie)",
@@ -160,7 +160,7 @@ class Window_Wykr(QWidget):
         play_()
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         czyPol()
 
         self.loadCOLORS()
@@ -590,7 +590,7 @@ class Window_Seria_Wykr(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("cardschooli - dodaj wykresy seryjne")
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'iconka.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         gui.center(self)
         self.resize(800, 600)
         self.liczbapoz = 0

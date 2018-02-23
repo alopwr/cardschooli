@@ -1,15 +1,16 @@
 import os.path
+import matplotlib.pyplot as plt
 import platform
 
-import matplotlib.pyplot as plt
 from PIL import Image
-from PyQt5.QtCore import QSize
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QIcon
+from random import randrange
 from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
+from PyQt5.QtCore import QSize, QUrl
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
+
 
 import fs_interaction
 import gui
@@ -29,6 +30,8 @@ class QListWidgetItem2(QListWidgetItem):
     def changeNUMB(self, new_number):
         self.number = new_number
 
+    def giveCombo(self, combobox):
+        self.combobox = combobox
 
 class MyWidget(QWidget):
     def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
@@ -41,7 +44,7 @@ class MyWidget(QWidget):
         itm.changeNUMB(self.number)
 
         delt_btn = QPushButton()
-        delt_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', image)))
+        delt_btn.setIcon(QIcon(os.path.join(os.pardir, "res", 'img', image)))
         delt_btn.setIconSize(QSize(35, 35))
         delt_btn.resize(10, 10)
         delt_btn.clicked.connect(self.delt_btn_act)
@@ -163,7 +166,7 @@ class Window_Wykr(QWidget):
         self.loadCOLORS()
 
         add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'res', 'img', 'plusiik.png')))
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "plusik.png")))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
@@ -567,14 +570,6 @@ class My_Cool_Widget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
-    """
-    @pyqtSlot()
-    def on_click(self):
-        print("\n")
-        for currentQTableWidgetItem in self.tableWidget.selectedItems():
-            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
-    """
-
     def load_labels(self):
         labels = []
         for row in self.rows:
@@ -608,6 +603,8 @@ class Window_Seria_Wykr(QWidget):
         self.X = 0
         self.Y = 0
         self.isCreatingChart = False
+        self.LEGEND_BASE = []
+        self.PATCHES_BASE = []
 
     def init_ui(self, columnlist):
         self.loadCOLORS()
@@ -616,7 +613,7 @@ class Window_Seria_Wykr(QWidget):
         self.coolWidget = My_Cool_Widget()
 
         add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, 'res', 'img', 'plusiik.png')))
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", 'img', 'plusik.png')))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
@@ -676,51 +673,113 @@ class Window_Seria_Wykr(QWidget):
         xd1 = self.LIST_OF_GOD[Cname][self.colors].pop(name)
         xd2 = self.LIST_OF_GOD[Cname][self.explodings].pop(name)
 
-    def generating_chart(self, LIST_OF_GOD, size):
-        for thing in LIST_OF_GOD:
-            names = []
-            for name in LIST_OF_GOD[thing][0].values():  # names = 0
-                names.append(name)
+    def calculate(self, names):
+        dlugosci = []
+        for name in names:
+            dlugosci.append(len(name))
+        dl = max(dlugosci)
+        dl2 = (dl * 0.1 + 0.5)
+        wys = len(names)
+        wys2 = (wys * 0.25) + 0.11
+        return (dl2, wys2)
 
-            labels = []
-            for name in LIST_OF_GOD[thing][1].values():  # values = 1
+    def dym_font(self, texts, size):
+
+        newTEXTS = []
+        if size[0] >= 300 or size[1] >= 300:
+            for txt in texts:
+                txt.set_fontsize(8)
+                newTEXTS.append(txt)
+        elif size[0] >= 100 or size[1] >= 100:
+            for txt in texts:
+                txt.set_fontsize(4)
+                newTEXTS.append(txt)
+        elif size[0] < 40 or size[1] < 40:
+            for txt in texts:
+                txt.set_fontsize(1)
+                newTEXTS.append(txt)
+        elif size[0] < 10 or size[1] < 10:
+            for txt in texts:
+                txt.set_fontsize(0.6)
+                newTEXTS.append(txt)
+        else:
+            for txt in texts:
+                txt.set_fontsize(2)
+                newTEXTS.append(txt)
+
+        return newTEXTS
+
+    def generating_legend(self):
+        x, y = self.calculate(self.LEGEND_BASE)
+        figlegend = plt.figure(figsize=(x, y))
+        figlegend.legend(self.PATCHES_BASE, self.LEGEND_BASE)
+        figlegend.savefig(fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600)
+
+    def generating_chart(self, LIST_OF_GOD, size, thing):
+
+        names = []
+        for name in LIST_OF_GOD[0].values():  # names = 0
+            names.append(name)
+
+        labels = []
+        for name in LIST_OF_GOD[1].values():  # values = 1
+            if name != 0.0:
                 if int(name) == name:
-                    labels.append((str(name)[:2] + " g"))
+                    labels.append((str(name)[:1] + " g"))
                 else:
                     labels.append((str(name) + " g"))
 
-            sizes = []
-            for value in LIST_OF_GOD[thing][1].values():  # values = 1
-                sizes.append(value)
+        sizes = []
+        for value in LIST_OF_GOD[1].values():  # values = 1
+            sizes.append(value)
 
-            colors = []
-            for color in LIST_OF_GOD[thing][2].values():  # colors = 2
-                colors.append(color)
+        colors = []
+        for color in LIST_OF_GOD[2].values():
+            colors.append(color)
 
-            explode = []
-            for expld in LIST_OF_GOD[thing][3].values():  # explode = 3
-                explode.append(expld)
+        explode = []
+        for expld in LIST_OF_GOD[3].values():  # explode = 3
+            explode.append(expld)
 
-            plt.figure(figsize=(size[0] / 100, size[1] / 100))
-            patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
-                                     labeldistance=0.5)
+        plt.figure(figsize=(size[0] / 100, size[1] / 100))
+        patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
+                                 labeldistance=0.8)
 
-            # texts = self.dym_font(texts, size)
-            plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing) + "wykresOLD.png"), dpi=600)
-            """
-            x, y = self.calculate(names)
-            figlegend = plt.figure(figsize=(x, y))
-            figlegend.legend(patches, names)
-            figlegend.savefig(fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600)
-            """
+        texts = self.dym_font(texts, size)
+        plt.axis('equal')
+        plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"),
+                    dpi=600)
 
+        self.legend_base_update(names, patches)
+
+    def transp(self):
+        for thing in self.LIST_OF_GOD:
+            new_img = Image.open(
+                fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"))
+            new_img.convert("RGBA")
+            datas = new_img.getdata()
+            newData = []
+            for item in datas:
+                if item[0] == 255 and item[1] == 255 and item[2] == 255:
+                    newData.append((255, 255, 255, 0))
+                else:
+                    newData.append(item)
+            new_img.putdata(newData)
+            new_img.save(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykres.png"),
+                         'png')
+
+    def legend_base_update(self, texts, patches):
+        i = 0
+        for text in texts:
+            if text not in self.LEGEND_BASE:
+                self.LEGEND_BASE.append(text)
+                self.PATCHES_BASE.append(patches[i])
+            i += 1
     def exchange(self):
-        pass
-        """
-        for name in self.LIST_OF_GOD[self.colors]:
-            color = self.LIST_OF_GOD[self.colors][name]
-            self.LIST_OF_GOD[self.colors][name] = self.dict_of_colors[color]"""
+        for thing in self.LIST_OF_GOD:
+            for name in self.LIST_OF_GOD[thing][self.colors]:
+                color = self.LIST_OF_GOD[thing][self.colors][name]
+                self.LIST_OF_GOD[thing][self.colors][name] = self.dict_of_colors[color]
 
     def AddNew(self):
         self.number_of_layouts += 1
@@ -770,9 +829,12 @@ class Window_Seria_Wykr(QWidget):
 
                 itemek.setSizeHint(my_itemek.sizeHint())
 
+                itemek.giveCombo(my_itemek.combobox)
+
                 self.coolWidget.LIST_OF_TABS[thing].list.addItem(itemek)
                 self.coolWidget.LIST_OF_TABS[thing].list.setItemWidget(itemek, my_itemek)
             i += 1
+
 
     def isEmpty(self):
         puste = []
@@ -785,6 +847,24 @@ class Window_Seria_Wykr(QWidget):
         else:
             return False, puste
 
+    def colors_random(self):
+        listOfColors = self.list_of_colors
+        czarna_lista = []
+        dzienniczek_kolorkow = {}
+        for thing in self.LIST_OF_GOD:
+
+            for colorK in self.LIST_OF_GOD[thing][self.colors]:
+                if self.LIST_OF_GOD[thing][self.colors][colorK] == "automatically generated color":
+                    if colorK not in czarna_lista:
+                        numb = randrange(1, len(self.list_of_colors))
+                        self.LIST_OF_GOD[thing][self.colors][colorK] = listOfColors[numb]
+                        czarna_lista.append(colorK)
+                        dzienniczek_kolorkow[colorK] = listOfColors[numb]
+                        xd = listOfColors.pop(numb)
+                    else:
+                        self.LIST_OF_GOD[thing][self.colors][colorK] = dzienniczek_kolorkow[colorK]
+
+
     def ok_act(self):
         pust = self.isEmpty()
         pustt = pust[0]
@@ -792,17 +872,33 @@ class Window_Seria_Wykr(QWidget):
             size = self.get_size()
             if self.coolWidget.czyP:
                 self.exchange()
+
+            self.colors_random()
             for thing in self.LIST_OF_GOD:
                 if len(self.LIST_OF_GOD[thing][self.names]) > 0:
-                    print("")
-                    # self.generating_chart(self.LIST_OF_GOD, size)
-                    # self.transp()
-                    # self.adding_chart([self.X, self.Y])
+                    lista = self.LIST_OF_GOD[thing]
+                    self.generating_chart(lista, size, thing)
+            self.transp()
+            # self.adding_chart([self.X, self.Y])
+            self.generating_legend()
             self.isCreatingChart = False
             self.close()
         else:
+            print(pust[1])
+            namEs = ""
+            i = 0
+            for empt in pust[1]:
+
+                if i == 0 and len(pust[1]) == 1:
+                    namEs += str(empt)
+
+                elif i != len(pust[1]) - 1:
+                    namEs += empt
+                    namEs += ", "
+                i +=1
             QMessageBox().warning(self, '!!! PUSTO !!!',
-                                  '!!!        nie możesz dodać pustego wykresu        !!!', QMessageBox.Ok)
+                                  '!!!        nie możesz dodać pustego wykresu        !!!\n wykres {} nie ma żadnych pozycji'.format(
+                                      namEs), QMessageBox.Ok)
 
     def xSPINchange(self, newvalue):
         self.X = self.spin_str_2_float(newvalue)
@@ -851,7 +947,7 @@ class MyWidget2(QWidget):
         self.itm.changeNUMB(self.number)
 
         delt_btn = QPushButton()
-        delt_btn.setIcon(QIcon(os.path.join(os.pardir, 'img', image)))
+        delt_btn.setIcon(QIcon(os.path.join(os.pardir, "res", 'img', image)))
         delt_btn.setIconSize(QSize(35, 35))
         delt_btn.resize(10, 10)
         delt_btn.clicked.connect(self.delt_btn_act)
@@ -873,10 +969,11 @@ class MyWidget2(QWidget):
         spiinbox.setDecimals(dok)
 
         combobox = QComboBox()
-        combobox = self.adding_to_combo(combobox)
+        self.combobox = self.adding_to_combo(combobox)
 
         spiinbox.valueChanged[str].connect(self.spiin_change)
-        combobox.currentIndexChanged[str].connect(self.combo_change)
+        self.combobox.currentIndexChanged[str].connect(self.combo_change)
+
 
         layout = QHBoxLayout()
 
@@ -885,17 +982,35 @@ class MyWidget2(QWidget):
 
         layout.addWidget(label3)
 
-        layout.addWidget(combobox)
+        layout.addWidget(self.combobox)
         layout.addWidget(delt_btn)
 
         self.setLayout(layout)
 
-    def spiin_change(self, newvalue):
+    def spiin_change(self, value):
         window_seria_wykr.LIST_OF_GOD[self.itm.name][window_seria_wykr.values][
-            self.name] = window_wykr.spin_str_2_float(newvalue)
+            self.name] = window_wykr.spin_str_2_float(value)
 
-    def combo_change(self, value):
-        window_seria_wykr.LIST_OF_GOD[self.itm.name][window_seria_wykr.colors][self.name] = value
+    def combo_change(self, newvalue):
+
+        for thing in window_seria_wykr.LIST_OF_GOD:
+            val = window_seria_wykr.LIST_OF_GOD[thing][window_seria_wykr.colors]
+            for name in val:
+                if name == self.name:
+                    window_seria_wykr.LIST_OF_GOD[thing][window_seria_wykr.colors][name] = newvalue
+
+                    i = 0
+                    i2 = window_seria_wykr.coolWidget.LIST_OF_TABS[thing].list.count()
+                    while i < i2:
+                        iitem = window_seria_wykr.coolWidget.LIST_OF_TABS[thing].list.item(i)
+                        if iitem.number == self.number:
+                            window_seria_wykr.coolWidget.LIST_OF_TABS[thing].list.item(i).combobox.setCurrentText(
+                                newvalue)
+
+                        i += 1
+
+
+
 
     def delt_btn_act(self):
         window_seria_wykr.deleting(self.number, self.itm.name)

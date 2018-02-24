@@ -45,7 +45,6 @@ def generate(name, data_path, config_path):
             elif i[0] == "img":
                 j.paste(i[1], (i[2], i[3]), False)
             elif i[0] == "imgf":
-                print(i)
                 j.add_image_folder(i[1], i[2], (i[3], i[4]), False)
             elif i[0] == "txt":
                 j.add_text((i[1], i[2]), i[3], i[5], i[6], i[4], False)

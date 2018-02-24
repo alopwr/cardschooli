@@ -107,7 +107,7 @@ class CardObverse(object):
 
     def add_series_of_charts(self, column_nr, coords, project, gen_cnfg=True, first=False):
         if first:
-            row = fs_interaction.read_csv_line(self.data_path, self.number)
+            row = fs_interaction.read_csv(self.data_path, self.number)
         else:
             row = fs_interaction.read_csv(self.data_path, self.number + 1)
         name = row[column_nr].strip() + "_wykres.png"

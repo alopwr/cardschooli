@@ -1,12 +1,10 @@
 import os.path
-import platform
 from random import randrange
 
 import matplotlib.pyplot as plt
 from PIL import Image
-from PyQt5.QtCore import QSize, QUrl
+from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
-from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
@@ -122,22 +120,6 @@ class quesTion(QMessageBox):
         self.show()
 
 
-def play_():
-    try:
-        if platform.system() == "Windows":
-            global playlist, player
-            playlist = QMediaPlaylist()
-            url = QUrl.fromLocalFile(os.path.join(os.pardir, "res", "fonts", "music.mp3"))
-            playlist.addMedia(QMediaContent(url))
-            playlist.setPlaybackMode(QMediaPlaylist.Loop)
-
-            player = QMediaPlayer()
-            player.setPlaylist(playlist)
-            player.play()
-    except:
-        pass
-
-
 class Window_Wykr(QWidget):
     def __init__(self):
         super().__init__()
@@ -156,7 +138,6 @@ class Window_Wykr(QWidget):
         self.project = ""
         self.filename = ""
         self.card3 = None
-        play_()
 
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
@@ -541,8 +522,8 @@ class My_Cool_Widget(QWidget):
         self.columnlist = window_seria_wykr.columnlist
         self.rows = fs_interaction.read_csv(window_wykr.card3.data_path)
         self.headers = self.rows[0]
-        self.labels = [i[0] for i in self.rows]
-
+        self.labels = [i[0] for i in self.rows[1:]]
+        print(self.rows, "gvrvre", self.headers, "fefef", self.labels)
         self.LIST_OF_TABS = {}
         self.LIST = {}
         self.layout = QVBoxLayout(self)

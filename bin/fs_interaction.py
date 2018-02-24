@@ -3,7 +3,7 @@ import csv
 import os.path
 
 
-def read_csv(path, line_num=None):
+def read_csv(path, *line_num):
     """
     reads num line of csv file
     :param path: path to the csv file
@@ -13,11 +13,11 @@ def read_csv(path, line_num=None):
     with open(path, newline="") as f:
         reader = csv.reader(f)
         if line_num:
-            for i in range(line_num + 1):
+            for i in range(line_num[0] + 1):
                 line = next(reader)
             return line
         else:
-            return f.readlines()
+            return list(reader)
 
 
 def get_file_lenght(path):

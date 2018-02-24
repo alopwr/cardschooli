@@ -277,7 +277,7 @@ class Window3(QWidget):
 
     def chart_seria_btn_act(self):
         column = choose_colum(self, "Wybierz kolumnę",
-                              "Wybierz kolumnę, w której zapisane są nazwy kart (Tytuły)",
+                              "Wybierz kolumnę, w której zapisane są nazwy kart (tytuły):",
                               fs_interaction.read_csv(window1.filename, 0))
 
         column_data = fs_interaction.read_csv(window1.filename, 0)

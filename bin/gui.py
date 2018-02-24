@@ -354,15 +354,15 @@ class Window3(QWidget):
         self.update_preview()
 
     def finish_btn_act(self):
-        if not charts.window_wykr.isCreatingChart:
+        if charts.window_wykr.isCreatingChart == False and charts.window_seria_wykr.isCreatingChart == False:
             self.close()
             window4.init_ui()
         else:
             QMessageBox().warning(self, 'W TRAKCIE CZYNNOŚCI',
                                   'Jesteś w trakcie dodawania wykresu',
                                   QMessageBox.Ok)
-
-
+            print("wykres: " + str(charts.window_wykr.isCreatingChart))
+            print("seria: " + str(charts.window_seria_wykr.isCreatingChart))
 class Window4(QWidget):
     def __init__(self):
         super().__init__()
@@ -384,9 +384,10 @@ class Window4(QWidget):
         self.show()
 
     def compile(self):
+        print("elo")
         obverse.generate(window0.project, window1.filename,
                          fs_interaction.project_location(window0.project, "obverse.cardconfig"))
-
+        print("elo2")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

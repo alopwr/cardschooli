@@ -234,11 +234,9 @@ class Window_Wykr(QWidget):
         return newvalue
 
     def xSPINchange(self, newvalue):
-        self.X = self.spin_str_2_float(newvalue)
-
+        self.X = int(self.spin_str_2_float(newvalue))
     def ySPINchange(self, newvalue):
-        self.Y = self.spin_str_2_float(newvalue)
-
+        self.Y = int(self.spin_str_2_float(newvalue))
     def deleting(self, number):
         i = 0
         i2 = self.LIST.count()
@@ -259,6 +257,9 @@ class Window_Wykr(QWidget):
         if self.czy_per:
             self.maxim += float(xd)
 
+    def adding_chart(self):
+        self.window3.card.adding_chart("wykres.png", [self.X, self.Y], self.project)
+        self.window3.update_preview()
     def ok_act(self):
         if self.LIST.count() > 0 and self.suma() == 100.0:
             if self.czyP:
@@ -268,7 +269,7 @@ class Window_Wykr(QWidget):
             self.generating_chart(self.LIST_OF_GOD, size)
 
             self.transp()
-            self.adding_chart([self.X, self.Y])
+            self.adding_chart()
 
             self.isCreatingChart = False
             self.close()
@@ -407,11 +408,7 @@ class Window_Wykr(QWidget):
         if okPressed and item:
             return item
 
-    def adding_chart(self, coords):
 
-        imported = fs_interaction.project_location(window_wykr.project, "wykres.png")
-        self.window3.card.paste(imported, coords)
-        self.window3.update_preview()
 
     def calculate(self, names):
         dlugosci = []
@@ -607,6 +604,7 @@ class Window_Seria_Wykr(QWidget):
         self.PATCHES_BASE = []
 
     def init_ui(self, columnlist):
+        self.isCreatingChart = True
         self.loadCOLORS()
         self.columnlist = columnlist
 
@@ -879,7 +877,9 @@ class Window_Seria_Wykr(QWidget):
                     lista = self.LIST_OF_GOD[thing]
                     self.generating_chart(lista, size, thing)
             self.transp()
-            # self.adding_chart([self.X, self.Y])
+            print(self.columnlist[1])
+            window_wykr.window3.card.add_series_of_charts(self.columnlist[1], [self.X, self.Y], window_wykr.project)
+            window_wykr.window3.update_preview()
             self.generating_legend()
             self.isCreatingChart = False
             self.close()

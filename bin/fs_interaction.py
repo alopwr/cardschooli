@@ -3,18 +3,21 @@ import csv
 import os.path
 
 
-def read_csv_line(path, num):
+def read_csv(path, line_num=None):
     """
     reads num line of csv file
     :param path: path to the csv file
-    :param num: number of the line to be read
+    :param line_num: number of the line to be read, if empty, returns full file
     :return: num line of the path csv
     """
     with open(path, newline="") as f:
         reader = csv.reader(f)
-        for i in range(num + 1):
-            line = next(reader)
-    return line
+        if line_num:
+            for i in range(line_num + 1):
+                line = next(reader)
+            return line
+        else:
+            return f.readlines()
 
 
 def get_file_lenght(path):

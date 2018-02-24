@@ -40,7 +40,6 @@ def generate(name, data_path, config_path):
     obverses = [CardObverse(name, data_path, i) for i in range(fs_interaction.get_file_lenght(data_path) - 1)]
     cmds = fs_interaction.read_config(config_path)
     for i in cmds:
-        print(i)
         for j in obverses:
             if i[0] == "col":
                 j.change_color(i[1], False)
@@ -51,6 +50,7 @@ def generate(name, data_path, config_path):
             elif i[0] == "txt":
                 j.add_text((i[1], i[2]), i[3], i[5], i[6], i[4], False)
             elif i[0] == "chrt":
+                print(i)
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
     for i, obv in enumerate(obverses):
         obv.obverse.save(fs_interaction.project_location(name, "obverse{}.png".format(i)))
@@ -58,7 +58,6 @@ def generate(name, data_path, config_path):
 
 def get_numb_rows(name, filename):
     obverses = [CardObverse(name, filename, i) for i in range(fs_interaction.get_file_lenght(filename) - 1)]
-
     return len(obverses)
 
 
@@ -110,7 +109,7 @@ class CardObverse(object):
         if first:
             row = fs_interaction.read_csv_line(self.data_path, self.number)
         else:
-            row = fs_interaction.read_csv_line(self.data_path, self.number + 1)
+            row = fs_interaction.read_csv(self.data_path, self.number + 1)
         name = row[column_nr].strip() + "_wykres.png"
         print(name)
         self.paste(os.path.join(os.pardir, "cards", project, name), coords, False)
@@ -119,8 +118,7 @@ class CardObverse(object):
 
     def add_image_folder(self, folder_path, column, coords, gen_cnfg=True):
 
-        row = fs_interaction.read_csv_line(self.data_path, self.number)
-
+        row = fs_interaction.read_csv(self.data_path, self.number)
         self.paste(os.path.join(folder_path, row[column] + ".png"), coords, False)
         if gen_cnfg:
             add_command("imgf^^{}^^{}^^{}^^{}".format(folder_path, column, coords[0], coords[1]), self.config_path)
@@ -128,6 +126,7 @@ class CardObverse(object):
     def adding_chart(self, name, coords, project):
         imported = fs_interaction.project_location(project, name)
         self.paste(imported, coords)
+
     def add_text(self, coords, text, size, fill=0, font=os.path.join(os.pardir, "res", "fonts", "font.ttf"),
                  gen_cnfg=True):
         """

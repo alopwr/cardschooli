@@ -330,7 +330,7 @@ class Window_Wykr(QWidget):
 
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
-                                             'Podaj szerokość diagramu. \n(piksele)', 100,
+                                             'Podaj szerokość diagramu. \n(piksele)', 500,
                                              min=1)
 
         j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
@@ -440,6 +440,7 @@ class Window_Wykr(QWidget):
         return newTEXTS
 
     def generating_chart(self, LIST_OF_GOD, size):
+        dpi = 600
         if not self.czy_per:
             names = []
             for name in LIST_OF_GOD[0].values():  # names = 0
@@ -463,13 +464,13 @@ class Window_Wykr(QWidget):
             explode = []
             for expld in LIST_OF_GOD[3].values():  # explode = 3
                 explode.append(expld)
-            plt.figure(figsize=(size[0] / 100, size[1] / 100))
+            plt.figure(figsize=(size[0] / dpi, size[1] / dpi))
             patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
                                      labeldistance=0.5)
 
             texts = self.dym_font(texts, size)
             plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=600)
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=dpi)
             x, y = self.calculate(names)
             figlegend = plt.figure(figsize=(x, y))
             figlegend.legend(patches, names)
@@ -493,11 +494,11 @@ class Window_Wykr(QWidget):
             for expld in LIST_OF_GOD[3].values():  # explode = 3
                 explode.append(expld)
 
-            plt.figure(figsize=(size[0] / 100, size[1] / 100))
+            plt.figure(figsize=(size[0] / dpi, size[1] / dpi))
             plt.pie(sizes, explode=explode, colors=colors, labels=labels,
                     autopct='%1.1f%%', shadow=False, startangle=140)
             plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"))
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=600)
 
 
 def choose_colum(parent, caption, text, selections):
@@ -644,8 +645,7 @@ class Window_Seria_Wykr(QWidget):
         wys2 = (wys * 0.25) + 0.11
         return (dl2, wys2)
 
-    def dym_font(self, texts, size):
-
+    def dynamic_font(self, texts, size):
         newTEXTS = []
         if size[0] >= 300 or size[1] >= 300:
             for txt in texts:
@@ -677,6 +677,7 @@ class Window_Seria_Wykr(QWidget):
         figlegend.savefig(fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600)
 
     def generating_chart(self, LIST_OF_GOD, size, thing):
+        dpi = 600
 
         names = []
         for name in LIST_OF_GOD[0].values():  # names = 0
@@ -702,14 +703,14 @@ class Window_Seria_Wykr(QWidget):
         for expld in LIST_OF_GOD[3].values():  # explode = 3
             explode.append(expld)
 
-        plt.figure(figsize=(size[0] / 100, size[1] / 100))
+        plt.figure(figsize=(size[0] / dpi, size[1] / dpi))
         patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
                                  labeldistance=0.5)
 
-        texts = self.dym_font(texts, size)
+        texts = self.dynamic_font(texts, size)
         plt.axis('equal')
         plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"),
-                    dpi=600)
+                    dpi=dpi)
 
         self.legend_base_update(names, patches)
 
@@ -870,7 +871,7 @@ class Window_Seria_Wykr(QWidget):
         self.Y = int(window_wykr.spin_str_2_float(newvalue))
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
-                                             'Podaj szerokość diagramu. \n(piksele)', 100,
+                                             'Podaj szerokość diagramu. \n(piksele)', 500,
                                              min=1)
 
         j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',

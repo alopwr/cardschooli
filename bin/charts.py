@@ -542,7 +542,7 @@ class My_Cool_Widget(QWidget):
             window_seria_wykr.LIST_OF_GOD[label] = lista
 
         self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
+        # self.setLayout(self.layout)
 
 
 class Window_Seria_Wykr(QWidget):

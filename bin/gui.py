@@ -385,7 +385,7 @@ class Window4(QWidget):
     def compile(self):
         obverse.generate(window0.project, window1.filename,
                          fs_interaction.project_location(window0.project, "obverse.cardconfig"))
-
+        fs_interaction.cleaning_files(os.path.join(os.pardir, "cards", window0.project))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

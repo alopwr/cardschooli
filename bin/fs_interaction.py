@@ -1,6 +1,6 @@
 # coding=utf-8
 import csv
-import os.path
+import os
 
 
 def read_csv(path, *line_num):
@@ -57,3 +57,11 @@ def read_config(path):
                     pass
             commands.append(i)
     return commands
+
+
+def cleaning_files(directory_path):
+    for root, dirs, files in os.walk(directory_path):
+        for name in files:
+            if name.endswith("_wykres.png") or name.endswith(
+                    "_wykresOLD.png") or name == "obverse_preview.png" or name.endswith(".cardconfig"):
+                os.remove(os.path.join(root, name))

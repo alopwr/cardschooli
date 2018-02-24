@@ -878,7 +878,8 @@ class Window_Seria_Wykr(QWidget):
                     self.generating_chart(lista, size, thing)
             self.transp()
             print(self.columnlist[1])
-            window_wykr.window3.card.add_series_of_charts(self.columnlist[1], [self.X, self.Y], window_wykr.project)
+            window_wykr.window3.card.add_series_of_charts(self.columnlist[1], [self.X, self.Y], window_wykr.project,
+                                                          first=True)
             window_wykr.window3.update_preview()
             self.generating_legend()
             self.isCreatingChart = False

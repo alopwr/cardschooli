@@ -523,7 +523,7 @@ class My_Cool_Widget(QWidget):
         self.headers = self.rows[0]
         self.labels = [i[0] for i in self.rows[1:]]
         self.LIST_OF_TABS = {}
-        self.layout = QVBoxLayout(self)
+        layout = QVBoxLayout()
 
         self.tabs = QTabWidget()
 
@@ -531,7 +531,7 @@ class My_Cool_Widget(QWidget):
             tab = QWidget()
             self.tabs.addTab(tab, label)
 
-            tab.laj = QVBoxLayout(self)
+            tab.laj = QVBoxLayout()
 
             tab.list = QListWidget()
             tab.laj.addWidget(tab.list)
@@ -542,8 +542,8 @@ class My_Cool_Widget(QWidget):
             lista = [{}, {}, {}, {}]
             window_seria_wykr.LIST_OF_GOD[label] = lista
 
-        self.layout.addWidget(self.tabs)
-        # self.setLayout(self.layout)
+        layout.addWidget(self.tabs)
+        self.setLayout(layout)
 
 
 class Window_Seria_Wykr(QWidget):

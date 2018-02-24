@@ -45,6 +45,7 @@ def generate(name, data_path, config_path):
             elif i[0] == "img":
                 j.paste(i[1], (i[2], i[3]), False)
             elif i[0] == "imgf":
+                print(i)
                 j.add_image_folder(i[1], i[2], (i[3], i[4]), False)
             elif i[0] == "txt":
                 j.add_text((i[1], i[2]), i[3], i[5], i[6], i[4], False)
@@ -116,12 +117,15 @@ class CardObverse(object):
         if gen_cnfg:
             add_command("chrt^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], project), self.config_path)
 
-    def add_image_folder(self, folder_path, column, coords, gen_cnfg=True):
+    def add_image_folder(self, folder_path, column, coords, gen_cnfg=True, first=False):
+        if first:
+            row = fs_interaction.read_csv(self.data_path, self.number)
+        else:
+            row = fs_interaction.read_csv(self.data_path, self.number + 1)
 
-        row = fs_interaction.read_csv(self.data_path, self.number)
-        self.paste(os.path.join(folder_path, row[column] + ".png"), coords, False)
+        self.paste(os.path.join(folder_path, row[column].strip() + ".png"), coords, False)
         if gen_cnfg:
-            add_command("imgf^^{}^^{}^^{}^^{}".format(folder_path, column, coords[0], coords[1]), self.config_path)
+            add_command("imgf^^{}^^{}^^{}^^{}\n".format(folder_path, column, coords[0], coords[1]), self.config_path)
 
     def adding_chart(self, name, coords, project):
         imported = fs_interaction.project_location(project, name)

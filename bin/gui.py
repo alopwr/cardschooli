@@ -330,7 +330,7 @@ class Window3(QWidget):
         coords = coords_dialog(self)
         if not coords:
             return None
-        self.card.add_image_folder(folder, column_nr, coords)
+        self.card.add_image_folder(folder, column_nr, coords, first=True)
         self.update_preview()
 
     def text_btn_act(self):

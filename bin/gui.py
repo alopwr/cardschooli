@@ -384,10 +384,8 @@ class Window4(QWidget):
         self.show()
 
     def compile(self):
-        print("elo")
         obverse.generate(window0.project, window1.filename,
                          fs_interaction.project_location(window0.project, "obverse.cardconfig"))
-        print("elo2")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

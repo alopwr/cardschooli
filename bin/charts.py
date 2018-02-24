@@ -469,7 +469,7 @@ class Window_Wykr(QWidget):
             labels = []
             for name in LIST_OF_GOD[1].values():  # values = 1
                 if int(name) == name:
-                    labels.append((str(name)[:2] + " g"))
+                    labels.append((str(name)[:(len(str(name)) - 2)] + " g"))
                 else:
                     labels.append((str(name) + " g"))
 
@@ -723,7 +723,7 @@ class Window_Seria_Wykr(QWidget):
         for name in LIST_OF_GOD[1].values():  # values = 1
             if name != 0.0:
                 if int(name) == name:
-                    labels.append((str(name)[:1] + " g"))
+                    labels.append((str(name)[:(len(str(name)) - 2)] + " g"))
                 else:
                     labels.append((str(name) + " g"))
 
@@ -741,7 +741,7 @@ class Window_Seria_Wykr(QWidget):
 
         plt.figure(figsize=(size[0] / 100, size[1] / 100))
         patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
-                                 labeldistance=0.8)
+                                 labeldistance=0.5)
 
         texts = self.dym_font(texts, size)
         plt.axis('equal')

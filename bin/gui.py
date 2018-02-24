@@ -261,6 +261,7 @@ class Window3(QWidget):
         text_btn.setGeometry(490, 225, 235, 35)
         chart_btn.setGeometry(490, 280, 235, 35)
         chart_seria_btn.setGeometry(490, 335, 235, 35)
+
         finish_btn.setGeometry(490, 475, 235, 70)
         color_btn.clicked.connect(self.color_btn_act)
         image_btn.clicked.connect(self.image_btn_act)
@@ -277,9 +278,9 @@ class Window3(QWidget):
     def chart_seria_btn_act(self):
         column = choose_colum(self, "Wybierz kolumnę",
                               "Wybierz kolumnę, w której zapisane są nazwy kart (Tytuły)",
-                              fs_interaction.read_csv_line(window1.filename, 0))
+                              fs_interaction.read_csv(window1.filename, 0))
 
-        column_data = fs_interaction.read_csv_line(window1.filename, 0)
+        column_data = fs_interaction.read_csv(window1.filename, 0)
         column_nr = column_data.index(column)
 
         charts.window_seria_wykr.init_ui([column, column_nr, column_data])
@@ -320,10 +321,10 @@ class Window3(QWidget):
     def image_folder_btn_act(self):
         column = choose_colum(self, "Wybierz kolumnę:",
                               "Wybierz kolumnę, w której zapisane są nazwy plików PNG dla każdej karty:",
-                              fs_interaction.read_csv_line(window1.filename, 0))
+                              fs_interaction.read_csv(window1.filename, 0))
         if not column:
             return None
-        column_data = fs_interaction.read_csv_line(window1.filename, 0)
+        column_data = fs_interaction.read_csv(window1.filename, 0)
         column_nr = column_data.index(column)
         folder = file_dialog(self, "Wybierz folder z obrazkami:", folder=True)
         if not folder:
@@ -354,7 +355,7 @@ class Window3(QWidget):
         self.update_preview()
 
     def finish_btn_act(self):
-        if charts.window_wykr.isCreatingChart == False and charts.window_seria_wykr.isCreatingChart == False:
+        if not charts.window_wykr.isCreatingChart and not charts.window_seria_wykr.isCreatingChart:
             self.close()
             window4.init_ui()
         else:
@@ -363,6 +364,8 @@ class Window3(QWidget):
                                   QMessageBox.Ok)
             print("wykres: " + str(charts.window_wykr.isCreatingChart))
             print("seria: " + str(charts.window_seria_wykr.isCreatingChart))
+
+
 class Window4(QWidget):
     def __init__(self):
         super().__init__()
@@ -388,6 +391,7 @@ class Window4(QWidget):
         obverse.generate(window0.project, window1.filename,
                          fs_interaction.project_location(window0.project, "obverse.cardconfig"))
         print("elo2")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

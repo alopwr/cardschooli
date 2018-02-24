@@ -1,20 +1,18 @@
 import os.path
-import matplotlib.pyplot as plt
 import platform
-
-from PIL import Image
 from random import randrange
-from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
+
+import matplotlib.pyplot as plt
+from PIL import Image
 from PyQt5.QtCore import QSize, QUrl
 from PyQt5.QtGui import QIcon
+from PyQt5.QtMultimedia import QMediaPlaylist, QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
 
-
 import fs_interaction
 import gui
-import obverse
 
 
 def czyPol():
@@ -32,6 +30,7 @@ class QListWidgetItem2(QListWidgetItem):
 
     def giveCombo(self, combobox):
         self.combobox = combobox
+
 
 class MyWidget(QWidget):
     def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
@@ -235,8 +234,10 @@ class Window_Wykr(QWidget):
 
     def xSPINchange(self, newvalue):
         self.X = int(self.spin_str_2_float(newvalue))
+
     def ySPINchange(self, newvalue):
         self.Y = int(self.spin_str_2_float(newvalue))
+
     def deleting(self, number):
         i = 0
         i2 = self.LIST.count()
@@ -260,6 +261,7 @@ class Window_Wykr(QWidget):
     def adding_chart(self):
         self.window3.card.adding_chart("wykres.png", [self.X, self.Y], self.project)
         self.window3.update_preview()
+
     def ok_act(self):
         if self.LIST.count() > 0 and self.suma() == 100.0:
             if self.czyP:
@@ -408,8 +410,6 @@ class Window_Wykr(QWidget):
         if okPressed and item:
             return item
 
-
-
     def calculate(self, names):
         dlugosci = []
         for name in names:
@@ -539,9 +539,9 @@ class My_Cool_Widget(QWidget):
         super().__init__()
         self.czyP = False
         self.columnlist = window_seria_wykr.columnlist
-        self.load_rows()
-
-        self.load_labels()
+        self.rows = fs_interaction.read_csv(window_wykr.card3.data_path)
+        self.headers = self.rows[0]
+        self.labels = [i[0] for i in self.rows]
 
         self.LIST_OF_TABS = {}
         self.LIST = {}
@@ -566,21 +566,6 @@ class My_Cool_Widget(QWidget):
 
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
-
-    def load_labels(self):
-        labels = []
-        for row in self.rows:
-            labels.append(row[self.columnlist[1]])
-        self.labels = labels
-
-    def load_rows(self):
-        numb_r = obverse.get_numb_rows(window_wykr.project, window_wykr.filename) + 1
-        rows = []
-        for i in range(numb_r):
-            row = fs_interaction.read_csv_line(window_wykr.card3.data_path, i)
-            rows.append(row)
-        self.rows = rows[1::]
-        self.row0 = rows[0]
 
 
 class Window_Seria_Wykr(QWidget):
@@ -773,6 +758,7 @@ class Window_Seria_Wykr(QWidget):
                 self.LEGEND_BASE.append(text)
                 self.PATCHES_BASE.append(patches[i])
             i += 1
+
     def exchange(self):
         for thing in self.LIST_OF_GOD:
             for name in self.LIST_OF_GOD[thing][self.colors]:
@@ -781,8 +767,8 @@ class Window_Seria_Wykr(QWidget):
 
     def AddNew(self):
         self.number_of_layouts += 1
-        column = choose_colum(self, "wybierz pozycję", "wybierz kolumnę z wartościami na pierwsze pozycje na wykresach",
-                              self.coolWidget.row0)
+        column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pierwsze pozycje na wykresach",
+                              self.coolWidget.headers)
         column_nr = self.columnlist[2].index(column)
 
         data = []
@@ -798,7 +784,7 @@ class Window_Seria_Wykr(QWidget):
                     valuess.append(float(dat.strip()))
                 except:
                     QMessageBox.warning(self, "NIENUMERYCZNA xd",
-                                        "podana wartość jest nie numeryczna \n ustawiono na 0.0")
+                                        "podana wartość jest nienumeryczna \n ustawiono na 0.0")
                     valuess.append(0.0)
             else:
                 namess.append("")
@@ -833,7 +819,6 @@ class Window_Seria_Wykr(QWidget):
                 self.coolWidget.LIST_OF_TABS[thing].list.setItemWidget(itemek, my_itemek)
             i += 1
 
-
     def isEmpty(self):
         puste = []
         for thing in self.LIST_OF_GOD:
@@ -861,7 +846,6 @@ class Window_Seria_Wykr(QWidget):
                         xd = listOfColors.pop(numb)
                     else:
                         self.LIST_OF_GOD[thing][self.colors][colorK] = dzienniczek_kolorkow[colorK]
-
 
     def ok_act(self):
         pust = self.isEmpty()
@@ -895,7 +879,7 @@ class Window_Seria_Wykr(QWidget):
                 elif i != len(pust[1]) - 1:
                     namEs += empt
                     namEs += ", "
-                i +=1
+                i += 1
             QMessageBox().warning(self, '!!! PUSTO !!!',
                                   '!!!        nie możesz dodać pustego wykresu        !!!\n wykres {} nie ma żadnych pozycji'.format(
                                       namEs), QMessageBox.Ok)
@@ -974,7 +958,6 @@ class MyWidget2(QWidget):
         spiinbox.valueChanged[str].connect(self.spiin_change)
         self.combobox.currentIndexChanged[str].connect(self.combo_change)
 
-
         layout = QHBoxLayout()
 
         layout.addWidget(label)
@@ -1008,9 +991,6 @@ class MyWidget2(QWidget):
                                 newvalue)
 
                         i += 1
-
-
-
 
     def delt_btn_act(self):
         window_seria_wykr.deleting(self.number, self.itm.name)

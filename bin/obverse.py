@@ -105,14 +105,19 @@ class CardObverse(object):
         if gen_cnfg:
             add_command("img^^{}^^{}^^{}\n".format(image, coords[0], coords[1]), self.config_path)
 
-    def add_series_of_charts(self, column_nr, coords, project, gen_cnfg=True):
-        row = fs_interaction.read_csv(self.data_path, self.number)
+    def add_series_of_charts(self, column_nr, coords, project, gen_cnfg=True, first=False):
+        if first:
+            row = fs_interaction.read_csv_line(self.data_path, self.number)
+        else:
+            row = fs_interaction.read_csv(self.data_path, self.number + 1)
         name = row[column_nr].strip() + "_wykres.png"
+        print(name)
         self.paste(os.path.join(os.pardir, "cards", project, name), coords, False)
         if gen_cnfg:
             add_command("chrt^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], project), self.config_path)
 
     def add_image_folder(self, folder_path, column, coords, gen_cnfg=True):
+
         row = fs_interaction.read_csv(self.data_path, self.number)
         self.paste(os.path.join(folder_path, row[column] + ".png"), coords, False)
         if gen_cnfg:

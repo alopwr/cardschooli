@@ -525,7 +525,7 @@ class My_Cool_Widget(QWidget):
         self.labels = [i[0] for i in self.rows[1:]]
         print(self.rows, "gvrvre", self.headers, "fefef", self.labels)
         self.LIST_OF_TABS = {}
-        self.LIST = {}
+        # self.LIST = {}
         self.layout = QVBoxLayout(self)
 
         self.tabs = QTabWidget()
@@ -556,7 +556,6 @@ class Window_Seria_Wykr(QWidget):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         gui.center(self)
         self.resize(800, 600)
-        self.liczbapoz = 0
         self.LIST_OF_GOD = {}
         self.names = 0
         self.values = 1
@@ -753,23 +752,27 @@ class Window_Seria_Wykr(QWidget):
         column_nr = self.columnlist[2].index(column)
 
         data = []
-        for row in self.coolWidget.rows:
+        for row in self.coolWidget.rows[1::]:
             data.append(row[column_nr])
 
         namess, valuess = [], []
-
+        i = 0
         for dat in data:
             if dat.strip() != "":
                 namess.append(column)
                 try:
+                    print(dat.strip())
                     valuess.append(float(dat.strip()))
                 except:
-                    QMessageBox.warning(self, "NIENUMERYCZNA xd",
-                                        "podana wartość jest nienumeryczna \n ustawiono na 0.0")
+                    QMessageBox.warning(self, "NIENUMERYCZNA",
+                                        "na karcie '{1}' ,wartość '{0}' jest nienumeryczna \n ustawiono na 0.0".format(
+                                            namess[len(namess) - 1], self.coolWidget.labels[i]))
                     valuess.append(0.0)
             else:
                 namess.append("")
                 valuess.append(0.0)
+            i +=1
+
         if self.coolWidget.czyP:
             listofcolors = self.list_of_colors_P
         else:
@@ -929,7 +932,7 @@ class MyWidget2(QWidget):
             spiinbox.setValue(float(value))
         except:
             QMessageBox().warning(self, '!!! WARTOŚĆ NIENUMERYCZNA !!!',
-                                  '!!!   wartość komórki {} w karcie {} jest nienumeryczna    !!!\ \n ustawiono wartość 0 '.format(
+                                  '!!!   wartość komórki {} w karcie {} jest nienumeryczna    !!!\ \n ustawiono wartość 0.0 '.format(
                                       self.name, itm.name),
                                   QMessageBox.Ok)
         spiinbox.setDecimals(dok)

@@ -383,8 +383,8 @@ class Window4(QWidget):
 
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
-        self.compile()
         self.show()
+        self.compile()
 
     def compile(self):
         obverse.generate(window0.project, window1.filename,

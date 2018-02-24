@@ -1,6 +1,8 @@
 import os.path
 from random import randrange
 
+import fs_interaction
+import gui
 import matplotlib.pyplot as plt
 from PIL import Image
 from PyQt5.QtCore import QSize
@@ -8,9 +10,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
-
-import fs_interaction
-import gui
 
 
 def czyPol():
@@ -214,11 +213,10 @@ class Window_Wykr(QWidget):
         return newvalue
 
     def xSPINchange(self, newvalue):
-        self.X = int(self.spin_str_2_float(newvalue))
+        self.X = int(window_wykr.spin_str_2_float(newvalue))
 
     def ySPINchange(self, newvalue):
-        self.Y = int(self.spin_str_2_float(newvalue))
-
+        self.Y = int(window_wykr.spin_str_2_float(newvalue))
     def deleting(self, number):
         i = 0
         i2 = self.LIST.count()
@@ -523,9 +521,7 @@ class My_Cool_Widget(QWidget):
         self.rows = fs_interaction.read_csv(window_wykr.card3.data_path)
         self.headers = self.rows[0]
         self.labels = [i[0] for i in self.rows[1:]]
-        print(self.rows, "gvrvre", self.headers, "fefef", self.labels)
         self.LIST_OF_TABS = {}
-        # self.LIST = {}
         self.layout = QVBoxLayout(self)
 
         self.tabs = QTabWidget()
@@ -591,6 +587,8 @@ class Window_Seria_Wykr(QWidget):
         xSPIN.setValue(self.X)
         ySPIN.setRange(0, 9999)
         ySPIN.setValue(self.Y)
+        xSPIN.valueChanged[str].connect(self.xSPINchange)
+        ySPIN.valueChanged[str].connect(self.ySPINchange)
 
         laj3 = QHBoxLayout()
         laj4 = QHBoxLayout()
@@ -761,7 +759,6 @@ class Window_Seria_Wykr(QWidget):
             if dat.strip() != "":
                 namess.append(column)
                 try:
-                    print(dat.strip())
                     valuess.append(float(dat.strip()))
                 except:
                     QMessageBox.warning(self, "NIENUMERYCZNA",
@@ -845,7 +842,6 @@ class Window_Seria_Wykr(QWidget):
                     lista = self.LIST_OF_GOD[thing]
                     self.generating_chart(lista, size, thing)
             self.transp()
-            print(self.columnlist[1])
             window_wykr.window3.card.add_series_of_charts(self.columnlist[1], [self.X, self.Y], window_wykr.project,
                                                           first=True)
             window_wykr.window3.update_preview()
@@ -853,7 +849,6 @@ class Window_Seria_Wykr(QWidget):
             self.isCreatingChart = False
             self.close()
         else:
-            print(pust[1])
             namEs = ""
             i = 0
             for empt in pust[1]:
@@ -870,11 +865,9 @@ class Window_Seria_Wykr(QWidget):
                                       namEs), QMessageBox.Ok)
 
     def xSPINchange(self, newvalue):
-        self.X = self.spin_str_2_float(newvalue)
-
+        self.X = int(window_wykr.spin_str_2_float(newvalue))
     def ySPINchange(self, newvalue):
-        self.Y = self.spin_str_2_float(newvalue)
-
+        self.Y = int(window_wykr.spin_str_2_float(newvalue))
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
                                              'Podaj szerokość diagramu. \n(piksele)', 100,

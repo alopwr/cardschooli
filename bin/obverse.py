@@ -4,9 +4,8 @@ generating, updating and saving the card's obverse
 """
 import os.path
 
-from PIL import Image, ImageDraw, ImageFont
-
 import fs_interaction
+from PIL import Image, ImageDraw, ImageFont
 
 
 def process_coords(coords, size, psize):
@@ -50,7 +49,6 @@ def generate(name, data_path, config_path):
             elif i[0] == "txt":
                 j.add_text((i[1], i[2]), i[3], i[5], i[6], i[4], False)
             elif i[0] == "chrt":
-                print(i)
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
     for i, obv in enumerate(obverses):
         obv.obverse.save(fs_interaction.project_location(name, "obverse{}.png".format(i)))
@@ -110,9 +108,11 @@ class CardObverse(object):
             row = fs_interaction.read_csv(self.data_path, self.number)
         else:
             row = fs_interaction.read_csv(self.data_path, self.number + 1)
+
         name = row[column_nr].strip() + "_wykres.png"
-        print(name)
+
         self.paste(os.path.join(os.pardir, "cards", project, name), coords, False)
+
         if gen_cnfg:
             add_command("chrt^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], project), self.config_path)
 

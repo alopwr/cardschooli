@@ -6,14 +6,13 @@ allows user creating his deck of cards
 import os
 import sys
 
-from PyQt5.QtGui import QPixmap, QMovie, QIcon
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
-    QColorDialog, QInputDialog, QMessageBox
-
 import charts
 import fs_interaction
 import obverse
 import reverse
+from PyQt5.QtGui import QPixmap, QMovie, QIcon
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
+    QColorDialog, QInputDialog, QMessageBox
 
 
 def center(window):
@@ -105,7 +104,6 @@ class Window0(QWidget):
     def next(self):
         self.project = self.project_name.text()
         charts.window_wykr.project = self.project
-        print(charts.window_wykr.project)
         if not fs_interaction.project_location(self.project_name.text()):
             raise_warning(self, "Tylko znaki alfanumeryczne!",
                           "W nazwie projektu wykorzystałeś znaki niealfanumeryczne. Spróbuj jeszcze raz!")
@@ -362,8 +360,6 @@ class Window3(QWidget):
             QMessageBox().warning(self, 'W TRAKCIE CZYNNOŚCI',
                                   'Jesteś w trakcie dodawania wykresu',
                                   QMessageBox.Ok)
-            print("wykres: " + str(charts.window_wykr.isCreatingChart))
-            print("seria: " + str(charts.window_seria_wykr.isCreatingChart))
 
 
 class Window4(QWidget):

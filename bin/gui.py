@@ -54,7 +54,6 @@ def text_dialog(parent):
     if ok_pressed and text:
         return text
 
-
 def raise_warning(parent, caption, text):
     """ raises PyQt warning """
     QMessageBox.warning(parent, caption, text, QMessageBox.Ok)
@@ -250,24 +249,55 @@ class Window3(QWidget):
         image_btn = QPushButton("Zaimportuj grafikę PNG", self)
         image_var_btn = QPushButton("Zaimportuj folder z grafikami PNG", self)
         text_btn = QPushButton("Dodaj tekst", self)
+        text_seria_btn = QPushButton("Dodaj serię tekstu", self)
         finish_btn = QPushButton("Zakończ >>>", self)
         chart_btn = QPushButton('Dodaj wykres kołowy', self)
         chart_seria_btn = QPushButton("Dodaj serię wykresów kołowych", self)
+
         color_btn.setGeometry(490, 60, 235, 35)
+
         image_btn.setGeometry(490, 115, 235, 35)
         image_var_btn.setGeometry(490, 170, 235, 35)
+
         text_btn.setGeometry(490, 225, 235, 35)
-        chart_btn.setGeometry(490, 280, 235, 35)
-        chart_seria_btn.setGeometry(490, 335, 235, 35)
+        text_seria_btn.setGeometry(490, 280, 235, 35)
+
+        chart_btn.setGeometry(490, 335, 235, 35)
+        chart_seria_btn.setGeometry(490, 390, 235, 35)
 
         finish_btn.setGeometry(490, 475, 235, 70)
+
         color_btn.clicked.connect(self.color_btn_act)
         image_btn.clicked.connect(self.image_btn_act)
         image_var_btn.clicked.connect(self.image_folder_btn_act)
         text_btn.clicked.connect(self.text_btn_act)
+        text_seria_btn.clicked.connect(self.text_seria_btn_act)
         finish_btn.clicked.connect(self.finish_btn_act)
         chart_btn.clicked.connect(self.chart_btn_act)
         chart_seria_btn.clicked.connect(self.chart_seria_btn_act)
+
+    def text_seria_btn_act(self):
+        column = choose_colum(self, "Wybierz kolumnę:",
+                              "Wybierz kolumnę, w której zapisane są teksty dla każdej karty: ",
+                              fs_interaction.read_csv(window1.filename, 0))
+        if not column:
+            return None
+        column_data = fs_interaction.read_csv(window1.filename, 0)
+        column_nr = column_data.index(column)
+
+        size = size_dialog(self)
+        if not size:
+            return None
+        coords = coords_dialog(self)
+        if not coords:
+            return None
+        color = color_dialog()
+        if not color:
+            return None
+
+        self.card.add_text_series(column_nr, coords, size, color, first=True)
+
+        self.update_preview()
 
     def chart_btn_act(self):
         charts.window_wykr.isCreatingChart = True

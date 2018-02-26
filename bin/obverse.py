@@ -40,6 +40,7 @@ def generate(name, data_path, config_path):
     cmds = fs_interaction.read_config(config_path)
     for i in cmds:
         for j in obverses:
+            print(i[0])
             if i[0] == "col":
                 j.change_color(i[1], False)
             elif i[0] == "img":
@@ -50,6 +51,9 @@ def generate(name, data_path, config_path):
                 j.add_text((i[1], i[2]), i[3], i[5], i[6], i[4], False)
             elif i[0] == "chrt":
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
+            elif i[0] == "txtS":
+                print("Yeah")
+                j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
     for i, obv in enumerate(obverses):
         obv.obverse.save(fs_interaction.project_location(name, "obverse{}.png".format(i)))
 
@@ -69,7 +73,12 @@ class CardObverse(object):
         self.config_path = fs_interaction.project_location(self.project_name, "obverse.cardconfig")
         self.data_path = data_path
         self.number = number
-        self.obverse = Image.new("RGB", (1500, 2100), 0)
+
+        x_size = 1500
+        y_size = 2100
+        self.xy_size = (x_size, y_size)
+
+        self.obverse = Image.new("RGB", (x_size, y_size), 0)
         self.obverse_draw = ImageDraw.Draw(self.obverse)
 
     def save_preview(self):
@@ -130,8 +139,41 @@ class CardObverse(object):
         imported = fs_interaction.project_location(project, name)
         self.paste(imported, coords)
 
-    def add_text(self, coords, text, size, fill=0, font=os.path.join(os.pardir, "res", "fonts", "font.ttf"),
+    def calculate_enters(self, text, coords, size_f):
+        free_x_place = self.xy_size[0] - coords[0]
+
+        new_text = ""
+        dlugosc = 0
+        literka_dlugosc = size_f * 0.6
+        for letter in text:
+            dlugosc += literka_dlugosc
+            if dlugosc < free_x_place:
+                new_text += letter
+            else:
+                new_text += "\n"
+                new_text += letter
+                dlugosc = 0
+
+        return new_text
+
+    def add_text_series(self, column_nr, coords, size, fill=0,
+                        font=os.path.join(os.pardir, "res", "fonts", "Menlo-Regular.ttf"), gen_cnfg=True, first=False):
+        if first:
+            row = fs_interaction.read_csv(self.data_path, self.number)
+        else:
+            row = fs_interaction.read_csv(self.data_path, self.number + 1)
+
+        text = str(row[column_nr])
+        text = self.calculate_enters(text, coords, size)
+
+        self.add_text(coords, text, size, fill, font, False)
+        if gen_cnfg:
+            add_command("txtS^^{}^^{}^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], size, fill, font),
+                        self.config_path)
+
+    def add_text(self, coords, text, size, fill=0, font=os.path.join(os.pardir, "res", "fonts", "Menlo-Regular.ttf"),
                  gen_cnfg=True):
+
         """
         adds text to card's obverse
         :param coords: coords of the added text

@@ -1,8 +1,6 @@
 import os.path
 from random import randrange
 
-import fs_interaction
-import gui
 import matplotlib.pyplot as plt
 from PIL import Image
 from PyQt5.QtCore import QSize
@@ -10,6 +8,9 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
+
+import fs_interaction
+import gui
 
 
 def czyPol():
@@ -217,6 +218,7 @@ class Window_Wykr(QWidget):
 
     def ySPINchange(self, newvalue):
         self.Y = int(window_wykr.spin_str_2_float(newvalue))
+
     def deleting(self, number):
         i = 0
         i2 = self.LIST.count()
@@ -249,7 +251,7 @@ class Window_Wykr(QWidget):
 
             self.generating_chart(self.LIST_OF_GOD, size)
 
-            self.transp()
+            #self.transp()
             self.adding_chart()
 
             self.isCreatingChart = False
@@ -398,7 +400,7 @@ class Window_Wykr(QWidget):
         wys = len(names)
         wys2 = (wys * 0.25) + 0.11
         return (dl2, wys2)
-
+    """
     def transp(self):
 
         new_img = Image.open(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"))
@@ -412,7 +414,7 @@ class Window_Wykr(QWidget):
                 newData.append(item)
         new_img.putdata(newData)
         new_img.save(fs_interaction.project_location(window_wykr.project, "wykres.png"), 'png')
-
+    """
     def dym_font(self, texts, size):
 
         newTEXTS = []
@@ -470,7 +472,7 @@ class Window_Wykr(QWidget):
 
             texts = self.dym_font(texts, size)
             plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=dpi)
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=dpi,transparent=True)
             x, y = self.calculate(names)
             figlegend = plt.figure(figsize=(x, y))
             figlegend.legend(patches, names)
@@ -498,7 +500,7 @@ class Window_Wykr(QWidget):
             plt.pie(sizes, explode=explode, colors=colors, labels=labels,
                     autopct='%1.1f%%', shadow=False, startangle=140)
             plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=600)
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png",), dpi=600,transparent=True)
 
 
 def choose_colum(parent, caption, text, selections):
@@ -674,7 +676,7 @@ class Window_Seria_Wykr(QWidget):
         x, y = self.calculate(self.LEGEND_BASE)
         figlegend = plt.figure(figsize=(x, y))
         figlegend.legend(self.PATCHES_BASE, self.LEGEND_BASE)
-        figlegend.savefig(fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600)
+        figlegend.savefig(fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600,transparent=True)
 
     def generating_chart(self, LIST_OF_GOD, size, thing):
         dpi = 600
@@ -710,10 +712,10 @@ class Window_Seria_Wykr(QWidget):
         texts = self.dynamic_font(texts, size)
         plt.axis('equal')
         plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"),
-                    dpi=dpi)
+                    dpi=dpi,transparent=True)
 
         self.legend_base_update(names, patches)
-
+    """
     def transp(self):
         for thing in self.LIST_OF_GOD:
             new_img = Image.open(
@@ -729,7 +731,7 @@ class Window_Seria_Wykr(QWidget):
             new_img.putdata(newData)
             new_img.save(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykres.png"),
                          'png')
-
+    """
     def legend_base_update(self, texts, patches):
         i = 0
         for text in texts:
@@ -769,7 +771,7 @@ class Window_Seria_Wykr(QWidget):
             else:
                 namess.append("")
                 valuess.append(0.0)
-            i +=1
+            i += 1
 
         if self.coolWidget.czyP:
             listofcolors = self.list_of_colors_P
@@ -842,8 +844,8 @@ class Window_Seria_Wykr(QWidget):
                 if len(self.LIST_OF_GOD[thing][self.names]) > 0:
                     lista = self.LIST_OF_GOD[thing]
                     self.generating_chart(lista, size, thing)
-            self.transp()
-            window_wykr.window3.card.add_series_of_charts(self.columnlist[1], [self.X, self.Y], window_wykr.project,
+            #self.transp()
+            window_wykr.window3.card.add_series_of_charts(self.columnlist[1], (self.X, self.Y), window_wykr.project,
                                                           first=True)
             window_wykr.window3.update_preview()
             self.generating_legend()
@@ -867,8 +869,10 @@ class Window_Seria_Wykr(QWidget):
 
     def xSPINchange(self, newvalue):
         self.X = int(window_wykr.spin_str_2_float(newvalue))
+
     def ySPINchange(self, newvalue):
         self.Y = int(window_wykr.spin_str_2_float(newvalue))
+
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
                                              'Podaj szerokość diagramu. \n(piksele)', 500,

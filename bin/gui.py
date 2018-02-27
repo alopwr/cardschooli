@@ -251,9 +251,8 @@ class Window3(QWidget):
         text_btn = QPushButton("Dodaj tekst", self)
         text_seria_btn = QPushButton("Dodaj serię tekstu", self)
         finish_btn = QPushButton("Zakończ >>>", self)
-        chart_btn = QPushButton('Dodaj wykres kołowy', self)
-        chart_seria_btn = QPushButton("Dodaj serię wykresów kołowych", self)
-
+        chart_btn = QPushButton("Dodaj wykres kołowy", self)
+        chart_seria_btn = QPushButton("Dodaj seryjne wykresy kołowe", self)
         color_btn.setGeometry(490, 60, 235, 35)
 
         image_btn.setGeometry(490, 115, 235, 35)
@@ -261,10 +260,8 @@ class Window3(QWidget):
 
         text_btn.setGeometry(490, 225, 235, 35)
         text_seria_btn.setGeometry(490, 280, 235, 35)
-
         chart_btn.setGeometry(490, 335, 235, 35)
         chart_seria_btn.setGeometry(490, 390, 235, 35)
-
         finish_btn.setGeometry(490, 475, 235, 70)
 
         color_btn.clicked.connect(self.color_btn_act)
@@ -416,6 +413,7 @@ class Window4(QWidget):
         obverse.generate(window0.project, window1.filename,
                          fs_interaction.project_location(window0.project, "obverse.cardconfig"))
         fs_interaction.cleaning_files(os.path.join(os.pardir, "cards", window0.project))
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

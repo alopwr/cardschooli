@@ -58,11 +58,6 @@ def generate(name, data_path, config_path):
         obv.obverse.save(fs_interaction.project_location(name, "obverse{}.png".format(i)))
 
 
-def get_numb_rows(name, filename):
-    obverses = [CardObverse(name, filename, i) for i in range(fs_interaction.get_file_lenght(filename) - 1)]
-    return len(obverses)
-
-
 class CardObverse(object):
     """
     class used to create obverse of card sized 1500x2100px with a dpi of 600
@@ -117,11 +112,8 @@ class CardObverse(object):
             row = fs_interaction.read_csv(self.data_path, self.number)
         else:
             row = fs_interaction.read_csv(self.data_path, self.number + 1)
-
-        name = row[column_nr].strip() + "_wykres.png"
-
-        self.paste(os.path.join(os.pardir, "cards", project, name), coords, False)
-
+        name = row[column_nr].strip() + "_wykresOLD.png"
+        self.paste(fs_interaction.project_location(project, name), coords, False)
         if gen_cnfg:
             add_command("chrt^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], project), self.config_path)
 
@@ -130,7 +122,8 @@ class CardObverse(object):
             row = fs_interaction.read_csv(self.data_path, self.number)
         else:
             row = fs_interaction.read_csv(self.data_path, self.number + 1)
-
+        print(row)
+        print(row[column])
         self.paste(os.path.join(folder_path, row[column].strip() + ".png"), coords, False)
         if gen_cnfg:
             add_command("imgf^^{}^^{}^^{}^^{}\n".format(folder_path, column, coords[0], coords[1]), self.config_path)

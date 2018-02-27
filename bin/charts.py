@@ -2,7 +2,6 @@ import os.path
 from random import randrange
 
 import matplotlib.pyplot as plt
-from PIL import Image
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
@@ -251,7 +250,7 @@ class Window_Wykr(QWidget):
 
             self.generating_chart(self.LIST_OF_GOD, size)
 
-            #self.transp()
+            # self.transp()
             self.adding_chart()
 
             self.isCreatingChart = False
@@ -400,6 +399,7 @@ class Window_Wykr(QWidget):
         wys = len(names)
         wys2 = (wys * 0.25) + 0.11
         return (dl2, wys2)
+
     """
     def transp(self):
 
@@ -472,7 +472,7 @@ class Window_Wykr(QWidget):
 
             texts = self.dym_font(texts, size)
             plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=dpi,transparent=True)
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=dpi, transparent=True)
             x, y = self.calculate(names)
             figlegend = plt.figure(figsize=(x, y))
             figlegend.legend(patches, names)
@@ -500,7 +500,8 @@ class Window_Wykr(QWidget):
             plt.pie(sizes, explode=explode, colors=colors, labels=labels,
                     autopct='%1.1f%%', shadow=False, startangle=140)
             plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png",), dpi=600,transparent=True)
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png", ), dpi=600,
+                        transparent=True)
 
 
 def choose_colum(parent, caption, text, selections):
@@ -676,7 +677,7 @@ class Window_Seria_Wykr(QWidget):
         x, y = self.calculate(self.LEGEND_BASE)
         figlegend = plt.figure(figsize=(x, y))
         figlegend.legend(self.PATCHES_BASE, self.LEGEND_BASE)
-        figlegend.savefig(fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600,transparent=True)
+        figlegend.savefig(fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600, transparent=True)
 
     def generating_chart(self, LIST_OF_GOD, size, thing):
         dpi = 600
@@ -712,9 +713,10 @@ class Window_Seria_Wykr(QWidget):
         texts = self.dynamic_font(texts, size)
         plt.axis('equal')
         plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"),
-                    dpi=dpi,transparent=True)
+                    dpi=dpi, transparent=True)
 
         self.legend_base_update(names, patches)
+
     """
     def transp(self):
         for thing in self.LIST_OF_GOD:
@@ -844,7 +846,7 @@ class Window_Seria_Wykr(QWidget):
                 if len(self.LIST_OF_GOD[thing][self.names]) > 0:
                     lista = self.LIST_OF_GOD[thing]
                     self.generating_chart(lista, size, thing)
-            #self.transp()
+            # self.transp()
             window_wykr.window3.card.add_series_of_charts(self.columnlist[1], (self.X, self.Y), window_wykr.project,
                                                           first=True)
             window_wykr.window3.update_preview()

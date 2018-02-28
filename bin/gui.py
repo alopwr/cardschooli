@@ -143,8 +143,9 @@ class Window1(QWidget):
             raise_warning(self, "Nie wybrałeś pliku",
                           "Nie wybrałeś pliku, bądź ma on nieodpowiedni format. Użyj pliku .csv!")
             return None
+
+        # charts.window_seria_wykr.give_filename(window0.filename)
         self.close()
-        charts.window_wykr.filename = window1.filename
         window2.init_ui()
 
 
@@ -305,10 +306,11 @@ class Window3(QWidget):
         column = choose_colum(self, "Wybierz kolumnę",
                               "Wybierz kolumnę, w której zapisane są nazwy kart (tytuły):",
                               fs_interaction.read_csv(window1.filename, 0))
-
-        column_data = fs_interaction.read_csv(window1.filename, 0)
-        column_nr = column_data.index(column)
-
+        try:
+            column_data = fs_interaction.read_csv(window1.filename, 0)
+            column_nr = column_data.index(column)
+        except:
+            return None
         charts.window_seria_wykr.init_ui([column, column_nr, column_data])
 
     def init_ui(self):
@@ -321,7 +323,7 @@ class Window3(QWidget):
         self.preview.setPixmap(self.pixmap)
         self.preview.setGeometry(25, 60, self.pixmap.width(), self.pixmap.height())
         self.show()
-        charts.window_wykr.card3 = self.card
+        charts.window_seria_wykr.give_card3(self.card)
 
     def update_preview(self):
         self.card.save_preview()

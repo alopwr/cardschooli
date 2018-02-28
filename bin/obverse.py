@@ -4,9 +4,8 @@ generating, updating and saving the card"s obverse
 """
 import os.path
 
-from PIL import Image, ImageDraw, ImageFont
-
 import fs_interaction
+from PIL import Image, ImageDraw, ImageFont
 
 
 def process_coords(coords, size, psize):

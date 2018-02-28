@@ -709,7 +709,7 @@ class SerialChartsWindow(QWidget):
 
     def AddNew(self):
         self.number_of_layouts += 1
-        column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pierwsze pozycje na wykresach",
+        column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pozycję na wykresach",
                               self.coolWidget.headers)
         column_nr = self.columnlist[2].index(column)
 
@@ -725,7 +725,8 @@ class SerialChartsWindow(QWidget):
                 try:
                     values.append(float(dat.strip()))
                 except ValueError:
-                    QMessageBox.warning(self, "NIENUMERYCZNA",
+                    QMessageBox.warning(self, "WARTOŚĆ NIENUMERYCZNA!!!",
+
                                         "Na karcie {} wartość {} jest nienumeryczna! \n Ustawiono na 0.0.".format(
                                             self.coolWidget.labels[i], namess[len(namess) - 1]))
                     values.append(0.0)
@@ -866,6 +867,7 @@ class MyWidget2(QWidget):
     def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2):
         super().__init__()
 
+        print("Acikadys")
         self.color = color
         self.number = number
         self.value = value
@@ -886,13 +888,9 @@ class MyWidget2(QWidget):
         spinbox = QDoubleSpinBox()
         spinbox.setMinimum(0.01)
         spinbox.setMaximum(maxx)
-        try:
-            spinbox.setValue(float(value))
-        except ValueError:
-            QMessageBox().warning(self, "WARTOŚĆ NIENUMERYCZNA",
-                                  "Wartość komórki {} w karcie {} jest nienumeryczna! \n Ustawiono wartość 0.0.".format(
-                                      self.name, itm.name),
-                                  QMessageBox.Ok)
+
+        spinbox.setValue(float(value))
+
         spinbox.setDecimals(dok)
 
         combobox = QComboBox()

@@ -1,15 +1,14 @@
 import os.path
 from random import randrange
 
+import fs_interaction
+import gui
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
-
-import fs_interaction
-import gui
 
 
 def czyPol():
@@ -137,41 +136,30 @@ class Window_Wykr(QWidget):
         self.project = ""
         self.filename = ""
         self.card3 = None
-
-    def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
-        czyPol()
-
-        self.loadCOLORS()
 
         add_btn = QPushButton("ADD", self)
         add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "plusik.png")))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
-
-        self.LIST = QListWidget()
-        self.LIST.setToolTip("pozycje na wykresie")
-
+        gui.center(self)
         self.resize(800, 600)
         self.setWindowTitle('cardschooli - dodaj wykres')
-
-        gui.center(self)
-
         xSPIN = QSpinBox()
         ySPIN = QSpinBox()
         xSPIN.setRange(0, 9999)
         xSPIN.setValue(self.X)
         ySPIN.setRange(0, 9999)
         ySPIN.setValue(self.Y)
-
         xSPIN.valueChanged[str].connect(self.xSPINchange)
         ySPIN.valueChanged[str].connect(self.ySPINchange)
-
         OK_btn = QPushButton('Dodaj wykres na karte >>>')
         OK_btn.setGeometry(450, 450, 300, 70)
         OK_btn.clicked.connect(self.ok_act)
-        LAJ = QVBoxLayout()
+        self.LIST = QListWidget()
+        self.LIST.setToolTip("pozycje na wykresie")
+        self.LAJ = QVBoxLayout()
         laj = QHBoxLayout()
         laj3 = QHBoxLayout()
         laj4 = QHBoxLayout()
@@ -185,17 +173,22 @@ class Window_Wykr(QWidget):
         laj.addWidget(self.LIST)
         laj.addLayout(LAJ2)
 
-        LAJ.addLayout(laj)
+        self.LAJ.addLayout(laj)
 
-        LAJ.addWidget(OK_btn)
+        self.LAJ.addWidget(OK_btn)
 
         laj3.addWidget(QLabel("X: "))
         laj3.addWidget(xSPIN)
         laj4.addWidget(QLabel("Y: "))
         laj4.addWidget(ySPIN)
 
-        self.setLayout(LAJ)
+    def init_ui(self):
+        self.LIST_OF_GOD = [{}, {}, {}, {}]
+        self.LIST.clear()
 
+        czyPol()
+        self.loadCOLORS()
+        self.setLayout(self.LAJ)
         self.show()
 
     def changeczyP(self, new):
@@ -244,13 +237,14 @@ class Window_Wykr(QWidget):
 
     def ok_act(self):
         if self.LIST.count() > 0 and self.suma() == 100.0:
+            size = self.get_size()
+            if not size:
+                return None
+
             if self.czyP:
                 self.exchange()
-            size = self.get_size()
 
             self.generating_chart(self.LIST_OF_GOD, size)
-
-            # self.transp()
             self.adding_chart()
 
             self.isCreatingChart = False
@@ -281,12 +275,17 @@ class Window_Wykr(QWidget):
 
     def AddNew(self):
         if self.smaxim() > 0:
-            itemek = QListWidgetItem2()
-            self.number_of_layouts += 1
-
             name = self.get_text()
             value = self.get_value()
             color = self.get_color()
+            if not value or not color:
+                return None
+
+            itemek = QListWidgetItem2()
+            self.number_of_layouts += 1
+
+
+
             if self.czy_per:
                 my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek, dok=2)
             else:
@@ -333,7 +332,8 @@ class Window_Wykr(QWidget):
         i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
                                              'Podaj szerokość diagramu. \n(piksele)', 500,
                                              min=1)
-
+        if not ok_pressed0:
+            return False
         j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
                                              'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', i,
                                              min=1)
@@ -400,21 +400,7 @@ class Window_Wykr(QWidget):
         wys2 = (wys * 0.25) + 0.11
         return (dl2, wys2)
 
-    """
-    def transp(self):
 
-        new_img = Image.open(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"))
-        new_img.convert("RGBA")
-        datas = new_img.getdata()
-        newData = []
-        for item in datas:
-            if item[0] == 255 and item[1] == 255 and item[2] == 255:
-                newData.append((255, 255, 255, 0))
-            else:
-                newData.append(item)
-        new_img.putdata(newData)
-        new_img.save(fs_interaction.project_location(window_wykr.project, "wykres.png"), 'png')
-    """
     def dym_font(self, texts, size):
 
         newTEXTS = []
@@ -472,7 +458,7 @@ class Window_Wykr(QWidget):
 
             texts = self.dym_font(texts, size)
             plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=dpi, transparent=True)
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykres.png"), dpi=dpi, transparent=True)
             x, y = self.calculate(names)
             figlegend = plt.figure(figsize=(x, y))
             figlegend.legend(patches, names)
@@ -500,7 +486,7 @@ class Window_Wykr(QWidget):
             plt.pie(sizes, explode=explode, colors=colors, labels=labels,
                     autopct='%1.1f%%', shadow=False, startangle=140)
             plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png", ), dpi=600,
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykres.png", ), dpi=600,
                         transparent=True)
 
 
@@ -521,7 +507,7 @@ class My_Cool_Widget(QWidget):
     def __init__(self):
         super().__init__()
         self.czyP = False
-        self.columnlist = window_seria_wykr.columnlist
+        # self.columnlist = window_seria_wykr.columnlist
         self.rows = fs_interaction.read_csv(window_wykr.card3.data_path)
         self.headers = self.rows[0]
         self.labels = [i[0] for i in self.rows[1:]]
@@ -556,7 +542,6 @@ class Window_Seria_Wykr(QWidget):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
         gui.center(self)
         self.resize(800, 600)
-        self.LIST_OF_GOD = {}
         self.names = 0
         self.values = 1
         self.colors = 2
@@ -567,59 +552,37 @@ class Window_Seria_Wykr(QWidget):
         self.isCreatingChart = False
         self.LEGEND_BASE = []
         self.PATCHES_BASE = []
-
-    def init_ui(self, columnlist):
-        self.isCreatingChart = True
         self.loadCOLORS()
-        self.columnlist = columnlist
 
+        self.add_btn = QPushButton("ADD", self)
+        self.add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", 'img', 'plusik.png')))
+        self.add_btn.setGeometry(30, 30, 50, 50)
+        self.add_btn.clicked.connect(self.AddNew)
+        self.add_btn.setToolTip("dodaje element do wykresu")
+
+        self.OK_btn = QPushButton('Dodaj wykres na karte >>>')
+        self.OK_btn.setGeometry(450, 450, 300, 70)
+        self.OK_btn.clicked.connect(self.ok_act)
+
+        self.xSPIN = QSpinBox()
+        self.ySPIN = QSpinBox()
+        self.xSPIN.setRange(0, 9999)
+        self.xSPIN.setValue(self.X)
+        self.ySPIN.setRange(0, 9999)
+        self.ySPIN.setValue(self.Y)
+        self.xSPIN.valueChanged[str].connect(self.xSPINchange)
+        self.ySPIN.valueChanged[str].connect(self.ySPINchange)
+    def init_ui(self, columnlist):
+        self.LIST_OF_GOD = {}
         self.coolWidget = My_Cool_Widget()
+        self.load_layouts()
 
-        add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", 'img', 'plusik.png')))
-        add_btn.setGeometry(30, 30, 50, 50)
-        add_btn.clicked.connect(self.AddNew)
-        add_btn.setToolTip("dodaje element do wykresu")
+        for tab in self.coolWidget.LIST_OF_TABS:
+            tab.list.clear()
 
-        OK_btn = QPushButton('Dodaj wykres na karte >>>')
-        OK_btn.setGeometry(450, 450, 300, 70)
-        OK_btn.clicked.connect(self.ok_act)
-
-        xSPIN = QSpinBox()
-        ySPIN = QSpinBox()
-        xSPIN.setRange(0, 9999)
-        xSPIN.setValue(self.X)
-        ySPIN.setRange(0, 9999)
-        ySPIN.setValue(self.Y)
-        xSPIN.valueChanged[str].connect(self.xSPINchange)
-        ySPIN.valueChanged[str].connect(self.ySPINchange)
-
-        laj3 = QHBoxLayout()
-        laj4 = QHBoxLayout()
-
-        laj3.addWidget(QLabel("X: "))
-        laj3.addWidget(xSPIN)
-        laj4.addWidget(QLabel("Y: "))
-        laj4.addWidget(ySPIN)
-
-        lajout = QVBoxLayout()
-        lajout.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
-
-        lajout.addLayout(laj3)
-
-        lajout.addLayout(laj4)
-
-        layout = QHBoxLayout()
-        layout.addWidget(add_btn)
-        layout.addWidget(self.coolWidget)
-        layout.addLayout(lajout)
-
-        self.layout_master = QVBoxLayout()
-        self.layout_master.addLayout(layout)
-        self.layout_master.addWidget(OK_btn)
-        self.setLayout(self.layout_master)
+        self.isCreatingChart = True
+        self.columnlist = columnlist
         self.show()
-
     def deleting(self, number, Cname):
         i = 0
         i2 = self.coolWidget.LIST_OF_TABS[Cname].list.count()
@@ -631,6 +594,37 @@ class Window_Seria_Wykr(QWidget):
 
             i += 1
 
+    def load_layouts(self):
+        laj3 = QHBoxLayout()
+        laj4 = QHBoxLayout()
+
+        laj3.addWidget(QLabel("X: "))
+        laj3.addWidget(self.xSPIN)
+        laj4.addWidget(QLabel("Y: "))
+        laj4.addWidget(self.ySPIN)
+
+        lajout = QVBoxLayout()
+        lajout.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
+
+        lajout.addLayout(laj3)
+
+        lajout.addLayout(laj4)
+
+        layout = QHBoxLayout()
+        layout.addWidget(self.add_btn)
+        layout.addWidget(self.coolWidget)
+        layout.addLayout(lajout)
+
+        self.layout_master = QVBoxLayout()
+        self.layout_master.addLayout(layout)
+        self.layout_master.addWidget(self.OK_btn)
+        self.setLayout(self.layout_master)
+
+    def give_filename(self, flnam):
+        self.filename = flnam
+
+    def give_card3(self, card):
+        self.card3 = card
     def removing(self, numbeer, Cname):
         name = self.LIST_OF_GOD[Cname][self.names].pop(numbeer)
 
@@ -712,28 +706,12 @@ class Window_Seria_Wykr(QWidget):
 
         texts = self.dynamic_font(texts, size)
         plt.axis('equal')
-        plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"),
+        plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykres.png"),
                     dpi=dpi, transparent=True)
 
         self.legend_base_update(names, patches)
 
-    """
-    def transp(self):
-        for thing in self.LIST_OF_GOD:
-            new_img = Image.open(
-                fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"))
-            new_img.convert("RGBA")
-            datas = new_img.getdata()
-            newData = []
-            for item in datas:
-                if item[0] == 255 and item[1] == 255 and item[2] == 255:
-                    newData.append((255, 255, 255, 0))
-                else:
-                    newData.append(item)
-            new_img.putdata(newData)
-            new_img.save(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykres.png"),
-                         'png')
-    """
+
     def legend_base_update(self, texts, patches):
         i = 0
         for text in texts:
@@ -752,8 +730,10 @@ class Window_Seria_Wykr(QWidget):
         self.number_of_layouts += 1
         column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pierwsze pozycje na wykresach",
                               self.coolWidget.headers)
-        column_nr = self.columnlist[2].index(column)
-
+        try:
+            column_nr = self.columnlist[2].index(column)
+        except:
+            return None
         data = []
         for row in self.coolWidget.rows[1::]:
             data.append(row[column_nr])
@@ -838,6 +818,8 @@ class Window_Seria_Wykr(QWidget):
         pustt = pust[0]
         if not pustt:
             size = self.get_size()
+            if not size:
+                return None
             if self.coolWidget.czyP:
                 self.exchange()
 
@@ -846,7 +828,6 @@ class Window_Seria_Wykr(QWidget):
                 if len(self.LIST_OF_GOD[thing][self.names]) > 0:
                     lista = self.LIST_OF_GOD[thing]
                     self.generating_chart(lista, size, thing)
-            # self.transp()
             window_wykr.window3.card.add_series_of_charts(self.columnlist[1], (self.X, self.Y), window_wykr.project,
                                                           first=True)
             window_wykr.window3.update_preview()

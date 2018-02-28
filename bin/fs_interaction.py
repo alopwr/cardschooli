@@ -62,6 +62,5 @@ def read_config(path):
 def cleaning_files(directory_path):
     for root, dirs, files in os.walk(directory_path):
         for name in files:
-            if name.endswith("wykres.png") or name.endswith(
-                    "wykresOLD.png") or name == "obverse_preview.png" or name.endswith(".cardconfig"):
+            if name.endswith("wykres.png") or name == "obverse_preview.png" or name.endswith(".cardconfig"):
                 os.remove(os.path.join(root, name))

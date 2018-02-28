@@ -4,9 +4,8 @@ generating, updating and saving the card's obverse
 """
 import os.path
 
-from PIL import Image, ImageDraw, ImageFont
-
 import fs_interaction
+from PIL import Image, ImageDraw, ImageFont
 
 
 def process_coords(coords, size, psize):
@@ -41,7 +40,6 @@ def generate(name, data_path, config_path):
     cmds = fs_interaction.read_config(config_path)
     for i in cmds:
         for j in obverses:
-            print(i[0])
             if i[0] == "col":
                 j.change_color(i[1], False)
             elif i[0] == "img":
@@ -113,7 +111,7 @@ class CardObverse(object):
             row = fs_interaction.read_csv(self.data_path, self.number)
         else:
             row = fs_interaction.read_csv(self.data_path, self.number + 1)
-        name = row[column_nr].strip() + "_wykresOLD.png"
+        name = row[column_nr].strip() + "_wykres.png"
         self.paste(fs_interaction.project_location(project, name), coords, False)
         if gen_cnfg:
             add_command("chrt^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], project), self.config_path)

@@ -40,7 +40,7 @@ class MyWidget(QWidget):
         itm.changeNUMB(self.number)
 
         delt_btn = QPushButton()
-        delt_btn.setIcon(QIcon(os.path.join(os.pardir, "res", 'img', image)))
+        delt_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", image)))
         delt_btn.setIconSize(QSize(35, 35))
         delt_btn.resize(10, 10)
         delt_btn.clicked.connect(self.delt_btn_act)
@@ -48,22 +48,22 @@ class MyWidget(QWidget):
         label = QLabel(txt)
         label2 = QLabel(" % ")
         label3 = QLabel("g")
-        spiinbox = QDoubleSpinBox()
-        spiinbox.setMinimum(0.01)
-        spiinbox.setMaximum(maxx)
-        spiinbox.setValue(value)
-        spiinbox.setDecimals(dok)
+        spinbox = QDoubleSpinBox()
+        spinbox.setMinimum(0.01)
+        spinbox.setMaximum(maxx)
+        spinbox.setValue(value)
+        spinbox.setDecimals(dok)
 
         combobox = QComboBox()
         combobox = self.adding_to_combo(combobox)
 
-        spiinbox.valueChanged[str].connect(self.spiinCHANGE)
+        spinbox.valueChanged[str].connect(self.spin_change)
 
-        combobox.currentIndexChanged[str].connect(self.comboCHANGE)
+        combobox.currentIndexChanged[str].connect(self.combo_change)
 
         layout = QHBoxLayout()
         layout.addWidget(label)
-        layout.addWidget(spiinbox)
+        layout.addWidget(spinbox)
         if window_wykr.czy_per:
             layout.addWidget(label2)
         else:
@@ -73,20 +73,20 @@ class MyWidget(QWidget):
 
         self.setLayout(layout)
 
-    def spiinCHANGE(self, newvalue):
+    def spin_change(self, newvalue):
 
         newvalue = window_wykr.spin_str_2_float(newvalue)
         if window_wykr.czy_per:
             oldvalue = window_wykr.LIST_OF_GOD[window_wykr.values][self.name]
             if not window_wykr.maxim - (newvalue - oldvalue) >= 0:
-                QMessageBox().warning(self, '!!! LIMIT !!!',
-                                      '!!!       Przekroczono sumę 100 %      !!! \n zmniejsz procent innego elementu',
+                QMessageBox().warning(self, "!!! LIMIT !!!",
+                                      "!!!       Przekroczono sumę 100 %      !!! \n zmniejsz procenty innego elementu",
                                       QMessageBox.Ok)
                 window_wykr.maxim += (oldvalue - newvalue)
 
                 window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
 
-    def comboCHANGE(self, value):
+    def combo_change(self, value):
         window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = value
 
     def delt_btn_act(self):
@@ -105,9 +105,9 @@ class MyWidget(QWidget):
 class quesTion(QMessageBox):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         gui.center(self)
-        buttonReply = QMessageBox.question(self, 'language',
+        buttonReply = QMessageBox.question(self, "language",
                                            "Czy przedłumaczyć nazwy kolorów na polski? (słabe tłumaczenie)",
                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
@@ -139,7 +139,7 @@ class Window_Wykr(QWidget):
         self.card3 = None
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         czyPol()
 
         self.loadCOLORS()
@@ -154,7 +154,7 @@ class Window_Wykr(QWidget):
         self.LIST.setToolTip("pozycje na wykresie")
 
         self.resize(800, 600)
-        self.setWindowTitle('cardschooli - dodaj wykres')
+        self.setWindowTitle("cardschooli - dodaj wykres")
 
         gui.center(self)
 
@@ -168,7 +168,7 @@ class Window_Wykr(QWidget):
         xSPIN.valueChanged[str].connect(self.xSPINchange)
         ySPIN.valueChanged[str].connect(self.ySPINchange)
 
-        OK_btn = QPushButton('Dodaj wykres na karte >>>')
+        OK_btn = QPushButton("Dodaj wykres na karte >>>")
         OK_btn.setGeometry(450, 450, 300, 70)
         OK_btn.clicked.connect(self.ok_act)
         LAJ = QVBoxLayout()
@@ -232,14 +232,14 @@ class Window_Wykr(QWidget):
     def removing(self, numbeer):
         name = self.LIST_OF_GOD[self.names].pop(numbeer)
 
-        xd = self.LIST_OF_GOD[self.values].pop(name)
-        xd1 = self.LIST_OF_GOD[self.colors].pop(name)
-        xd2 = self.LIST_OF_GOD[self.explodings].pop(name)
+        remov_val = self.LIST_OF_GOD[self.values].pop(name)
+        self.LIST_OF_GOD[self.colors].pop(name)
+        self.LIST_OF_GOD[self.explodings].pop(name)
         if self.czy_per:
-            self.maxim += float(xd)
+            self.maxim += float(remov_val)
 
     def adding_chart(self):
-        self.window3.card.adding_chart("wykres.png", [self.X, self.Y], self.project)
+        self.window3.card.adding_chart("wykres.png", (self.X, self.Y), self.project)
         self.window3.update_preview()
 
     def ok_act(self):
@@ -249,23 +249,21 @@ class Window_Wykr(QWidget):
             size = self.get_size()
 
             self.generating_chart(self.LIST_OF_GOD, size)
-
-            # self.transp()
             self.adding_chart()
 
             self.isCreatingChart = False
             self.close()
         elif self.LIST.count() == 0:
-            QMessageBox().warning(self, '!!! PUSTO !!!',
-                                  '!!!        nie możesz dodać pustego wykresu        !!!', QMessageBox.Ok)
+            QMessageBox().warning(self, "!!! PUSTO !!!",
+                                  "!!!        nie możesz dodać pustego wykresu        !!!", QMessageBox.Ok)
         elif self.suma() > 100.0:
-            QMessageBox().warning(self, '!!! LIMIT !!!',
-                                  '!!!       Przekroczono sumę 100 %      !!! \n',
+            QMessageBox().warning(self, "!!! LIMIT !!!",
+                                  "!!!       Przekroczono sumę 100 %      !!! \n",
                                   QMessageBox.Ok)
         else:
             if self.czyPer:
-                QMessageBox().warning(self, '!!! ZA MAŁO !!!',
-                                      '!!!       brakuje do sumy 100%      !!! \n',
+                QMessageBox().warning(self, "!!! ZA MAŁO !!!",
+                                      "!!!       brakuje do sumy 100%      !!! \n",
                                       QMessageBox.Ok)
 
     def exchange(self):
@@ -305,37 +303,37 @@ class Window_Wykr(QWidget):
                 self.maxim -= value
 
         else:
-            QMessageBox().warning(self, '!!! LIMIT !!!',
-                                  '!!!       wykorzystano sumę 100 %      !!! \n możesz zmiejszyć procent innego elementu',
+            QMessageBox().warning(self, "!!! LIMIT !!!",
+                                  "!!!       wykorzystano sumę 100 %      !!! \n możesz zmiejszyć procent innego elementu",
                                   QMessageBox.Ok)
 
     def get_value(self):
         if self.czy_per:
-            i, ok_pressed = QInputDialog.getDouble(self, 'Podaj wartość',
-                                                   'Podaj wartość elementu na wykresie (%) : ', 1, 0.1, 100, 2)
+            i, ok_pressed = QInputDialog.getDouble(self, "Podaj wartość",
+                                                   "Podaj wartość elementu na wykresie (%) : ", 1, 0.1, 100, 2)
 
             if ok_pressed and self.maxim - i >= 0:
                 return i
             elif self.maxim - i < 0:
-                QMessageBox().warning(self, '!!! LIMIT !!!',
-                                      '!!!       Przekroczono sumę 100 %      !!! \n spróbuj ponownie',
+                QMessageBox().warning(self, "!!! LIMIT !!!",
+                                      "!!!       Przekroczono sumę 100 %      !!! \n spróbuj ponownie",
                                       QMessageBox.Ok)
                 self.get_value()
 
             return i
         else:
-            i, ok_pressed = QInputDialog.getDouble(self, 'Podaj wartość',
-                                                   'Podaj wartość elementu na wykresie (q) : ', 1, 1, 999999999, 1)
+            i, ok_pressed = QInputDialog.getDouble(self, "Podaj wartość",
+                                                   "Podaj wartość elementu na wykresie (q) : ", 1, 1, 999999999, 1)
             if ok_pressed:
                 return i
 
     def get_size(self):
-        i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
-                                             'Podaj szerokość diagramu. \n(piksele)', 500,
+        i, ok_pressed0 = QInputDialog.getInt(self, "SZEROKOŚĆ",
+                                             "Podaj szerokość diagramu. \n(piksele)", 500,
                                              min=1)
 
-        j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
-                                             'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', i,
+        j, ok_pressed1 = QInputDialog.getInt(self, "WYSOKOŚĆ",
+                                             "Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat", i,
                                              min=1)
         if not ok_pressed1:
             j = i
@@ -343,22 +341,22 @@ class Window_Wykr(QWidget):
         return [i, j]
 
     def get_text(self):
-        text, okPressed = QInputDialog.getText(self, 'Podaj nazwę elementu', 'NAZWA:', QLineEdit.Normal, '')
+        text, okPressed = QInputDialog.getText(self, "Podaj nazwę elementu", "NAZWA:", QLineEdit.Normal, "")
 
-        if okPressed and (text != '' or text != " " or text != None):
+        if okPressed and (text != "" or text != " " or text != None):
             return text
         else:
-            QMessageBox().warning(self, '!!! PUSTE !!!',
-                                  '!!!       Wypełnij nazwę      !!! \n ',
+            QMessageBox().warning(self, "!!! PUSTE !!!",
+                                  "!!!       Wypełnij nazwę      !!! \n ",
                                   QMessageBox.Ok)
             self.get_text()
 
     def loadCOLORS(self):
-        with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
+        with open(os.path.join(os.pardir, "res", "files", "colors.txt")) as f:
             self.list_of_colors = f.readlines()
         self.list_of_colors = [x.strip() for x in self.list_of_colors]
 
-        with open(os.path.join(os.pardir, 'res', 'files', 'colorsPOLISH.txt')) as f:
+        with open(os.path.join(os.pardir, "res", "files", "colorsPOLISH.txt")) as f:
             self.list_of_colors_P = f.readlines()
         self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
 
@@ -398,23 +396,8 @@ class Window_Wykr(QWidget):
         dl2 = (dl * 0.1 + 0.5)
         wys = len(names)
         wys2 = (wys * 0.25) + 0.11
-        return (dl2, wys2)
+        return dl2, wys2
 
-    """
-    def transp(self):
-
-        new_img = Image.open(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"))
-        new_img.convert("RGBA")
-        datas = new_img.getdata()
-        newData = []
-        for item in datas:
-            if item[0] == 255 and item[1] == 255 and item[2] == 255:
-                newData.append((255, 255, 255, 0))
-            else:
-                newData.append(item)
-        new_img.putdata(newData)
-        new_img.save(fs_interaction.project_location(window_wykr.project, "wykres.png"), 'png')
-    """
     def dym_font(self, texts, size):
 
         newTEXTS = []
@@ -471,13 +454,12 @@ class Window_Wykr(QWidget):
                                      labeldistance=0.5)
 
             texts = self.dym_font(texts, size)
-            plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png"), dpi=dpi, transparent=True)
+            plt.axis("equal")
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykres.png"), dpi=dpi, transparent=True)
             x, y = self.calculate(names)
             figlegend = plt.figure(figsize=(x, y))
             figlegend.legend(patches, names)
             figlegend.savefig(fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600)
-
 
         else:
             labels = []
@@ -498,9 +480,9 @@ class Window_Wykr(QWidget):
 
             plt.figure(figsize=(size[0] / dpi, size[1] / dpi))
             plt.pie(sizes, explode=explode, colors=colors, labels=labels,
-                    autopct='%1.1f%%', shadow=False, startangle=140)
-            plt.axis('equal')
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykresOLD.png", ), dpi=600,
+                    autopct="%1.1f%%", shadow=False, startangle=140)
+            plt.axis("equal")
+            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykres.png", ), dpi=600,
                         transparent=True)
 
 
@@ -509,15 +491,9 @@ def choose_colum(parent, caption, text, selections):
 
     if response[1]:
         return response[0]
-    """
-    elif not (response[0] in selections):
-        mes = QMessageBox.warning("brak kolumny","podana kolumna nie istnieje",QMessageBox.Ok)
-        mes.show()
-        choose_colum(parent, caption, text, selections)
-    """
 
 
-class My_Cool_Widget(QWidget):
+class ChartControlWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.czyP = False
@@ -549,11 +525,11 @@ class My_Cool_Widget(QWidget):
         self.setLayout(layout)
 
 
-class Window_Seria_Wykr(QWidget):
+class SerialChartsWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("cardschooli - dodaj wykresy seryjne")
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         gui.center(self)
         self.resize(800, 600)
         self.LIST_OF_GOD = {}
@@ -573,15 +549,15 @@ class Window_Seria_Wykr(QWidget):
         self.loadCOLORS()
         self.columnlist = columnlist
 
-        self.coolWidget = My_Cool_Widget()
+        self.coolWidget = ChartControlWidget()
 
         add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", 'img', 'plusik.png')))
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "plusik.png")))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
 
-        OK_btn = QPushButton('Dodaj wykres na karte >>>')
+        OK_btn = QPushButton("Dodaj wykres na kartę >>>")
         OK_btn.setGeometry(450, 450, 300, 70)
         OK_btn.clicked.connect(self.ok_act)
 
@@ -711,29 +687,12 @@ class Window_Seria_Wykr(QWidget):
                                  labeldistance=0.5)
 
         texts = self.dynamic_font(texts, size)
-        plt.axis('equal')
-        plt.savefig(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"),
+        plt.axis("equal")
+        plt.savefig(fs_interaction.project_location(window_wykr.project, "{}_wykres.png".format(str(thing).strip())),
                     dpi=dpi, transparent=True)
 
         self.legend_base_update(names, patches)
 
-    """
-    def transp(self):
-        for thing in self.LIST_OF_GOD:
-            new_img = Image.open(
-                fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykresOLD.png"))
-            new_img.convert("RGBA")
-            datas = new_img.getdata()
-            newData = []
-            for item in datas:
-                if item[0] == 255 and item[1] == 255 and item[2] == 255:
-                    newData.append((255, 255, 255, 0))
-                else:
-                    newData.append(item)
-            new_img.putdata(newData)
-            new_img.save(fs_interaction.project_location(window_wykr.project, str(thing).strip() + "_wykres.png"),
-                         'png')
-    """
     def legend_base_update(self, texts, patches):
         i = 0
         for text in texts:
@@ -758,21 +717,21 @@ class Window_Seria_Wykr(QWidget):
         for row in self.coolWidget.rows[1::]:
             data.append(row[column_nr])
 
-        namess, valuess = [], []
+        namess, values = [], []
         i = 0
         for dat in data:
             if dat.strip() != "":
                 namess.append(column)
                 try:
-                    valuess.append(float(dat.strip()))
-                except:
+                    values.append(float(dat.strip()))
+                except ValueError:
                     QMessageBox.warning(self, "NIENUMERYCZNA",
-                                        "na karcie '{1}' ,wartość '{0}' jest nienumeryczna \n ustawiono na 0.0".format(
-                                            namess[len(namess) - 1], self.coolWidget.labels[i]))
-                    valuess.append(0.0)
+                                        "Na karcie {} wartość {} jest nienumeryczna! \n Ustawiono na 0.0.".format(
+                                            self.coolWidget.labels[i], namess[len(namess) - 1]))
+                    values.append(0.0)
             else:
                 namess.append("")
-                valuess.append(0.0)
+                values.append(0.0)
             i += 1
 
         if self.coolWidget.czyP:
@@ -784,7 +743,7 @@ class Window_Seria_Wykr(QWidget):
         for thing in self.LIST_OF_GOD:
             if not namess[i] == "":
                 self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
-                self.LIST_OF_GOD[thing][self.values][namess[i]] = valuess[i]
+                self.LIST_OF_GOD[thing][self.values][namess[i]] = values[i]
                 self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
                 self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
 
@@ -846,7 +805,6 @@ class Window_Seria_Wykr(QWidget):
                 if len(self.LIST_OF_GOD[thing][self.names]) > 0:
                     lista = self.LIST_OF_GOD[thing]
                     self.generating_chart(lista, size, thing)
-            # self.transp()
             window_wykr.window3.card.add_series_of_charts(self.columnlist[1], (self.X, self.Y), window_wykr.project,
                                                           first=True)
             window_wykr.window3.update_preview()
@@ -865,8 +823,8 @@ class Window_Seria_Wykr(QWidget):
                     namEs += empt
                     namEs += ", "
                 i += 1
-            QMessageBox().warning(self, '!!! PUSTO !!!',
-                                  '!!!        nie możesz dodać pustego wykresu        !!!\n wykres {} nie ma żadnych pozycji'.format(
+            QMessageBox().warning(self, "!!! PUSTO !!!",
+                                  "!!!        nie możesz dodać pustego wykresu        !!!\n wykres {} nie ma żadnych pozycji".format(
                                       namEs), QMessageBox.Ok)
 
     def xSPINchange(self, newvalue):
@@ -876,12 +834,12 @@ class Window_Seria_Wykr(QWidget):
         self.Y = int(window_wykr.spin_str_2_float(newvalue))
 
     def get_size(self):
-        i, ok_pressed0 = QInputDialog.getInt(self, 'SZEROKOŚĆ',
-                                             'Podaj szerokość diagramu. \n(piksele)', 500,
+        i, ok_pressed0 = QInputDialog.getInt(self, "SZEROKOŚĆ",
+                                             "Podaj szerokość diagramu. \n(piksele)", 500,
                                              min=1)
 
-        j, ok_pressed1 = QInputDialog.getInt(self, 'WYSOKOŚĆ',
-                                             'Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat', i,
+        j, ok_pressed1 = QInputDialog.getInt(self, "WYSOKOŚĆ",
+                                             "Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat", i,
                                              min=1)
         if not ok_pressed1:
             j = i
@@ -889,12 +847,12 @@ class Window_Seria_Wykr(QWidget):
         return [i, j]
 
     def loadCOLORS(self):
-        with open(os.path.join(os.pardir, 'res', 'files', 'colors.txt')) as f:
+        with open(os.path.join(os.pardir, "res", "files", "colors.txt")) as f:
             self.list_of_colors = f.readlines()
         self.list_of_colors = [x.strip() for x in self.list_of_colors]
         self.list_of_colors[0] = "automatically generated color"
 
-        with open(os.path.join(os.pardir, 'res', 'files', 'colorsPOLISH.txt')) as f:
+        with open(os.path.join(os.pardir, "res", "files", "colorsPOLISH.txt")) as f:
             self.list_of_colors_P = f.readlines()
         self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
         self.list_of_colors_P[0] = "automatycznie generowane koloru"
@@ -905,7 +863,7 @@ class Window_Seria_Wykr(QWidget):
 
 
 class MyWidget2(QWidget):
-    def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2, parent=None):
+    def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2):
         super().__init__()
 
         self.color = color
@@ -916,51 +874,50 @@ class MyWidget2(QWidget):
         self.itm.changeNUMB(self.number)
 
         delt_btn = QPushButton()
-        delt_btn.setIcon(QIcon(os.path.join(os.pardir, "res", 'img', image)))
+        delt_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", image)))
         delt_btn.setIconSize(QSize(35, 35))
         delt_btn.resize(10, 10)
         delt_btn.clicked.connect(self.delt_btn_act)
 
         label = QLabel(txt)
-        label2 = QLabel(" % ")
-        label3 = QLabel("g")
+        QLabel(" % ")
+        label2 = QLabel("g")
 
-        spiinbox = QDoubleSpinBox()
-        spiinbox.setMinimum(0.01)
-        spiinbox.setMaximum(maxx)
+        spinbox = QDoubleSpinBox()
+        spinbox.setMinimum(0.01)
+        spinbox.setMaximum(maxx)
         try:
-            spiinbox.setValue(float(value))
-        except:
-            QMessageBox().warning(self, '!!! WARTOŚĆ NIENUMERYCZNA !!!',
-                                  '!!!   wartość komórki {} w karcie {} jest nienumeryczna    !!!\ \n ustawiono wartość 0.0 '.format(
+            spinbox.setValue(float(value))
+        except ValueError:
+            QMessageBox().warning(self, "WARTOŚĆ NIENUMERYCZNA",
+                                  "Wartość komórki {} w karcie {} jest nienumeryczna! \n Ustawiono wartość 0.0.".format(
                                       self.name, itm.name),
                                   QMessageBox.Ok)
-        spiinbox.setDecimals(dok)
+        spinbox.setDecimals(dok)
 
         combobox = QComboBox()
         self.combobox = self.adding_to_combo(combobox)
 
-        spiinbox.valueChanged[str].connect(self.spiin_change)
+        spinbox.valueChanged[str].connect(self.spin_change)
         self.combobox.currentIndexChanged[str].connect(self.combo_change)
 
         layout = QHBoxLayout()
 
         layout.addWidget(label)
-        layout.addWidget(spiinbox)
+        layout.addWidget(spinbox)
 
-        layout.addWidget(label3)
+        layout.addWidget(label2)
 
         layout.addWidget(self.combobox)
         layout.addWidget(delt_btn)
 
         self.setLayout(layout)
 
-    def spiin_change(self, value):
+    def spin_change(self, value):
         window_seria_wykr.LIST_OF_GOD[self.itm.name][window_seria_wykr.values][
             self.name] = window_wykr.spin_str_2_float(value)
 
     def combo_change(self, newvalue):
-
         for thing in window_seria_wykr.LIST_OF_GOD:
             val = window_seria_wykr.LIST_OF_GOD[thing][window_seria_wykr.colors]
             for name in val:
@@ -982,10 +939,10 @@ class MyWidget2(QWidget):
 
     def adding_to_combo(self, combobox):
         if not window_seria_wykr.coolWidget.czyP:
-            List_of_colors = window_seria_wykr.list_of_colors
+            list_of_colors = window_seria_wykr.list_of_colors
         else:
-            List_of_colors = window_seria_wykr.list_of_colors_P
-        combobox.addItems(List_of_colors)
+            list_of_colors = window_seria_wykr.list_of_colors_P
+        combobox.addItems(list_of_colors)
         combobox.setCurrentText(self.color)
         return combobox
 
@@ -993,4 +950,4 @@ class MyWidget2(QWidget):
 def create_window_wykr():
     global window_wykr, window_seria_wykr
     window_wykr = Window_Wykr()
-    window_seria_wykr = Window_Seria_Wykr()
+    window_seria_wykr = SerialChartsWindow()

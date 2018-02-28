@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-generating, updating and saving the card's obverse
+generating, updating and saving the card"s obverse
 """
 import os.path
 
@@ -27,7 +27,7 @@ def process_coords(coords, size, psize):
 
 def add_command(command, path):
     """
-    addes command to the command's file
+    addes command to the command"s file
     :param command: command to be added
     :param path: path at which command file is located
     """
@@ -41,7 +41,6 @@ def generate(name, data_path, config_path):
     cmds = fs_interaction.read_config(config_path)
     for i in cmds:
         for j in obverses:
-            print(i[0])
             if i[0] == "col":
                 j.change_color(i[1], False)
             elif i[0] == "img":
@@ -53,10 +52,10 @@ def generate(name, data_path, config_path):
             elif i[0] == "chrt":
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
             elif i[0] == "txtS":
-                print("Yeah")
                 j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
     for i, obv in enumerate(obverses):
         obv.obverse.save(fs_interaction.project_location(name, "obverse{}.png".format(i)))
+
 
 
 class CardObverse(object):
@@ -86,7 +85,7 @@ class CardObverse(object):
 
     def change_color(self, color, gen_cnfg=True):
         """
-        updates color of the card's obverse
+        updates color of the card"s obverse
         :param color: new color specified in RGB
         :param gen_cnfg: if True will save a command
         """
@@ -97,7 +96,7 @@ class CardObverse(object):
 
     def paste(self, image, coords, gen_cnfg=True):
         """
-        pastes image to card's obverse
+        pastes image to card"s obverse
         :param image: image to be pasted
         :param coords: coords of the pasted image on card
         :param gen_cnfg: if True will save a command
@@ -113,7 +112,7 @@ class CardObverse(object):
             row = fs_interaction.read_csv(self.data_path, self.number)
         else:
             row = fs_interaction.read_csv(self.data_path, self.number + 1)
-        name = row[column_nr].strip() + "_wykresOLD.png"
+        name = row[column_nr].strip() + "_wykres.png"
         self.paste(fs_interaction.project_location(project, name), coords, False)
         if gen_cnfg:
             add_command("chrt^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], project), self.config_path)
@@ -169,12 +168,12 @@ class CardObverse(object):
                  gen_cnfg=True):
 
         """
-        adds text to card's obverse
+        adds text to card"s obverse
         :param coords: coords of the added text
         :param text: text to be added
         :param size: size of the text to be added
         :param fill: color of the text
-        :param font: path to the font's ttf file
+        :param font: path to the font"s ttf file
         :param gen_cnfg: if True will save a command
         """
         if gen_cnfg:

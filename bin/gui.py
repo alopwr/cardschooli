@@ -6,13 +6,14 @@ allows user creating his deck of cards
 import os
 import sys
 
+from PyQt5.QtGui import QPixmap, QMovie, QIcon
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
+    QColorDialog, QInputDialog, QMessageBox
+
 import charts
 import fs_interaction
 import obverse
 import reverse
-from PyQt5.QtGui import QPixmap, QMovie, QIcon
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
-    QColorDialog, QInputDialog, QMessageBox
 
 
 def center(window):
@@ -42,7 +43,7 @@ def color_dialog():
 
 
 def size_dialog(parent):
-    """ gets text's size"""
+    """ gets text"s size"""
     i, ok_pressed = QInputDialog.getInt(parent, "Podaj rozmiar czcionki:", "Wielkość czcionki:", 1)
     if ok_pressed:
         return i
@@ -86,7 +87,7 @@ class Window0(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         self.setWindowTitle("cardschooli - witaj!")
         self.resize(800, 600)
         center(self)
@@ -129,7 +130,7 @@ class Window1(QWidget):
         open_btn.clicked.connect(self.open_file)
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         QLabel(
             "Wybierz plik *.csv z danymi do projektu {}. Zostanie tylko wczytany, nie będzie naruszony. \nKoniecznie "
             "użyj nagłówków!".format(
@@ -177,7 +178,7 @@ class Window2(QWidget):
         finish_btn.clicked.connect(self.finish_btn_act)
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         self.path = fs_interaction.project_location(window0.project, "reverse_preview.png")
         self.card = reverse.CardReverse(window0.project)
         self.preview = QLabel(self)
@@ -313,7 +314,7 @@ class Window3(QWidget):
         charts.window_seria_wykr.init_ui([column, column_nr, column_data])
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         self.path = fs_interaction.project_location(window0.project, "obverse_preview.png")
         self.card = obverse.CardObverse(window0.project, window1.filename)
         self.card.save_preview()
@@ -386,8 +387,8 @@ class Window3(QWidget):
             self.close()
             window4.init_ui()
         else:
-            QMessageBox().warning(self, 'W TRAKCIE CZYNNOŚCI',
-                                  'Jesteś w trakcie dodawania wykresu',
+            QMessageBox().warning(self, "W TRAKCIE CZYNNOŚCI",
+                                  "Jesteś w trakcie dodawania wykresu",
                                   QMessageBox.Ok)
 
 
@@ -407,7 +408,7 @@ class Window4(QWidget):
         self.preloader.setGeometry(336, 236, 128, 128)
 
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", 'icon.png')))
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         self.show()
         self.compile()
 

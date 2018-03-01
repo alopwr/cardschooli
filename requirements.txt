@@ -3,8 +3,8 @@ matplotlib==2.1.2
 numpy==1.14.1
 Pillow==5.0.0
 pyparsing==2.2.0
-PyQt5==5.10
+PyQt5==5.10.1
 python-dateutil==2.6.1
 pytz==2018.3
-sip==4.19.7
+sip==4.19.8
 six==1.11.0

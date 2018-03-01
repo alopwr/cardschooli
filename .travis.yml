@@ -3,8 +3,7 @@ python:
 - '3.5'
 - '3.6'
 env:
-  - PYTHONPATH = ../cardschooli
-
+  - PYTHONPATH = ['../cardschooli']
 install:
   - pip install python-coveralls coverage
   - pip install -r requirements.txt

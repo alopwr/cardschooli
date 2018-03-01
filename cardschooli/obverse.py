@@ -133,20 +133,36 @@ class CardObverse(object):
         self.paste(imported, coords)
 
     def calculate_enters(self, text, coords, size_f):
+        text_data= text.split()
+
         free_x_place = self.xy_size[0] - coords[0]
 
         new_text = ""
-        dlugosc = 0
+        dlugosc_calosci = 0
+
         literka_dlugosc = size_f * 0.6
-        for letter in text:
-            dlugosc += literka_dlugosc
-            if dlugosc < free_x_place:
-                new_text += letter
+
+        for word in text_data:
+            word_leght = len(word) * literka_dlugosc
+            if dlugosc_calosci + word_leght < free_x_place:
+                new_text += word
+                dlugosc_calosci+=word_leght
+
+            elif word_leght>free_x_place:
+                for letter in word:
+                    if dlugosc_calosci + literka_dlugosc < free_x_place:
+                        new_text+=letter
+                        dlugosc_calosci += literka_dlugosc
+                    else:
+                        new_text+="\n"
+                        new_text+=letter
+                        dlugosc_calosci = literka_dlugosc
             else:
                 new_text += "\n"
-                new_text += letter
-                dlugosc = 0
-
+                new_text += word
+                dlugosc_calosci = word_leght
+            new_text+=" "
+            dlugosc_calosci += literka_dlugosc
         return new_text
 
     def add_text_series(self, column_nr, coords, size, fill=0,

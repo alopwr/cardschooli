@@ -14,8 +14,6 @@ import charts
 import fs_interaction
 import obverse
 import reverse
-
-
 def center(window):
     """ centers window """
     qr = window.frameGeometry()
@@ -102,9 +100,11 @@ class Window0(QWidget):
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
 
+
+
     def next(self):
         self.project = self.project_name.text()
-        charts.window_wykr.project = self.project
+        charts.window_wykr.give_project(self.project)
         if not fs_interaction.project_location(self.project_name.text()):
             raise_warning(self, "Tylko znaki alfanumeryczne!",
                           "W nazwie projektu wykorzystałeś znaki niealfanumeryczne. Spróbuj jeszcze raz!")
@@ -137,6 +137,7 @@ class Window1(QWidget):
             "użyj nagłówków!".format(
                 window0.project), self)
         self.show()
+
 
     def open_file(self):
         self.filename = file_dialog(self, "Wybierz plik z danymi:", "dane do cardschooli (*.csv)", ".csv")
@@ -303,13 +304,17 @@ class Window3(QWidget):
         charts.window_wykr.init_ui()
 
     def chart_seria_btn_act(self):
+        del charts.window_seria_wykr
+        charts.create_window_seria_wykr()
+
         column = choose_colum(self, "Wybierz kolumnę",
                               "Wybierz kolumnę, w której zapisane są nazwy kart (tytuły):",
                               fs_interaction.read_csv(window1.filename, 0))
-
-        column_data = fs_interaction.read_csv(window1.filename, 0)
-        column_nr = column_data.index(column)
-
+        try:
+            column_data = fs_interaction.read_csv(window1.filename, 0)
+            column_nr = column_data.index(column)
+        except:
+            return None
         charts.window_seria_wykr.init_ui([column, column_nr, column_data])
 
     def init_ui(self):
@@ -322,7 +327,6 @@ class Window3(QWidget):
         self.preview.setPixmap(self.pixmap)
         self.preview.setGeometry(25, 60, self.pixmap.width(), self.pixmap.height())
         self.show()
-        charts.window_wykr.card3 = self.card
 
     def update_preview(self):
         self.card.save_preview()
@@ -391,6 +395,7 @@ class Window3(QWidget):
                                   QMessageBox.Ok)
 
 
+
 class Window4(QWidget):
     def __init__(self):
         super().__init__()
@@ -426,6 +431,7 @@ if __name__ == "__main__":
     window4 = Window4()
 
     charts.create_window_wykr()
+    charts.create_window_seria_wykr()
     charts.window_wykr.window3 = window3
 
     sys.exit(app.exec_())

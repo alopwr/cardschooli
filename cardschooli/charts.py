@@ -84,7 +84,7 @@ class MyWidget(QWidget):
                                       QMessageBox.Ok)
                 window_wykr.maxim += (oldvalue - newvalue)
 
-                window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
+        window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
 
     def combo_change(self, value):
         window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = value
@@ -136,68 +136,58 @@ class Window_Wykr(QWidget):
         self.czy_per = False
         self.project = ""
         self.filename = ""
-        self.card3 = None
-
-    def init_ui(self):
+        #-----------------------------------------------------------
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-        czyPol()
-
         self.loadCOLORS()
-
         add_btn = QPushButton("ADD", self)
         add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "plusik.png")))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
-
         self.LIST = QListWidget()
         self.LIST.setToolTip("pozycje na wykresie")
-
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - dodaj wykres")
-
         gui.center(self)
-
         xSPIN = QSpinBox()
         ySPIN = QSpinBox()
         xSPIN.setRange(0, 9999)
         xSPIN.setValue(self.X)
         ySPIN.setRange(0, 9999)
         ySPIN.setValue(self.Y)
-
         xSPIN.valueChanged[str].connect(self.xSPINchange)
         ySPIN.valueChanged[str].connect(self.ySPINchange)
-
         OK_btn = QPushButton("Dodaj wykres na karte >>>")
         OK_btn.setGeometry(450, 450, 300, 70)
         OK_btn.clicked.connect(self.ok_act)
-        LAJ = QVBoxLayout()
+        self.LAJ = QVBoxLayout()
         laj = QHBoxLayout()
         laj3 = QHBoxLayout()
         laj4 = QHBoxLayout()
         LAJ2 = QVBoxLayout()
-
         LAJ2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
         LAJ2.addLayout(laj3)
         LAJ2.addLayout(laj4)
-
         laj.addWidget(add_btn)
         laj.addWidget(self.LIST)
         laj.addLayout(LAJ2)
-
-        LAJ.addLayout(laj)
-
-        LAJ.addWidget(OK_btn)
-
+        self.LAJ.addLayout(laj)
+        self.LAJ.addWidget(OK_btn)
         laj3.addWidget(QLabel("X: "))
         laj3.addWidget(xSPIN)
         laj4.addWidget(QLabel("Y: "))
         laj4.addWidget(ySPIN)
-
-        self.setLayout(LAJ)
-
+    def init_ui(self):
+        czyPol()
+        self.LIST.clear()
+        self.LIST_OF_GOD=[{},{},{},{}]
+        self.setLayout(self.LAJ)
         self.show()
-
+    def closeEvent(self, QCloseEvent):
+        self.isCreatingChart = False
+        QCloseEvent.accept()
+    def give_project(self,prjct):
+        self.project = prjct
     def changeczyP(self, new):
         self.czyP = new
 
@@ -219,13 +209,15 @@ class Window_Wykr(QWidget):
         self.Y = int(window_wykr.spin_str_2_float(newvalue))
 
     def deleting(self, number):
+
         i = 0
         i2 = self.LIST.count()
         while i < i2:
             iitem = self.LIST.item(i)
             if iitem.number == number:
-                self.removing(i)
                 self.LIST.removeItemWidget(iitem)
+                self.removing(i)
+
 
             i += 1
 
@@ -243,17 +235,19 @@ class Window_Wykr(QWidget):
         self.window3.update_preview()
 
     def ok_act(self):
-        if self.LIST.count() > 0 and self.suma() == 100.0:
+        if len(self.LIST_OF_GOD[0]) > 0 and self.suma() == 100.0:
+            size = self.get_size()
+            if not size:
+                return None
             if self.czyP:
                 self.exchange()
-            size = self.get_size()
 
             self.generating_chart(self.LIST_OF_GOD, size)
             self.adding_chart()
 
             self.isCreatingChart = False
             self.close()
-        elif self.LIST.count() == 0:
+        elif len(self.LIST_OF_GOD[0]) == 0:
             QMessageBox().warning(self, "!!! PUSTO !!!",
                                   "!!!        nie możesz dodać pustego wykresu        !!!", QMessageBox.Ok)
         elif self.suma() > 100.0:
@@ -279,12 +273,19 @@ class Window_Wykr(QWidget):
 
     def AddNew(self):
         if self.smaxim() > 0:
+            name = self.get_text()
+            value = self.get_value()
+            if not value:
+                return None
+            color = self.get_color()
+            if not color:
+                return None
+
+
             itemek = QListWidgetItem2()
             self.number_of_layouts += 1
 
-            name = self.get_text()
-            value = self.get_value()
-            color = self.get_color()
+
             if self.czy_per:
                 my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, itm=itemek, dok=2)
             else:
@@ -331,7 +332,8 @@ class Window_Wykr(QWidget):
         i, ok_pressed0 = QInputDialog.getInt(self, "SZEROKOŚĆ",
                                              "Podaj szerokość diagramu. \n(piksele)", 500,
                                              min=1)
-
+        if not ok_pressed0:
+            return False
         j, ok_pressed1 = QInputDialog.getInt(self, "WYSOKOŚĆ",
                                              "Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat", i,
                                              min=1)
@@ -498,7 +500,7 @@ class ChartControlWidget(QWidget):
         super().__init__()
         self.czyP = False
         self.columnlist = window_seria_wykr.columnlist
-        self.rows = fs_interaction.read_csv(window_wykr.card3.data_path)
+        self.rows = fs_interaction.read_csv(window_wykr.window3.card.data_path)
         self.headers = self.rows[0]
         self.labels = [i[0] for i in self.rows[1:]]
         self.LIST_OF_TABS = {}
@@ -532,31 +534,30 @@ class SerialChartsWindow(QWidget):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         gui.center(self)
         self.resize(800, 600)
-        self.LIST_OF_GOD = {}
         self.names = 0
         self.values = 1
         self.colors = 2
         self.explodings = 3
-        self.number_of_layouts = -1
+        self.isCreatingChart = False
+        self.loadCOLORS()
+        self.LIST_OF_GOD = {}
         self.X = 0
         self.Y = 0
-        self.isCreatingChart = False
+        self.number_of_layouts = -1
         self.LEGEND_BASE = []
         self.PATCHES_BASE = []
-
     def init_ui(self, columnlist):
         self.isCreatingChart = True
-        self.loadCOLORS()
         self.columnlist = columnlist
-
-        self.coolWidget = ChartControlWidget()
+        self.load_ui()
+        self.show()
+    def load_ui(self):
 
         add_btn = QPushButton("ADD", self)
         add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "plusik.png")))
         add_btn.setGeometry(30, 30, 50, 50)
         add_btn.clicked.connect(self.AddNew)
         add_btn.setToolTip("dodaje element do wykresu")
-
         OK_btn = QPushButton("Dodaj wykres na kartę >>>")
         OK_btn.setGeometry(450, 450, 300, 70)
         OK_btn.clicked.connect(self.ok_act)
@@ -569,7 +570,6 @@ class SerialChartsWindow(QWidget):
         ySPIN.setValue(self.Y)
         xSPIN.valueChanged[str].connect(self.xSPINchange)
         ySPIN.valueChanged[str].connect(self.ySPINchange)
-
         laj3 = QHBoxLayout()
         laj4 = QHBoxLayout()
 
@@ -584,7 +584,7 @@ class SerialChartsWindow(QWidget):
         lajout.addLayout(laj3)
 
         lajout.addLayout(laj4)
-
+        self.coolWidget = ChartControlWidget()
         layout = QHBoxLayout()
         layout.addWidget(add_btn)
         layout.addWidget(self.coolWidget)
@@ -594,8 +594,6 @@ class SerialChartsWindow(QWidget):
         self.layout_master.addLayout(layout)
         self.layout_master.addWidget(OK_btn)
         self.setLayout(self.layout_master)
-        self.show()
-
     def deleting(self, number, Cname):
         i = 0
         i2 = self.coolWidget.LIST_OF_TABS[Cname].list.count()
@@ -606,7 +604,9 @@ class SerialChartsWindow(QWidget):
                 self.coolWidget.LIST_OF_TABS[Cname].list.removeItemWidget(iitem)
 
             i += 1
-
+    def closeEvent(self, QCloseEvent):
+        self.isCreatingChart = False
+        QCloseEvent.accept()
     def removing(self, numbeer, Cname):
         name = self.LIST_OF_GOD[Cname][self.names].pop(numbeer)
 
@@ -708,10 +708,15 @@ class SerialChartsWindow(QWidget):
                 self.LIST_OF_GOD[thing][self.colors][name] = self.dict_of_colors[color]
 
     def AddNew(self):
-        self.number_of_layouts += 1
         column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pozycję na wykresach",
                               self.coolWidget.headers)
-        column_nr = self.columnlist[2].index(column)
+        try:
+            column_nr = self.columnlist[2].index(column)
+        except:
+            return None
+        self.number_of_layouts += 1
+
+
 
         data = []
         for row in self.coolWidget.rows[1::]:
@@ -797,6 +802,8 @@ class SerialChartsWindow(QWidget):
         pustt = pust[0]
         if not pustt:
             size = self.get_size()
+            if not size:
+                return None
             if self.coolWidget.czyP:
                 self.exchange()
 
@@ -837,7 +844,8 @@ class SerialChartsWindow(QWidget):
         i, ok_pressed0 = QInputDialog.getInt(self, "SZEROKOŚĆ",
                                              "Podaj szerokość diagramu. \n(piksele)", 500,
                                              min=1)
-
+        if not ok_pressed0:
+            return False
         j, ok_pressed1 = QInputDialog.getInt(self, "WYSOKOŚĆ",
                                              "Podaj wysokość diagramu \n(piksele)\n Anuluj by stworzyć kwadrat", i,
                                              min=1)
@@ -865,8 +873,6 @@ class SerialChartsWindow(QWidget):
 class MyWidget2(QWidget):
     def __init__(self, txt, value, color, image, number, itm=QListWidgetItem2(), maxx=100, dok=2):
         super().__init__()
-
-        print("Acikadys")
         self.color = color
         self.number = number
         self.value = value
@@ -943,6 +949,9 @@ class MyWidget2(QWidget):
 
 
 def create_window_wykr():
-    global window_wykr, window_seria_wykr
+    global window_wykr
     window_wykr = Window_Wykr()
+
+def create_window_seria_wykr():
+    global window_seria_wykr
     window_seria_wykr = SerialChartsWindow()

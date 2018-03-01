@@ -1,0 +1,8 @@
+ language: python
+  python:
+    - "3.5"
+    - "3.6"
+  script:
+    - pytest
+ notifications:
+    slack: auguscikoprojekt:MutsbFpDb0Ex0N4qagrjNe1g

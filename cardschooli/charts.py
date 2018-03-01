@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
     QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
 
-import fs_interaction
-import gui
+import cardschooli.fs_interaction
+import cardschooli.gui
 
 
 def czyPol():

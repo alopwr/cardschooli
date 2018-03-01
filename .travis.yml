@@ -3,10 +3,13 @@ python:
 - '3.5'
 - '3.6'
 install:
-  - pip install python-coveralls coverage
-  - pip install -r requirements.txt
+- pip install python-coveralls coverage
+- pip install -r requirements.txt
 script:
-  - pytest
+- pytest
 after_success:
-  - coverage run cardschooli/*
-  - coveralls
+- coverage run --source=cardschooli/*
+- coveralls
+notifications:
+  slack:
+    secure: d1SnlII4zavhmpjQJPA2M9cPGAxhMQpUQjPV2NpQhVPt4zNROfeqPEkgLcMdMVlWJMfZVc8eTaV07Sn/DziVQqecXsIdVFy+5K2wHbiVZyNfmf9pZE8pK7jKgU/xlvNKEYof5mL+2EqCnzNmiRakvFTwGxtys0U++EyURxS7+St3B3TQ85vhEzp7Occ0eF6KbEnydCL39fMMlvT3QCwUF9iHGgC8oZq0Te623SrHbREEYpfyLWdAKjRv4dt4e4FoV9hmY5FeeyWSC9GNI+7YntY+aiAAm/F/da7rxhMYtcoVCuASzr7GF7HSmBIXYcftWi7IEq5MTJRoI7x/v/MaRwaLlrBhQ9kIH45TkAtsi6CVWsSoJmabiGOFmLnuzIMZ6hC4oTaAxYKOa7Wy0TIwc3No9lpFL/njKTFA4uuALiXIgksvfVyaEA5/wB/Jj/c5LWRGLqKWaGg9dTYB6s0kfqFpZ46PLzWmX6kvQG09supepCxUvW3fcPmogyJvhAnJ1GCry91KEmRRpBN2nWgp00kuh4gNvcHDDlUE0dCKhVMNwp13mo8TSPXn09aN5ksUvVg7KDuiPZScoajv86dZFCkbIcLG89qGfXFjid5fgAnauCixAcdeW+gOsZffJ5HHMbFpDp/UYWrRqJRJZhQWt1J3G9MWZSyIn/OSn3Jvtkc=

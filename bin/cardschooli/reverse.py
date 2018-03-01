@@ -6,7 +6,7 @@ import os.path
 
 from PIL import Image, ImageDraw, ImageFont
 
-import fs_interaction
+from cardschooli import fs_interaction
 
 
 def process_coords(coords, size, psize):

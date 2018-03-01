@@ -1,4 +1,4 @@
-from obverse import process_coords
+from cardschooli.obverse import process_coords
 
 
 class TestObverse(object):

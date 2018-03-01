@@ -10,10 +10,7 @@ from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
 
-import charts
-import fs_interaction
-import obverse
-import reverse
+from cardschooli import charts, fs_interaction, obverse, reverse
 
 
 def center(window):

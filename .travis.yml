@@ -2,8 +2,6 @@ language: python
 python:
 - '3.5'
 - '3.6'
-env:
-  - PYTHONPATH = '../'
 install:
   - pip install python-coveralls coverage
   - pip install -r requirements.txt
@@ -11,6 +9,3 @@ script:
   - pytest
 after_success:
   - coveralls
-notifications:
-  slack:
-    secure: TL3drJx0Mq2eXjhreX9i8Sad7ha4p1mc7/ORGwGwUEwyaZRPlcl5mnSyQiOIaYq2mDupSp2Gk0ZMNtyGK+mDU80LLa3hKry9HgPunSTmMRdH1MUSJdSRAZ5HPnpl8Q8yJTVravCga0zSKV9ar+RPysA7K0vKm/RkmhawMTpUHBVAOIkmeTER5Qo1pRAxJuuSsemVoN01456dLyftwL+aPquo81ZomAIQK4lqOCOb9kS1aOkVelautt+kB6HuQnJwE/ZqEjm81emUGtqrdYCsu5VCQMkudxVNPq7hUiBqNLk/YulQmCtCi1W4Ntw77DpJxeLRjglQVZgS2oNvF9dJ601bfaRTxJn52VpxvLf8scilRi9N5A/Yvy4JnvUQljzGan967URIEpW75Ko96gB23/gmwaH7PLsTqhPBd4EnsM+cfg7wywz8atWcCJU0vemdztuBuMrPeDbFwe8cd+pgpFmhErtsAacURcvQ8trKvicTGRRECd6mbvEn1TkZQGHaXTZWSaRzs7fCOfwdRBUFCrjAxGEa3d/hzWlLA74FyNjjwJZU13qqYfYvd/14Rq+qwj5SIhRa2Z7QQMrTVG/BAs/Wn9iTu4oaZ/YK0Mci/oihGLXXZdHuAkg2z77+0HRZpuCh71DImS2hgj0X1WOpoi1dqpx0zxSkHj1wLzu5Lh8=

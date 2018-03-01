@@ -6,7 +6,7 @@ import os.path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from cardschooli import fs_interaction
+import fs_interaction
 
 
 def process_coords(coords, size, psize):
@@ -55,7 +55,6 @@ def generate(name, data_path, config_path):
                 j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
     for i, obv in enumerate(obverses):
         obv.obverse.save(fs_interaction.project_location(name, "obverse{}.png".format(i)))
-
 
 
 class CardObverse(object):

@@ -1,6 +1,6 @@
 # coding=utf-8
 import csv
-import os
+import os.path
 
 
 def read_csv(path, *line_num):

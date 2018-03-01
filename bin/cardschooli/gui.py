@@ -3,14 +3,17 @@
 cardschooli gui
 allows user creating his deck of cards
 """
-import os
+import os.path
 import sys
 
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
 
-from cardschooli import charts, fs_interaction, obverse, reverse
+import charts
+import fs_interaction
+import obverse
+import reverse
 
 
 def center(window):
@@ -51,6 +54,7 @@ def text_dialog(parent):
     text, ok_pressed = QInputDialog.getText(parent, "Jaki tekst chcesz dodać?", "Podaj tekst:", QLineEdit.Normal)
     if ok_pressed and text:
         return text
+
 
 def raise_warning(parent, caption, text):
     """ raises PyQt warning """

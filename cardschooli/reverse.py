@@ -40,10 +40,10 @@ class CardReverse(object):
         """
         saves final reverse and deletes the preview one
         """
-        self.reverse.save(fs_interaction.project_location(self.project_location, "reverse.png"),
+        self.reverse.save(cardschooli.fs_interaction.project_location(self.project_location, "reverse.png"),
                           format="PNG", dpi=(600, 600))
         try:
-            os.remove(fs_interaction.project_location(self.project_location, "reverse_preview.png"))
+            os.remove(cardschooli.fs_interaction.project_location(self.project_location, "reverse_preview.png"))
         except OSError:
             pass
 
@@ -53,7 +53,7 @@ class CardReverse(object):
         """
         tn_reverse = self.reverse.copy()
         tn_reverse.thumbnail((380, 520))
-        tn_reverse.save(fs_interaction.project_location(self.project_location, "reverse_preview.png"),
+        tn_reverse.save(cardschooli.fs_interaction.project_location(self.project_location, "reverse_preview.png"),
                         format="PNG", dpi=(600, 600))
 
     def change_color(self, color):

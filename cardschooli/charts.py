@@ -106,7 +106,7 @@ class quesTion(QMessageBox):
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-        gui.center(self)
+        cardschooli.gui.center(self)
         buttonReply = QMessageBox.question(self, "language",
                                            "Czy przedłumaczyć nazwy kolorów na polski? (słabe tłumaczenie)",
                                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -136,7 +136,7 @@ class Window_Wykr(QWidget):
         self.czy_per = False
         self.project = ""
         self.filename = ""
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         self.loadCOLORS()
         add_btn = QPushButton("ADD", self)
@@ -148,7 +148,7 @@ class Window_Wykr(QWidget):
         self.LIST.setToolTip("pozycje na wykresie")
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - dodaj wykres")
-        gui.center(self)
+        cardschooli.gui.center(self)
         xSPIN = QSpinBox()
         ySPIN = QSpinBox()
         xSPIN.setRange(0, 9999)
@@ -177,16 +177,19 @@ class Window_Wykr(QWidget):
         laj3.addWidget(xSPIN)
         laj4.addWidget(QLabel("Y: "))
         laj4.addWidget(ySPIN)
+
     def init_ui(self):
         czyPol()
         self.LIST.clear()
-        self.LIST_OF_GOD=[{},{},{},{}]
+        self.LIST_OF_GOD = [{}, {}, {}, {}]
         self.setLayout(self.LAJ)
         self.show()
+
     def closeEvent(self, QCloseEvent):
         self.isCreatingChart = False
         QCloseEvent.accept()
-    def give_project(self,prjct):
+
+    def give_project(self, prjct):
         self.project = prjct
     def changeczyP(self, new):
         self.czyP = new
@@ -280,7 +283,6 @@ class Window_Wykr(QWidget):
             color = self.get_color()
             if not color:
                 return None
-
 
             itemek = QListWidgetItem2()
             self.number_of_layouts += 1
@@ -457,11 +459,12 @@ class Window_Wykr(QWidget):
 
             texts = self.dym_font(texts, size)
             plt.axis("equal")
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykres.png"), dpi=dpi, transparent=True)
+            plt.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "wykres.png"), dpi=dpi,
+                        transparent=True)
             x, y = self.calculate(names)
             figlegend = plt.figure(figsize=(x, y))
             figlegend.legend(patches, names)
-            figlegend.savefig(fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600)
+            figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600)
 
         else:
             labels = []
@@ -484,7 +487,7 @@ class Window_Wykr(QWidget):
             plt.pie(sizes, explode=explode, colors=colors, labels=labels,
                     autopct="%1.1f%%", shadow=False, startangle=140)
             plt.axis("equal")
-            plt.savefig(fs_interaction.project_location(window_wykr.project, "wykres.png", ), dpi=600,
+            plt.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "wykres.png", ), dpi=600,
                         transparent=True)
 
 
@@ -500,7 +503,7 @@ class ChartControlWidget(QWidget):
         super().__init__()
         self.czyP = False
         self.columnlist = window_seria_wykr.columnlist
-        self.rows = fs_interaction.read_csv(window_wykr.window3.card.data_path)
+        self.rows = cardschooli.fs_interaction.read_csv(window_wykr.window3.card.data_path)
         self.headers = self.rows[0]
         self.labels = [i[0] for i in self.rows[1:]]
         self.LIST_OF_TABS = {}
@@ -532,7 +535,7 @@ class SerialChartsWindow(QWidget):
         super().__init__()
         self.setWindowTitle("cardschooli - dodaj wykresy seryjne")
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-        gui.center(self)
+        cardschooli.gui.center(self)
         self.resize(800, 600)
         self.names = 0
         self.values = 1
@@ -551,6 +554,7 @@ class SerialChartsWindow(QWidget):
         self.columnlist = columnlist
         self.load_ui()
         self.show()
+
     def load_ui(self):
 
         add_btn = QPushButton("ADD", self)
@@ -604,6 +608,7 @@ class SerialChartsWindow(QWidget):
                 self.coolWidget.LIST_OF_TABS[Cname].list.removeItemWidget(iitem)
 
             i += 1
+
     def closeEvent(self, QCloseEvent):
         self.isCreatingChart = False
         QCloseEvent.accept()
@@ -653,7 +658,8 @@ class SerialChartsWindow(QWidget):
         x, y = self.calculate(self.LEGEND_BASE)
         figlegend = plt.figure(figsize=(x, y))
         figlegend.legend(self.PATCHES_BASE, self.LEGEND_BASE)
-        figlegend.savefig(fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600, transparent=True)
+        figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600,
+                          transparent=True)
 
     def generating_chart(self, LIST_OF_GOD, size, thing):
         dpi = 600
@@ -688,7 +694,8 @@ class SerialChartsWindow(QWidget):
 
         texts = self.dynamic_font(texts, size)
         plt.axis("equal")
-        plt.savefig(fs_interaction.project_location(window_wykr.project, "{}_wykres.png".format(str(thing).strip())),
+        plt.savefig(cardschooli.fs_interaction.project_location(window_wykr.project,
+                                                                "{}_wykres.png".format(str(thing).strip())),
                     dpi=dpi, transparent=True)
 
         self.legend_base_update(names, patches)
@@ -951,6 +958,7 @@ class MyWidget2(QWidget):
 def create_window_wykr():
     global window_wykr
     window_wykr = Window_Wykr()
+
 
 def create_window_seria_wykr():
     global window_seria_wykr

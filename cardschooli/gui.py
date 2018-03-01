@@ -9,7 +9,7 @@ import sys
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
- 
+
 import cardschooli.charts
 import cardschooli.fs_interaction
 import cardschooli.obverse
@@ -102,12 +102,10 @@ class Window0(QWidget):
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
 
-
-
     def next(self):
         self.project = self.project_name.text()
-        charts.window_wykr.give_project(self.project)
-        if not fs_interaction.project_location(self.project_name.text()):
+        cardschooli.charts.window_wykr.give_project(self.project)
+        if not cardschooli.fs_interaction.project_location(self.project_name.text()):
             raise_warning(self, "Tylko znaki alfanumeryczne!",
                           "W nazwie projektu wykorzystałeś znaki niealfanumeryczne. Spróbuj jeszcze raz!")
             return None
@@ -140,7 +138,6 @@ class Window1(QWidget):
                 window0.project), self)
         self.show()
 
-
     def open_file(self):
         self.filename = file_dialog(self, "Wybierz plik z danymi:", "dane do cardschooli (*.csv)", ".csv")
         if not self.filename:
@@ -148,7 +145,7 @@ class Window1(QWidget):
                           "Nie wybrałeś pliku, bądź ma on nieodpowiedni format. Użyj pliku .csv!")
             return None
         self.close()
-        charts.window_wykr.filename = window1.filename
+        cardschooli.charts.window_wykr.filename = window1.filename
         window2.init_ui()
 
 
@@ -182,8 +179,8 @@ class Window2(QWidget):
 
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-        self.path = fs_interaction.project_location(window0.project, "reverse_preview.png")
-        self.card = reverse.CardReverse(window0.project)
+        self.path = cardschooli.fs_interaction.project_location(window0.project, "reverse_preview.png")
+        self.card = cardschooli.reverse.CardReverse(window0.project)
         self.preview = QLabel(self)
         self.pixmap = QPixmap(self.path)
         self.preview.setPixmap(self.pixmap)
@@ -281,10 +278,10 @@ class Window3(QWidget):
     def text_seria_btn_act(self):
         column = choose_colum(self, "Wybierz kolumnę:",
                               "Wybierz kolumnę, w której zapisane są teksty dla każdej karty: ",
-                              fs_interaction.read_csv(window1.filename, 0))
+                              cardschooli.fs_interaction.read_csv(window1.filename, 0))
         if not column:
             return None
-        column_data = fs_interaction.read_csv(window1.filename, 0)
+        column_data = cardschooli.fs_interaction.read_csv(window1.filename, 0)
         column_nr = column_data.index(column)
 
         size = size_dialog(self)
@@ -302,27 +299,27 @@ class Window3(QWidget):
         self.update_preview()
 
     def chart_btn_act(self):
-        charts.window_wykr.isCreatingChart = True
-        charts.window_wykr.init_ui()
+        cardschooli.charts.window_wykr.isCreatingChart = True
+        cardschooli.charts.window_wykr.init_ui()
 
     def chart_seria_btn_act(self):
-        del charts.window_seria_wykr
-        charts.create_window_seria_wykr()
+        del cardschooli.charts.window_seria_wykr
+        cardschooli.charts.create_window_seria_wykr()
 
         column = choose_colum(self, "Wybierz kolumnę",
                               "Wybierz kolumnę, w której zapisane są nazwy kart (tytuły):",
-                              fs_interaction.read_csv(window1.filename, 0))
+                              cardschooli.fs_interaction.read_csv(window1.filename, 0))
         try:
-            column_data = fs_interaction.read_csv(window1.filename, 0)
+            column_data = cardschooli.fs_interaction.read_csv(window1.filename, 0)
             column_nr = column_data.index(column)
-        except:
+        except:  # !!!
             return None
-        charts.window_seria_wykr.init_ui([column, column_nr, column_data])
+        cardschooli.charts.window_seria_wykr.init_ui([column, column_nr, column_data])
 
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-        self.path = fs_interaction.project_location(window0.project, "obverse_preview.png")
-        self.card = obverse.CardObverse(window0.project, window1.filename)
+        self.path = cardschooli.fs_interaction.project_location(window0.project, "obverse_preview.png")
+        self.card = cardschooli.obverse.CardObverse(window0.project, window1.filename)
         self.card.save_preview()
         self.preview = QLabel(self)
         self.pixmap = QPixmap(self.path)
@@ -354,10 +351,10 @@ class Window3(QWidget):
     def image_folder_btn_act(self):
         column = choose_colum(self, "Wybierz kolumnę:",
                               "Wybierz kolumnę, w której zapisane są nazwy plików PNG dla każdej karty:",
-                              fs_interaction.read_csv(window1.filename, 0))
+                              cardschooli.fs_interaction.read_csv(window1.filename, 0))
         if not column:
             return None
-        column_data = fs_interaction.read_csv(window1.filename, 0)
+        column_data = cardschooli.fs_interaction.read_csv(window1.filename, 0)
         column_nr = column_data.index(column)
         folder = file_dialog(self, "Wybierz folder z obrazkami:", folder=True)
         if not folder:
@@ -388,14 +385,13 @@ class Window3(QWidget):
         self.update_preview()
 
     def finish_btn_act(self):
-        if not charts.window_wykr.isCreatingChart and not charts.window_seria_wykr.isCreatingChart:
+        if not cardschooli.charts.window_wykr.isCreatingChart and not cardschooli.charts.window_seria_wykr.isCreatingChart:
             self.close()
             window4.init_ui()
         else:
             QMessageBox().warning(self, "W TRAKCIE CZYNNOŚCI",
                                   "Jesteś w trakcie dodawania wykresu",
                                   QMessageBox.Ok)
-
 
 
 class Window4(QWidget):
@@ -419,9 +415,9 @@ class Window4(QWidget):
         self.compile()
 
     def compile(self):
-        obverse.generate(window0.project, window1.filename,
-                         fs_interaction.project_location(window0.project, "obverse.cardconfig"))
-        fs_interaction.cleaning_files(os.path.join(os.pardir, "cards", window0.project))
+        cardschooli.obverse.generate(window0.project, window1.filename,
+                                     cardschooli.fs_interaction.project_location(window0.project, "obverse.cardconfig"))
+        cardschooli.fs_interaction.cleaning_files(os.path.join(os.pardir, "cards", window0.project))
 
 
 if __name__ == "__main__":
@@ -432,8 +428,8 @@ if __name__ == "__main__":
     window3 = Window3()
     window4 = Window4()
 
-    charts.create_window_wykr()
-    charts.create_window_seria_wykr()
-    charts.window_wykr.window3 = window3
+    cardschooli.charts.create_window_wykr()
+    cardschooli.charts.create_window_seria_wykr()
+    cardschooli.charts.window_wykr.window3 = window3
 
     sys.exit(app.exec_())

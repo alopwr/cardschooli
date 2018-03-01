@@ -9,11 +9,13 @@ import sys
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
+ 
+import cardschooli.charts
+import cardschooli.fs_interaction
+import cardschooli.obverse
+import cardschooli.reverse
 
-import charts
-import fs_interaction
-import obverse
-import reverse
+
 def center(window):
     """ centers window """
     qr = window.frameGeometry()

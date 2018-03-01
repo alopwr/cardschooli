@@ -101,7 +101,7 @@ class Window0(QWidget):
         self.show()
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
-
+        self.start_btn.setStyleSheet("background-color: aqua")
     def next(self):
         self.project = self.project_name.text()
         cardschooli.charts.window_wykr.give_project(self.project)
@@ -129,7 +129,7 @@ class Window1(QWidget):
         open_btn = QPushButton("Otwórz plik", self)
         open_btn.setGeometry(325, 250, 150, 100)
         open_btn.clicked.connect(self.open_file)
-
+        open_btn.setStyleSheet("background-color: aqua")
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         QLabel(
@@ -173,10 +173,13 @@ class Window2(QWidget):
         text_btn.setGeometry(500, 170, 225, 35)
         finish_btn.setGeometry(500, 475, 225, 70)
         color_btn.clicked.connect(self.color_btn_act)
+        color_btn.setStyleSheet("background-color: indianRed")
         image_btn.clicked.connect(self.image_btn_act)
+        image_btn.setStyleSheet("background-color: lightyellow")
         text_btn.clicked.connect(self.text_btn_act)
+        text_btn.setStyleSheet("background-color: lightgreen")
         finish_btn.clicked.connect(self.finish_btn_act)
-
+        finish_btn.setStyleSheet("background-color: orange")
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         self.path = cardschooli.fs_interaction.project_location(window0.project, "reverse_preview.png")
@@ -267,13 +270,21 @@ class Window3(QWidget):
         finish_btn.setGeometry(490, 475, 235, 70)
 
         color_btn.clicked.connect(self.color_btn_act)
+        color_btn.setStyleSheet("background-color: indianRed")
         image_btn.clicked.connect(self.image_btn_act)
+        image_btn.setStyleSheet("background-color: lightyellow")
         image_var_btn.clicked.connect(self.image_folder_btn_act)
+        image_var_btn.setStyleSheet("background-color: lightyellow")
         text_btn.clicked.connect(self.text_btn_act)
+        text_btn.setStyleSheet("background-color: lightgreen")
         text_seria_btn.clicked.connect(self.text_seria_btn_act)
+        text_seria_btn.setStyleSheet("background-color: lightgreen")
         finish_btn.clicked.connect(self.finish_btn_act)
+        finish_btn.setStyleSheet("background-color: orange")
         chart_btn.clicked.connect(self.chart_btn_act)
+        chart_btn.setStyleSheet("background-color: lightblue")
         chart_seria_btn.clicked.connect(self.chart_seria_btn_act)
+        chart_seria_btn.setStyleSheet("background-color: lightblue")
 
     def text_seria_btn_act(self):
         column = choose_colum(self, "Wybierz kolumnę:",

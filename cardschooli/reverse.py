@@ -68,7 +68,7 @@ class CardReverse(object):
     def paste(self, image, coords):
         """
         pastes image to card's reverse
-        :param image: image to be pasted
+        :param image: path to the image to be pasted
         :param coords: coords of the pasted image on card
         """
         image = Image.open(image).convert("RGBA")

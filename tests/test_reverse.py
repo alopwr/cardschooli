@@ -5,7 +5,6 @@ from random import randint
 from .context import reverse
 
 
-
 def test_process_coords():
     xy = [0, 0]
     assert reverse.process_coords(xy, 0, 0) == [0, 0]

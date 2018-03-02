@@ -102,6 +102,7 @@ class Window0(QWidget):
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
         self.start_btn.setStyleSheet("background-color: aqua")
+
     def next(self):
         self.project = self.project_name.text()
         cardschooli.charts.window_wykr.give_project(self.project)
@@ -130,6 +131,7 @@ class Window1(QWidget):
         open_btn.setGeometry(325, 250, 150, 100)
         open_btn.clicked.connect(self.open_file)
         open_btn.setStyleSheet("background-color: aqua")
+
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         QLabel(
@@ -180,6 +182,7 @@ class Window2(QWidget):
         text_btn.setStyleSheet("background-color: lightgreen")
         finish_btn.clicked.connect(self.finish_btn_act)
         finish_btn.setStyleSheet("background-color: orange")
+
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         self.path = cardschooli.fs_interaction.project_location(window0.project, "reverse_preview.png")

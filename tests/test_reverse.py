@@ -1,6 +1,7 @@
 import os
 from hashlib import sha1
 from random import randint
+
 from .context import reverse
 
 
@@ -34,10 +35,20 @@ class TestCardReverse(object):
 
     def test_paste(self):
         cardreverse = reverse.CardReverse("unittests3")
-        cardreverse.paste(os.path.join("data", "leaf.png"), [43, 282])
+        cardreverse.paste(os.path.join("tests", "data", "leaf.png"), [43, 282])
         path = os.path.join(os.pardir, "cards", "unittests3", "reverse_preview.png")
         with open(path, "rb") as f:
             sha1sum = sha1()
             data = f.read()
             sha1sum.update(data)
             assert sha1sum.hexdigest() == "99afde750ad26cbeb7b90e2c70f00290225d28ba"
+
+    def test_add_text(self):
+        cardreverse = reverse.CardReverse("unittests4")
+        cardreverse.add_text([0, 12], "SPQR", 34, "#194769", os.path.join("res", "fonts", "font.ttf"))
+        path = os.path.join(os.pardir, "cards", "unittests4", "reverse_preview.png")
+        with open(path, "rb") as f:
+            sha1sum = sha1()
+            data = f.read()
+            sha1sum.update(data)
+            assert sha1sum.hexdigest() == "a8b7d2cd322727fbc58a3f4de1af26ddf007bacb"

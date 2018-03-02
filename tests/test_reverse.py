@@ -34,7 +34,7 @@ class TestCardReverse(object):
 
     def test_paste(self):
         cardreverse = reverse.CardReverse("unittests3")
-        cardreverse.paste(os.path.join(os.pardir, "testdata", "leaf.png"), [43, 282])
+        cardreverse.paste(os.path.join("data", "leaf.png"), [43, 282])
         path = os.path.join(os.pardir, "cards", "unittests3", "reverse_preview.png")
         with open(path, "rb") as f:
             sha1sum = sha1()

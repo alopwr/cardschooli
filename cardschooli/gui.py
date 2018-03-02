@@ -326,7 +326,7 @@ class Window3(QWidget):
         try:
             column_data = cardschooli.fs_interaction.read_csv(window1.filename, 0)
             column_nr = column_data.index(column)
-        except:  # !!!
+        except ValueError:
             return None
         cardschooli.charts.window_seria_wykr.init_ui([column, column_nr, column_data])
 

@@ -13,7 +13,7 @@ def process_coords(coords, size, psize):
     """
     centers object to be pasted on card
     :param coords: coords of the object to be pasted
-    :param size: size of the we are pasting on
+    :param size: size of the object we are pasting on
     :param psize: size of the object to be pasted
     :return: proper coords of the object to be pasted
     """
@@ -39,7 +39,10 @@ def generate(name, data_path, config_path):
     """ proceeds with creating obverses from config file """
     obverses = [CardObverse(name, data_path, i) for i in
                 range(cardschooli.fs_interaction.get_file_lenght(data_path) - 1)]
-    cmds = cardschooli.fs_interaction.read_config(config_path)
+    try:
+        cmds = cardschooli.fs_interaction.read_config(config_path)
+    except FileNotFoundError:
+        return 1
     for i in cmds:
         for j in obverses:
             if i[0] == "col":

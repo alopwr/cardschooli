@@ -426,8 +426,11 @@ class Window4(QWidget):
         self.compile()
 
     def compile(self):
-        cardschooli.obverse.generate(window0.project, window1.filename,
-                                     cardschooli.fs_interaction.project_location(window0.project, "obverse.cardconfig"))
+        if cardschooli.obverse.generate(window0.project, window1.filename,
+                                        cardschooli.fs_interaction.project_location(window0.project,
+                                                                                    "obverse.cardconfig")):
+            raise_warning(self, "Brak pliku konfiguracyjnego", "Nie udało się wczytać pliku konfiguracyjnego talii.")
+            return 1
         cardschooli.fs_interaction.cleaning_files(os.path.join(os.pardir, "cards", window0.project))
 
 

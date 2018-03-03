@@ -82,7 +82,7 @@ class CardReverse(object):
         :param coords: coords of the added text
         :param text: text to be added
         :param size: size of the text to be added
-        :param fill: color of the text
+        :param fill:1 color of the text
         :param font: path to the font's ttf file
         """
         font = ImageFont.truetype(font, size)

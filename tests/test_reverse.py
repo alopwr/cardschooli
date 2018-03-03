@@ -52,3 +52,20 @@ class TestCardReverse(object):
             data = f.read()
             sha1sum.update(data)
             assert sha1sum.hexdigest() == "a8b7d2cd322727fbc58a3f4de1af26ddf007bacb"
+
+    def test_save_reverse(self):
+        cardreverse = reverse.CardReverse("unittests4")
+        cardreverse.paste(os.path.join("tests", "data", "leaf.png"), [43, 282])
+        cardreverse.add_text([0, 12], "SPQR", 34, "#194769", os.path.join("res", "fonts", "font.ttf"))
+        cardreverse.change_color("#ef2929")
+        cardreverse.save_reverse()
+        path = os.path.join(os.pardir, "cards", cardreverse.project_location, "reverse.png")
+        old_path = os.path.join(os.pardir, "cards", cardreverse.project_location, "reverse_preview.png")
+        print(path)
+        assert os.path.isfile(path) is True
+        assert os.path.isfile(old_path) is False
+        with open(path, "rb") as f:
+            sha1sum = sha1()
+            data = f.read()
+            sha1sum.update(data)
+            assert sha1sum.hexdigest() == "63fc1f27b7ea7fbf7a07ac8cdbff24eaf754fe3b"

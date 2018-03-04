@@ -47,7 +47,7 @@ class TestCardReverse(object):
         cardreverse = reverse.CardReverse("unittests4")
         cardreverse.add_text([0, 12], "SPQR", 34, "#194769", os.path.join("res", "fonts", "font.ttf"))
         path = os.path.join(os.pardir, "cards", "unittests4", "reverse_preview.png")
-        with open(path, "rb") as f:
+        with open(path, "rb", encoding="utf-8") as f:
             sha1sum = sha1()
             data = f.read()
             sha1sum.update(data)
@@ -64,7 +64,7 @@ class TestCardReverse(object):
         print(path)
         assert os.path.isfile(path) is True
         assert os.path.isfile(old_path) is False
-        with open(path, "rb") as f:
+        with open(path, "rb", encoding="utf-8") as f:
             sha1sum = sha1()
             data = f.read()
             sha1sum.update(data)

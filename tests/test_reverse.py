@@ -53,7 +53,7 @@ class TestCardReverse(object):
             sha1sum.update(data)
             assert sha1sum.hexdigest() == "a8b7d2cd322727fbc58a3f4de1af26ddf007bacb"
 
-    def test_save_reverse(self):
+    def test_save_reverses(self):
         cardreverse = reverse.CardReverse("unittests4")
         cardreverse.paste(os.path.join("tests", "data", "leaf.png"), [43, 282])
         cardreverse.add_text([0, 12], "SPQR", 34, "#194769", os.path.join("res", "fonts", "font.ttf"))

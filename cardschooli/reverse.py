@@ -36,7 +36,7 @@ class CardReverse(object):
         self.reverse_draw = ImageDraw.Draw(self.reverse)
         self.save_preview()
 
-    def save_reverse(self):
+    def save_reverses(self):
         """
         saves final reverse and deletes the preview one
         """

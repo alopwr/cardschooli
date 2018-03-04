@@ -10,7 +10,7 @@ def read_csv(path, *line_num):
     :param line_num: number of the line to be read, if empty, returns full file
     :return: num line of the path csv
     """
-    with open(path, newline="") as f:
+    with open(path, encoding="utf-8", newline="") as f:
         reader = csv.reader(f)
         if line_num:
             for i in range(line_num[0] + 1):

@@ -36,12 +36,17 @@ class CardReverse(object):
         self.reverse_draw = ImageDraw.Draw(self.reverse)
         self.save_preview()
 
-    def save_reverse(self):
+    def save_reverses(self):
         """
-        saves final reverse and deletes the preview one
+        saves final reverse grid and deletes the preview one
         """
-        self.reverse.save(cardschooli.fs_interaction.project_location(self.project_location, "reverse.png"),
-                          format="PNG", dpi=(600, 600))
+        grid = Image.new("RGB", (4500, 6300))
+        locations = [(x, y) for x in range(3) for y in range(3)]
+        for i in range(9):
+            x, y = locations[i][0] * 1500, locations[i][1] * 2100
+            grid.paste(self.reverse, (x, y))
+        grid.save(cardschooli.fs_interaction.project_location(self.project_location, "reverse.png"), format="PNG",
+                  dpi=(600, 600))
         try:
             os.remove(cardschooli.fs_interaction.project_location(self.project_location, "reverse_preview.png"))
         except OSError:

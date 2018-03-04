@@ -58,7 +58,7 @@ class TestCardReverse(object):
         cardreverse.paste(os.path.join("tests", "data", "leaf.png"), [43, 282])
         cardreverse.add_text([0, 12], "SPQR", 34, "#194769", os.path.join("res", "fonts", "font.ttf"))
         cardreverse.change_color("#ef2929")
-        cardreverse.save_reverse()
+        cardreverse.save_reverses()
         path = os.path.join(os.pardir, "cards", cardreverse.project_location, "reverse.png")
         old_path = os.path.join(os.pardir, "cards", cardreverse.project_location, "reverse_preview.png")
         print(path)

@@ -233,6 +233,7 @@ class Window2(QWidget):
         self.update_preview()
 
     def finish_btn_act(self):
+        self.card.save_reverses()
         self.close()
         window3.init_ui()
 
@@ -434,7 +435,7 @@ class Window4(QWidget):
                                                                                     "obverse.cardconfig")):
             raise_warning(self, "Brak pliku konfiguracyjnego", "Nie udało się wczytać pliku konfiguracyjnego talii.")
             return 1
-        cardschooli.fs_interaction.cleaning_files(os.path.join(os.pardir, "cards", window0.project))
+        cardschooli.fs_interaction.clean_files(os.path.join(os.pardir, "cards", window0.project))
 
 
 if __name__ == "__main__":

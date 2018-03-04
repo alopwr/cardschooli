@@ -59,7 +59,7 @@ def read_config(path):
     return commands
 
 
-def cleaning_files(directory_path):
+def clean_files(directory_path):
     for root, dirs, files in os.walk(directory_path):
         for name in files:
             if name.endswith("wykres.png") or name.endswith(

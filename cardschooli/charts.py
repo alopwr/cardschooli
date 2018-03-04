@@ -12,8 +12,11 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
 
 import cardschooli.fs_interaction
 import cardschooli.gui
+
+
 class QListWidgetItem2(QListWidgetItem):
     """ my own version of QListWidgetItem """
+
     def __init__(self, number=0, name=""):
         super().__init__()
         self.number = number
@@ -24,8 +27,11 @@ class QListWidgetItem2(QListWidgetItem):
 
     def give_combo(self, combobox):
         self.combobox = combobox
+
+
 class MyWidget2(QWidget):
     """a simple position on QListWidgetItem(series of charts version)"""
+
     def __init__(self, name, value, color, image, number, item=QListWidgetItem2(), max_value=100, accurancy=2):
         super().__init__()
         self.color = color
@@ -99,9 +105,13 @@ class MyWidget2(QWidget):
         combobox.addItems(list_of_colors)
         combobox.setCurrentText(self.color)
         return combobox
+
+
 class MyWidget(QWidget):
     """a simple position on QListWidgetItem"""
-    def __init__(self, name, value, color, image, number, item=QListWidgetItem2(), max_value=100, accurancy=2, parent=None):
+
+    def __init__(self, name, value, color, image, number, item=QListWidgetItem2(), max_value=100, accurancy=2,
+                 parent=None):
         super(MyWidget, self).__init__(parent)
 
         self.color = color
@@ -173,10 +183,13 @@ class MyWidget(QWidget):
         combobox.addItems(list_of_colors)
         combobox.setCurrentText(self.color)
         return combobox
+
+
 class ChartsWindow(QWidget):
     """
     user can create, customize and add chart to the card
     """
+
     def __init__(self):
         super().__init__()
         self.is_polish_names = False
@@ -209,7 +222,6 @@ class ChartsWindow(QWidget):
 
         self.QLIST = QListWidget()
         self.QLIST.setToolTip("pozycje na wykresie")
-
 
         x_spin = QSpinBox()
         y_spin = QSpinBox()
@@ -255,8 +267,10 @@ class ChartsWindow(QWidget):
 
     def give_project(self, prjct):
         self.project = prjct
+
     def change_is_polish_names(self, new):
         self.is_polish_names = new
+
     def spin_str_2_float(self, newvalues):
         new_value = ""
         for l in newvalues:
@@ -266,10 +280,13 @@ class ChartsWindow(QWidget):
                 new_value += l
         new_value = float(new_value)
         return new_value
+
     def x_spin_change(self, newvalue):
         self.X = int(window_wykr.spin_str_2_float(newvalue))
+
     def y_spin_change(self, newvalue):
         self.Y = int(window_wykr.spin_str_2_float(newvalue))
+
     def deleting(self, number):
         i = 0
         i2 = self.QLIST.count()
@@ -279,8 +296,8 @@ class ChartsWindow(QWidget):
                 self.QLIST.removeItemWidget(item)
                 self.removing(i)
 
-
             i += 1
+
     def removing(self, number):
         name = self.LIST_OF_GOD[self.names].pop(number)
 
@@ -344,9 +361,9 @@ class ChartsWindow(QWidget):
             itemek = QListWidgetItem2()
             self.number_of_layouts += 1
 
-
             if self.is_percent:
-                my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, item=itemek, accurancy=2)
+                my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, item=itemek,
+                                     accurancy=2)
             else:
                 my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, item=itemek,
                                      max_value=999999999, accurancy=1)
@@ -547,10 +564,13 @@ class ChartsWindow(QWidget):
             plt.axis("equal")
             plt.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "wykres.png", ), dpi=600,
                         transparent=True)
+
+
 class SerialChartsWindow(QWidget):
     """
     user can create, customize and add series of charts
     """
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("cardschooli - dodaj wykresy seryjne")
@@ -569,6 +589,7 @@ class SerialChartsWindow(QWidget):
         self.number_of_layouts = -1
         self.LEGEND_NAME_BASE = []
         self.LEGEND_PATCHES_BASE = []
+
     def init_ui(self, columnlist):
         self.isCreatingChart = True
         self.columnlist = columnlist
@@ -635,6 +656,7 @@ class SerialChartsWindow(QWidget):
     def closeEvent(self, QCloseEvent):
         self.isCreatingChart = False
         QCloseEvent.accept()
+
     def removing(self, number, thing_name):
         name = self.LIST_OF_GOD[thing_name][self.names].pop(number)
 
@@ -745,8 +767,6 @@ class SerialChartsWindow(QWidget):
         except ValueError:
             return None
         self.number_of_layouts += 1
-
-
 
         data = []
         for row in self.coolWidget.rows[1::]:
@@ -898,10 +918,13 @@ class SerialChartsWindow(QWidget):
         self.dict_of_colors = {}
         for i in range(len(self.list_of_colors)):
             self.dict_of_colors[self.list_of_colors_P[i]] = self.list_of_colors[i]
+
+
 class ChartControlWidget(QWidget):
     """
     class to managment of tabs
     """
+
     def __init__(self):
         super().__init__()
         self.is_polish_names = False
@@ -931,8 +954,11 @@ class ChartControlWidget(QWidget):
 
         main_layout.addWidget(self.tabs)
         self.setLayout(main_layout)
+
+
 class Question(QMessageBox):
     """asking for language of colors window"""
+
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
@@ -950,15 +976,21 @@ class Question(QMessageBox):
 def ask_for_polish_names():
     """create a asking window"""
     question1 = Question()
+
+
 def choose_colum(parent, caption, text, selections):
     "ask for column"
     response = QInputDialog.getItem(parent, caption, text, selections)
     if response[1]:
         return response[0]
+
+
 def create_window_wykr():
     """creating a charts window"""
     global window_wykr
     window_wykr = ChartsWindow()
+
+
 def create_window_seria_wykr():
     """creating a series of charts window"""
     global window_seria_wykr

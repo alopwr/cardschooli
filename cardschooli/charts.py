@@ -707,8 +707,10 @@ class SerialChartsWindow(QWidget):
                           transparent=True)
 
     def generating_chart(self, LIST_OF_GOD, size, thing):
-        dpi = 600
+        pass
 
+    def generating_chart(self, master_list):
+        LIST_OF_GOD, size, thing = master_list
         names = []
         for name in LIST_OF_GOD[0].values():  # names = 0
             names.append(name)
@@ -732,6 +734,8 @@ class SerialChartsWindow(QWidget):
         explode = []
         for expld in LIST_OF_GOD[3].values():  # explode = 3
             explode.append(expld)
+
+        dpi = 600
 
         plt.figure(figsize=(size[0] / dpi, size[1] / dpi))
         patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
@@ -848,6 +852,7 @@ class SerialChartsWindow(QWidget):
                         self.LIST_OF_GOD[thing][self.colors][colorKey] = dzienniczek_kolorkow[colorKey]
 
     def ok_act(self):
+        self.master_generator_list = []
         returned_from_isempty = self.is_empty()
         isempty = returned_from_isempty[0]
         if not isempty:
@@ -861,11 +866,10 @@ class SerialChartsWindow(QWidget):
             for thing in self.LIST_OF_GOD:
                 if len(self.LIST_OF_GOD[thing][self.names]) > 0:
                     lista = self.LIST_OF_GOD[thing]
-                    self.generating_chart(lista, size, thing)
+                    self.master_generator_list.append((lista, size, thing))
             window_wykr.window3.card.add_series_of_charts(self.columnlist[1], (self.X, self.Y), window_wykr.project,
                                                           first=True)
             window_wykr.window3.update_preview()
-            self.generating_legend()
             self.isCreatingChart = False
             self.close()
         else:

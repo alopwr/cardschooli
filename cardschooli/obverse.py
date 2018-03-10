@@ -6,6 +6,7 @@ import os.path
 
 from PIL import Image, ImageDraw, ImageFont
 
+import cardschooli.charts
 import cardschooli.fs_interaction
 
 
@@ -89,7 +90,7 @@ def generate(name, data_path, config_path):
                 j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
     for i, obv in enumerate(obverses):
         obv.obverse.save(cardschooli.fs_interaction.project_location(name, "obverse{}.png".format(i)))
-
+    cardschooli.charts.window_seria_wykr.generating_legend()
 
 class CardObverse(object):
     """
@@ -143,8 +144,12 @@ class CardObverse(object):
     def add_series_of_charts(self, column_nr, coords, project, gen_cnfg=True, first=False):
         if first:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number)
+            cardschooli.charts.window_seria_wykr.generating_chart(
+                cardschooli.charts.window_seria_wykr.master_generator_list[0])
         else:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number + 1)
+            cardschooli.charts.window_seria_wykr.generating_chart(
+                cardschooli.charts.window_seria_wykr.master_generator_list[self.number])
         name = row[column_nr].strip() + "_wykres.png"
         self.paste(cardschooli.fs_interaction.project_location(project, name), coords, False)
         if gen_cnfg:

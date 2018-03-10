@@ -7,6 +7,7 @@ import os.path
 from PIL import Image, ImageDraw, ImageFont
 from fpdf import FPDF
 
+import cardschooli.charts
 import cardschooli.fs_interaction
 
 
@@ -109,7 +110,7 @@ def generate(name, data_path, config_path):
         add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
                  cardschooli.fs_interaction.project_location(name, "reverse.png"))
     pdf.output(cardschooli.fs_interaction.project_location(name, "cards.pdf"))
-
+    cardschooli.charts.window_seria_wykr.generating_legend()
 
 def add_grid(pdf, grid, rev):
     pdf.add_page()
@@ -170,8 +171,12 @@ class CardObverse(object):
     def add_series_of_charts(self, column_nr, coords, project, gen_cnfg=True, first=False):
         if first:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number)
+            cardschooli.charts.window_seria_wykr.generating_chart(
+                cardschooli.charts.window_seria_wykr.master_generator_list[0])
         else:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number + 1)
+            cardschooli.charts.window_seria_wykr.generating_chart(
+                cardschooli.charts.window_seria_wykr.master_generator_list[self.number])
         name = row[column_nr].strip() + "_wykres.png"
         self.paste(cardschooli.fs_interaction.project_location(project, name), coords, False)
         if gen_cnfg:

@@ -6,10 +6,12 @@ allows user creating his deck of cards
 import os.path
 import sys
 
+from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
 
+import cardschooli.boom_menu
 import cardschooli.charts
 import cardschooli.fs_interaction
 import cardschooli.obverse
@@ -85,7 +87,6 @@ class Window0(QWidget):
     starting window
     asks user for project name
     """
-
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
@@ -98,10 +99,13 @@ class Window0(QWidget):
         self.project_name.resize(250, 25)
         self.start_btn = QPushButton("&Rozpocznij tworzenie talii >>>", self)
         self.start_btn.setGeometry(275, 275, 250, 50)
-        self.show()
+
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
         self.start_btn.setStyleSheet("background-color: aqua")
+
+        cardschooli.boom_menu.boom_window.window0 = self
+        cardschooli.boom_menu.boom_window.init_ui()
 
     def next(self):
         self.project = self.project_name.text()
@@ -419,16 +423,20 @@ class Window4(QWidget):
         self.loading = QLabel("Twoja talia jest generowana. Zachowaj cierpliwość, to może chwilę potrwać...", self)
         self.loading.move(140, 216)
         self.preloader = QLabel(self)
-        movie = QMovie(os.path.join(os.pardir, "res", "img", "preloader.gif"))
-        self.preloader.setMovie(movie)
-        movie.start()
-        self.preloader.setGeometry(336, 236, 128, 128)
+        self.movie = QMovie(os.path.join(os.pardir, "res", "img", "preloader.gif"))
+        self.preloader.setMovie(self.movie)
 
+        self.preloader.setGeometry(336, 236, 128, 128)
+        self.movie.start()
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-        self.show()
-        self.compile()
 
+        self.show()
+
+        timeoutTimer = QTimer(self)
+        timeoutTimer.setSingleShot(True)
+        timeoutTimer.timeout.connect(self.compile)
+        timeoutTimer.start(1000)
     def compile(self):
         window2.card.save_reverses()
         if cardschooli.obverse.generate(window0.project, window1.filename,
@@ -441,14 +449,13 @@ class Window4(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    cardschooli.boom_menu.create_windows()
     window0 = Window0()
     window1 = Window1()
     window2 = Window2()
     window3 = Window3()
     window4 = Window4()
-
     cardschooli.charts.create_window_wykr()
     cardschooli.charts.create_window_seria_wykr()
     cardschooli.charts.window_wykr.window3 = window3
-
     sys.exit(app.exec_())

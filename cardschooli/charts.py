@@ -748,7 +748,7 @@ class SerialChartsWindow(QWidget):
                     dpi=dpi, transparent=True)
 
         self.legend_base_update(names, patches)
-
+        plt.close()
     def legend_base_update(self, texts, patches):
         i = 0
         for text in texts:

@@ -70,10 +70,9 @@ def add_command(command, path):
 
 def generate(name, data_path, config_path):
     """ proceeds with creating obverses from config file """
+    pdf = FPDF()
     obverses = [CardObverse(name, data_path, i) for i in
                 range(cardschooli.fs_interaction.get_file_lenght(data_path) - 1)]
-    pdf = FPDF()
-    pdf.add_page()
     try:
         cmds = cardschooli.fs_interaction.read_config(config_path)
     except FileNotFoundError:
@@ -92,16 +91,31 @@ def generate(name, data_path, config_path):
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
             elif i[0] == "txtS":
                 j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
-    locations = [(x, y) for x in range(3) for y in range(3)]
+    locations = [(x, y) for y in range(3) for x in range(3)]
+    grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
     for i, obv in enumerate(obverses):
         path = cardschooli.fs_interaction.project_location(name, "obverse{}.png".format(i))
         obv.obverse.save(path)
         img = Image.open(path)
-        if i % 9 == 0:
-            grid = Image.new("RGB", (4500, 6300))
-        x, y = locations[i][0] * 1500, locations[i][1] * 2100
+        if i % 9 == 0 and i != 0:
+            grid.save(cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)), dpi=(600, 600))
+            add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
+                     cardschooli.fs_interaction.project_location(name, "reverse.png"))
+            grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
+        x, y = locations[i % 9][0] * 1500, locations[i % 9][1] * 2100
         grid.paste(img, (x, y))
-        grid.save(path)
+    if len(obverses) % 9 != 0:
+        grid.save(cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)), dpi=(600, 600))
+        add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
+                 cardschooli.fs_interaction.project_location(name, "reverse.png"))
+    pdf.output(cardschooli.fs_interaction.project_location(name, "cards.pdf"))
+
+
+def add_grid(pdf, grid, rev):
+    pdf.add_page()
+    pdf.image(grid, w=190.5, h=266.7)
+    pdf.add_page()
+    pdf.image(rev, w=190.5, h=266.7)
 
 
 class CardObverse(object):

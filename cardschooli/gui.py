@@ -430,6 +430,7 @@ class Window4(QWidget):
         self.compile()
 
     def compile(self):
+        window2.card.save_reverses()
         if cardschooli.obverse.generate(window0.project, window1.filename,
                                         cardschooli.fs_interaction.project_location(window0.project,
                                                                                     "obverse.cardconfig")):

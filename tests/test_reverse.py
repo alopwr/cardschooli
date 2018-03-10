@@ -68,4 +68,4 @@ class TestCardReverse(object):
             sha1sum = sha1()
             data = f.read()
             sha1sum.update(data)
-            assert sha1sum.hexdigest() == "63fc1f27b7ea7fbf7a07ac8cdbff24eaf754fe3b"
+            assert sha1sum.hexdigest() == "a3ccfe4c3c63a8d176133219605dee245da6a89c"

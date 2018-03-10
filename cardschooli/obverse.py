@@ -5,6 +5,7 @@ generating, updating and saving the card"s obverse
 import os.path
 
 from PIL import Image, ImageDraw, ImageFont
+from fpdf import FPDF
 
 import cardschooli.fs_interaction
 
@@ -39,6 +40,8 @@ def calculate_enters(xy_size, text, coords, font):
         new_text += " "
         dlugosc_calosci += font.getsize(" ")[0]
     return new_text
+
+
 def process_coords(coords, size, psize):
     """
     centers object to be pasted on card
@@ -67,6 +70,7 @@ def add_command(command, path):
 
 def generate(name, data_path, config_path):
     """ proceeds with creating obverses from config file """
+    pdf = FPDF()
     obverses = [CardObverse(name, data_path, i) for i in
                 range(cardschooli.fs_interaction.get_file_lenght(data_path) - 1)]
     try:
@@ -87,8 +91,31 @@ def generate(name, data_path, config_path):
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
             elif i[0] == "txtS":
                 j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
+    locations = [(x, y) for y in range(3) for x in range(3)]
+    grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
     for i, obv in enumerate(obverses):
-        obv.obverse.save(cardschooli.fs_interaction.project_location(name, "obverse{}.png".format(i)))
+        path = cardschooli.fs_interaction.project_location(name, "obverse{}.png".format(i))
+        obv.obverse.save(path)
+        img = Image.open(path)
+        if i % 9 == 0 and i != 0:
+            grid.save(cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)), dpi=(600, 600))
+            add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
+                     cardschooli.fs_interaction.project_location(name, "reverse.png"))
+            grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
+        x, y = locations[i % 9][0] * 1500, locations[i % 9][1] * 2100
+        grid.paste(img, (x, y))
+    if len(obverses) % 9 != 0:
+        grid.save(cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)), dpi=(600, 600))
+        add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
+                 cardschooli.fs_interaction.project_location(name, "reverse.png"))
+    pdf.output(cardschooli.fs_interaction.project_location(name, "cards.pdf"))
+
+
+def add_grid(pdf, grid, rev):
+    pdf.add_page()
+    pdf.image(grid, w=190.5, h=266.7)
+    pdf.add_page()
+    pdf.image(rev, w=190.5, h=266.7)
 
 
 class CardObverse(object):
@@ -165,8 +192,6 @@ class CardObverse(object):
         imported = cardschooli.fs_interaction.project_location(project, name)
         self.paste(imported, coords)
 
-
-
     def add_text_series(self, column_nr, coords, size, fill=0,
                         font=os.path.join(os.pardir, "res", "fonts", "font.ttf"), gen_cnfg=True, first=False):
         if first:
@@ -176,13 +201,13 @@ class CardObverse(object):
 
         text = str(row[column_nr])
 
-        self.add_text(coords, text, size, fill, font, False,series=True)
+        self.add_text(coords, text, size, fill, font, False, series=True)
         if gen_cnfg:
             add_command("txtS^^{}^^{}^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], size, fill, font),
                         self.config_path)
 
     def add_text(self, coords, text, size, fill=0, font=os.path.join(os.pardir, "res", "fonts", "font.ttf"),
-                 gen_cnfg=True,series=False):
+                 gen_cnfg=True, series=False):
 
         """
         adds text to card"s obverse

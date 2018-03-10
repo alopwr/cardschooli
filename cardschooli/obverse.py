@@ -5,8 +5,41 @@ generating, updating and saving the card"s obverse
 import os.path
 
 from PIL import Image, ImageDraw, ImageFont
+from fpdf import FPDF
 
 import cardschooli.fs_interaction
+
+
+def calculate_enters(xy_size, text, coords, font):
+    text_data = text.split()
+
+    free_x_place = xy_size[0] - coords[0]
+
+    new_text = ""
+    dlugosc_calosci = 0
+    for word in text_data:
+        word_leght = font.getsize(word)[0]
+        if dlugosc_calosci + word_leght < free_x_place:
+            new_text += word
+            dlugosc_calosci += word_leght
+
+        elif word_leght > free_x_place:
+            for letter in word:
+                literka_dlugosc = font.getsize(letter)[0]
+                if dlugosc_calosci + literka_dlugosc < free_x_place:
+                    new_text += letter
+                    dlugosc_calosci += literka_dlugosc
+                else:
+                    new_text += "\n"
+                    new_text += letter
+                    dlugosc_calosci = literka_dlugosc
+        else:
+            new_text += "\n"
+            new_text += word
+            dlugosc_calosci = word_leght
+        new_text += " "
+        dlugosc_calosci += font.getsize(" ")[0]
+    return new_text
 
 
 def process_coords(coords, size, psize):
@@ -39,6 +72,8 @@ def generate(name, data_path, config_path):
     """ proceeds with creating obverses from config file """
     obverses = [CardObverse(name, data_path, i) for i in
                 range(cardschooli.fs_interaction.get_file_lenght(data_path) - 1)]
+    pdf = FPDF()
+    pdf.add_page()
     try:
         cmds = cardschooli.fs_interaction.read_config(config_path)
     except FileNotFoundError:
@@ -57,8 +92,16 @@ def generate(name, data_path, config_path):
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
             elif i[0] == "txtS":
                 j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
+    locations = [(x, y) for x in range(3) for y in range(3)]
     for i, obv in enumerate(obverses):
-        obv.obverse.save(cardschooli.fs_interaction.project_location(name, "obverse{}.png".format(i)))
+        path = cardschooli.fs_interaction.project_location(name, "obverse{}.png".format(i))
+        obv.obverse.save(path)
+        img = Image.open(path)
+        if i % 9 == 0:
+            grid = Image.new("RGB", (4500, 6300))
+        x, y = locations[i][0] * 1500, locations[i][1] * 2100
+        grid.paste(img, (x, y))
+        grid.save(path)
 
 
 class CardObverse(object):
@@ -135,56 +178,22 @@ class CardObverse(object):
         imported = cardschooli.fs_interaction.project_location(project, name)
         self.paste(imported, coords)
 
-    def calculate_enters(self, text, coords, size_f):
-        text_data= text.split()
-
-        free_x_place = self.xy_size[0] - coords[0]
-
-        new_text = ""
-        dlugosc_calosci = 0
-
-        literka_dlugosc = size_f * 0.6
-
-        for word in text_data:
-            word_leght = len(word) * literka_dlugosc
-            if dlugosc_calosci + word_leght < free_x_place:
-                new_text += word
-                dlugosc_calosci+=word_leght
-
-            elif word_leght>free_x_place:
-                for letter in word:
-                    if dlugosc_calosci + literka_dlugosc < free_x_place:
-                        new_text+=letter
-                        dlugosc_calosci += literka_dlugosc
-                    else:
-                        new_text+="\n"
-                        new_text+=letter
-                        dlugosc_calosci = literka_dlugosc
-            else:
-                new_text += "\n"
-                new_text += word
-                dlugosc_calosci = word_leght
-            new_text+=" "
-            dlugosc_calosci += literka_dlugosc
-        return new_text
-
     def add_text_series(self, column_nr, coords, size, fill=0,
-                        font=os.path.join(os.pardir, "res", "fonts", "Menlo-Regular.ttf"), gen_cnfg=True, first=False):
+                        font=os.path.join(os.pardir, "res", "fonts", "font.ttf"), gen_cnfg=True, first=False):
         if first:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number)
         else:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number + 1)
 
         text = str(row[column_nr])
-        text = self.calculate_enters(text, coords, size)
 
-        self.add_text(coords, text, size, fill, font, False)
+        self.add_text(coords, text, size, fill, font, False, series=True)
         if gen_cnfg:
             add_command("txtS^^{}^^{}^^{}^^{}^^{}^^{}\n".format(column_nr, coords[0], coords[1], size, fill, font),
                         self.config_path)
 
-    def add_text(self, coords, text, size, fill=0, font=os.path.join(os.pardir, "res", "fonts", "Menlo-Regular.ttf"),
-                 gen_cnfg=True):
+    def add_text(self, coords, text, size, fill=0, font=os.path.join(os.pardir, "res", "fonts", "font.ttf"),
+                 gen_cnfg=True, series=False):
 
         """
         adds text to card"s obverse
@@ -198,7 +207,12 @@ class CardObverse(object):
         if gen_cnfg:
             add_command("txt^^{}^^{}^^{}^^{}^^{}^^{}\n".format(coords[0], coords[1], text, font, size, fill),
                         self.config_path)
+
         font = ImageFont.truetype(font, size)
+
+        if series:
+            text = calculate_enters(self.xy_size, text, coords, font)
+
         coords = process_coords(coords, self.obverse.size, self.obverse_draw.textsize(text, font))
         if coords[0] < 0 or coords[1] < 0:
             return 1

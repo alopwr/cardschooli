@@ -6,6 +6,7 @@ allows user creating his deck of cards
 import os.path
 import sys
 
+from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
@@ -422,16 +423,20 @@ class Window4(QWidget):
         self.loading = QLabel("Twoja talia jest generowana. Zachowaj cierpliwość, to może chwilę potrwać...", self)
         self.loading.move(140, 216)
         self.preloader = QLabel(self)
-        movie = QMovie(os.path.join(os.pardir, "res", "img", "preloader.gif"))
-        self.preloader.setMovie(movie)
-        movie.start()
-        self.preloader.setGeometry(336, 236, 128, 128)
+        self.movie = QMovie(os.path.join(os.pardir, "res", "img", "preloader.gif"))
+        self.preloader.setMovie(self.movie)
 
+        self.preloader.setGeometry(336, 236, 128, 128)
+        self.movie.start()
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-        self.show()
-        self.compile()
 
+        self.show()
+
+        timeoutTimer = QTimer(self)
+        timeoutTimer.setSingleShot(True)
+        timeoutTimer.timeout.connect(self.compile)
+        timeoutTimer.start(1000)
     def compile(self):
         if cardschooli.obverse.generate(window0.project, window1.filename,
                                         cardschooli.fs_interaction.project_location(window0.project,

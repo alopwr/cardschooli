@@ -92,6 +92,7 @@ def generate(name, data_path, config_path):
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
             elif i[0] == "txtS":
                 j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
+
     locations = [(x, y) for y in range(3) for x in range(3)]
     grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
     for i, obv in enumerate(obverses):
@@ -110,8 +111,10 @@ def generate(name, data_path, config_path):
         add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
                  cardschooli.fs_interaction.project_location(name, "reverse.png"))
     pdf.output(cardschooli.fs_interaction.project_location(name, "cards.pdf"))
-    cardschooli.charts.window_seria_wykr.generating_legend()
-
+    try:
+        cardschooli.charts.window_seria_wykr.generating_legend()
+    except:
+        pass
 def add_grid(pdf, grid, rev):
     pdf.add_page()
     pdf.image(grid, w=190.5, h=266.7)

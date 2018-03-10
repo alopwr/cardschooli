@@ -418,6 +418,7 @@ class Window4(QWidget):
     def __init__(self):
         super().__init__()
 
+
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - krok 4")
         center(self)
@@ -429,6 +430,15 @@ class Window4(QWidget):
 
         self.preloader.setGeometry(336, 236, 128, 128)
         self.movie.start()
+
+        pixmap = QPixmap(os.path.join(os.pardir, "res", "img", "done.png"))
+        self.label = QLabel("", self)
+        self.label.setPixmap(pixmap)
+        self.label.move(400, 165)
+        self.label2 = QLabel("PLIK GOTOWY",self)
+        self.label2.setStyleSheet("color: red")
+        self.label2.hide()
+        self.label.hide()
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
 
@@ -438,6 +448,7 @@ class Window4(QWidget):
         timeoutTimer.setSingleShot(True)
         timeoutTimer.timeout.connect(self.compile)
         timeoutTimer.start(1000)
+
     def compile(self):
         window2.card.save_reverses()
         if cardschooli.obverse.generate(window0.project, window1.filename,
@@ -446,8 +457,8 @@ class Window4(QWidget):
             raise_warning(self, "Brak pliku konfiguracyjnego", "Nie udało się wczytać pliku konfiguracyjnego talii.")
             return 1
         cardschooli.fs_interaction.clean_files(os.path.join(os.pardir, "cards", window0.project))
-
-
+        self.label.show()
+        self.label2.show()
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     cardschooli.boom_menu.create_windows()

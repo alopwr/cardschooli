@@ -539,7 +539,7 @@ class ChartsWindow(QWidget):
             x, y = self.calculate_the_legends_size(names)
             figlegend = plt.figure(figsize=(x, y))
             figlegend.legend(patches, names)
-            figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600)
+            figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "legend2.png"), dpi=600)
 
         else:
             labels = []
@@ -703,7 +703,7 @@ class SerialChartsWindow(QWidget):
         x, y = self.calculate_the_legends_size(self.LEGEND_NAME_BASE)
         figlegend = plt.figure(figsize=(x, y))
         figlegend.legend(self.LEGEND_PATCHES_BASE, self.LEGEND_NAME_BASE)
-        figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "LeGend.png"), dpi=600,
+        figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600,
                           transparent=True)
 
     def generating_chart(self, LIST_OF_GOD, size, thing):

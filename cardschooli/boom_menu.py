@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsPixmapItem, QGraphi
 
 import cardschooli.fs_interaction
 
-CZY_BOOM_MENU = False
+CZY_BOOM_MENU = True
 
 def make_transparent(name):
     img = Image.open(os.path.join(os.pardir, "res", "img", name))
@@ -143,16 +143,17 @@ class BoomMenu(QGraphicsView):
         self.firework_label2.setMovie(self.fire_movie)
 
     def closeEvent(self, QCloseEvent):
-        cardschooli.fs_interaction.clean_files(os.path.join(os.pardir, "res", "img"))
+        cardschooli.fs_interaction.clean_files2(os.path.join(os.pardir, "res", "img"))
         QCloseEvent.accept()
 
     def next(self):
         self.close()
         boom_window.window0.show()
-        cardschooli.fs_interaction.clean_files(os.path.join(os.pardir, "res", "img"))
+        cardschooli.fs_interaction.clean_files2(os.path.join(os.pardir, "res", "img"))
 
 
 def create_windows():
+    #make_transparent("done.png")
     if  CZY_BOOM_MENU:
         global boom_menu, boom_window
         boom_menu = BoomMenu()

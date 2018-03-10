@@ -10,6 +10,7 @@ from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox
 
+import cardschooli.boom_menu
 import cardschooli.charts
 import cardschooli.fs_interaction
 import cardschooli.obverse
@@ -85,7 +86,6 @@ class Window0(QWidget):
     starting window
     asks user for project name
     """
-
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
@@ -98,10 +98,13 @@ class Window0(QWidget):
         self.project_name.resize(250, 25)
         self.start_btn = QPushButton("&Rozpocznij tworzenie talii >>>", self)
         self.start_btn.setGeometry(275, 275, 250, 50)
-        self.show()
+
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
         self.start_btn.setStyleSheet("background-color: aqua")
+
+        cardschooli.boom_menu.boom_window.window0 = self
+        cardschooli.boom_menu.boom_window.init_ui()
 
     def next(self):
         self.project = self.project_name.text()
@@ -440,14 +443,13 @@ class Window4(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    cardschooli.boom_menu.create_windows()
     window0 = Window0()
     window1 = Window1()
     window2 = Window2()
     window3 = Window3()
     window4 = Window4()
-
     cardschooli.charts.create_window_wykr()
     cardschooli.charts.create_window_seria_wykr()
     cardschooli.charts.window_wykr.window3 = window3
-
     sys.exit(app.exec_())

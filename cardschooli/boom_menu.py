@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsPixmapItem, QGraphi
 
 import cardschooli.fs_interaction
 
+CZY_BOOM_MENU = False
 
 def make_transparent(name):
     img = Image.open(os.path.join(os.pardir, "res", "img", name))
@@ -152,6 +153,7 @@ class BoomMenu(QGraphicsView):
 
 
 def create_windows():
-    global boom_menu, boom_window
-    boom_menu = BoomMenu()
-    boom_window = BoomWindow()
+    if  CZY_BOOM_MENU:
+        global boom_menu, boom_window
+        boom_menu = BoomMenu()
+        boom_window = BoomWindow()

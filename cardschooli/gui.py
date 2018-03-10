@@ -103,10 +103,11 @@ class Window0(QWidget):
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
         self.start_btn.setStyleSheet("background-color: aqua")
-
-        cardschooli.boom_menu.boom_window.window0 = self
-        cardschooli.boom_menu.boom_window.init_ui()
-
+        if cardschooli.boom_menu.CZY_BOOM_MENU:
+            cardschooli.boom_menu.boom_window.window0 = self
+            cardschooli.boom_menu.boom_window.init_ui()
+        else:
+            self.show()
     def next(self):
         self.project = self.project_name.text()
         cardschooli.charts.window_wykr.give_project(self.project)

@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsPixmapItem, QGraphi
 
 import cardschooli.fs_interaction
 
-CZY_BOOM_MENU = True
+CZY_BOOM_MENU  = False
 
 def make_transparent(name):
     img = Image.open(os.path.join(os.pardir, "res", "img", name))
@@ -19,7 +19,7 @@ def make_transparent(name):
             newData.append((255, 255, 255, 0))
         else:
             newData.append(item)
-    new_img.putdata(newData)
+    new_img.putdata(newData) False
     new_img.save(os.path.join(os.pardir, "res", "img", name[:len(name) - 4] + "_new.png"), "png")
 
 

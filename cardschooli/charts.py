@@ -1009,7 +1009,6 @@ def choose_colum(parent, caption, text,selections = None, adding_a_value_to_char
     if adding_a_value_to_chart_not_something_else:
         selections = window_seria_wykr.coolWidget.headers.copy()
         dict_of_numbers_of_already_added_values = window_seria_wykr.get_dict_of_numbers_of_already_added_values()
-        print(dict_of_numbers_of_already_added_values)
         for element in dict_of_numbers_of_already_added_values:
             if dict_of_numbers_of_already_added_values[element] > 0:
                 selections.remove(element)

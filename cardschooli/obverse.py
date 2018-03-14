@@ -174,12 +174,11 @@ class CardObverse(object):
     def add_series_of_charts(self, column_nr, coords, project, gen_cnfg=True, first=False):
         if first:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number)
-            cardschooli.charts.window_seria_wykr.generating_chart(
-                cardschooli.charts.window_seria_wykr.master_generator_list[0])
         else:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number + 1)
-            cardschooli.charts.window_seria_wykr.generating_chart(
-                cardschooli.charts.window_seria_wykr.master_generator_list[self.number])
+
+        cardschooli.charts.window_seria_wykr.generating_chart(cardschooli.charts.window_seria_wykr.master_generator_dict[row[column_nr].strip()])
+
         name = row[column_nr].strip() + "_wykres.png"
         self.paste(cardschooli.fs_interaction.project_location(project, name), coords, False)
         if gen_cnfg:
@@ -190,8 +189,6 @@ class CardObverse(object):
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number)
         else:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number + 1)
-        print(row)
-        print(row[column])
         self.paste(os.path.join(folder_path, row[column].strip() + ".png"), coords, False)
         if gen_cnfg:
             add_command("imgf^^{}^^{}^^{}^^{}\n".format(folder_path, column, coords[0], coords[1]), self.config_path)

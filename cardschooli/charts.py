@@ -705,10 +705,6 @@ class SerialChartsWindow(QWidget):
         figlegend.legend(self.LEGEND_PATCHES_BASE, self.LEGEND_NAME_BASE)
         figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600,
                           transparent=True)
-
-    def generating_chart(self, LIST_OF_GOD, size, thing):
-        pass
-
     def generating_chart(self, master_list):
         LIST_OF_GOD, size, thing = master_list
         names = []
@@ -852,7 +848,7 @@ class SerialChartsWindow(QWidget):
                         self.LIST_OF_GOD[thing][self.colors][colorKey] = dzienniczek_kolorkow[colorKey]
 
     def ok_act(self):
-        self.master_generator_list = []
+        self.master_generator_dict = {}
         returned_from_isempty = self.is_empty()
         isempty = returned_from_isempty[0]
         if not isempty:
@@ -866,7 +862,7 @@ class SerialChartsWindow(QWidget):
             for thing in self.LIST_OF_GOD:
                 if len(self.LIST_OF_GOD[thing][self.names]) > 0:
                     lista = self.LIST_OF_GOD[thing]
-                    self.master_generator_list.append((lista, size, thing))
+                    self.master_generator_dict[thing.strip()] = (lista, size, thing)
             window_wykr.window3.card.add_series_of_charts(self.columnlist[1], (self.X, self.Y), window_wykr.project,
                                                           first=True)
             window_wykr.window3.update_preview()

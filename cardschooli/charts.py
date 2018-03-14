@@ -297,7 +297,7 @@ class ChartsWindow(QWidget):
             if item.number == number:
                 self.QLIST.removeItemWidget(item)
                 self.removing(i)
-
+                item.change_is_empty(True)
             i += 1
 
     def removing(self, number):
@@ -349,10 +349,17 @@ class ChartsWindow(QWidget):
             return self.maxim
         else:
             return 999
+    def get_already_added_names_list(self):
+        already_added_names_list=[]
+        for i in range(self.QLIST.count()):
+            if not self.QLIST.item(i).is_empty:
+                already_added_names_list.append(self.QLIST.item(i).title)
 
+        return already_added_names_list
     def add_new(self):
         if self.return_maxim() > 0:
-            name = self.get_text()
+            already_added_names_list = self.get_already_added_names_list()
+            name = self.get_text(already_added_names_list)
             value = self.get_value()
             if not value:
                 return None
@@ -360,7 +367,7 @@ class ChartsWindow(QWidget):
             if not color:
                 return None
 
-            itemek = QListWidgetItem2()
+            itemek = QListWidgetItem2(title=name, isEmpty = False)
             self.number_of_layouts += 1
 
             if self.is_percent:
@@ -421,8 +428,12 @@ class ChartsWindow(QWidget):
 
         return [i, j]
 
-    def get_text(self):
+    def get_text(self,already_added_names_list):
         text, okPressed = QInputDialog.getText(self, "Podaj nazwę elementu", "NAZWA:", QLineEdit.Normal, "")
+
+        if text in already_added_names_list:
+            QMessageBox.warning(self,"NAZWA ZAJETA","istnieje już wartość o takiej nazwie. proszę podaj inną")
+            self.get_text(already_added_names_list)
 
         if okPressed and (text != "" or text != " " or text != None):
             return text
@@ -430,7 +441,7 @@ class ChartsWindow(QWidget):
             QMessageBox().warning(self, "!!! PUSTE !!!",
                                   "!!!       Wypełnij nazwę      !!! \n ",
                                   QMessageBox.Ok)
-            self.get_text()
+            self.get_text(already_added_names_list)
 
     def load_colors(self):
         with open(os.path.join(os.pardir, "res", "files", "colors.txt")) as f:

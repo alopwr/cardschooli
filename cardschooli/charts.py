@@ -17,14 +17,16 @@ import cardschooli.gui
 class QListWidgetItem2(QListWidgetItem):
     """ my own version of QListWidgetItem """
 
-    def __init__(self, number=0, name=""):
+    def __init__(self, number=0, name="",title="",isEmpty=True):
         super().__init__()
         self.number = number
         self.name = name
-
+        self.title = title
+        self.is_empty = isEmpty
     def change_numb(self, new_number):
         self.number = new_number
-
+    def change_is_empty(self,newvalue):
+        self.is_empty = newvalue
     def give_combo(self, combobox):
         self.combobox = combobox
 
@@ -650,7 +652,7 @@ class SerialChartsWindow(QWidget):
             if item.number == number:
                 self.removing(i, thing_name)
                 self.coolWidget.LIST_OF_TABS[thing_name].QLIST.removeItemWidget(item)
-
+                item.change_is_empty(True)
             i += 1
 
     def closeEvent(self, QCloseEvent):
@@ -760,10 +762,23 @@ class SerialChartsWindow(QWidget):
             for name in self.LIST_OF_GOD[thing][self.colors]:
                 color = self.LIST_OF_GOD[thing][self.colors][name]
                 self.LIST_OF_GOD[thing][self.colors][name] = self.dict_of_colors[color]
+    def get_dict_of_numbers_of_already_added_values(self):
+        dict_of_numbers_of_already_added_values = {}
+        for tab in self.coolWidget.LIST_OF_TABS.values():
+            for i in range(tab.QLIST.count()):
+                if not tab.QLIST.item(i).is_empty:
+                    if tab.QLIST.item(i).title in dict_of_numbers_of_already_added_values :
+                        dict_of_numbers_of_already_added_values[tab.QLIST.item(i).title] +=1
+                    else:
+                        dict_of_numbers_of_already_added_values[tab.QLIST.item(i).title] = 1
+                else:
+                    dict_of_numbers_of_already_added_values[tab.QLIST.item(i).title] = 0
+        return dict_of_numbers_of_already_added_values
+
+
 
     def add_new(self):
-        column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pozycję na wykresach",
-                              self.coolWidget.headers)
+        column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pozycję na wykresach",adding_a_value_to_chart_not_something_else=True)
         try:
             column_nr = self.columnlist[2].index(column)
         except ValueError:
@@ -792,7 +807,6 @@ class SerialChartsWindow(QWidget):
                         msg.setIcon(QMessageBox.Warning)
                         msg.addButton("OK (DLA WSZYTSKICH)",QMessageBox.YesRole)
                         returned = msg.exec_()
-                        print(returned)
                         if returned == 0: # Ich don`t know why but it is 0 (printing test)
                             skip = True
                     values.append(0.0)
@@ -814,9 +828,9 @@ class SerialChartsWindow(QWidget):
                 self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
                 self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
 
-                itemek = QListWidgetItem2(name=thing)
-                name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
 
+                name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
+                itemek = QListWidgetItem2(name=thing, title=name,isEmpty=False)
                 my_itemek = MyWidget2(name,
                                       self.LIST_OF_GOD[thing][self.values][name],
                                       self.LIST_OF_GOD[thing][self.colors][name],
@@ -990,11 +1004,24 @@ def ask_for_polish_names():
     question1 = Question()
 
 
-def choose_colum(parent, caption, text, selections):
+def choose_colum(parent, caption, text,selections = None, adding_a_value_to_chart_not_something_else = False):
     "ask for column"
-    response = QInputDialog.getItem(parent, caption, text, selections)
-    if response[1]:
-        return response[0]
+    if adding_a_value_to_chart_not_something_else:
+        selections = window_seria_wykr.coolWidget.headers.copy()
+        dict_of_numbers_of_already_added_values = window_seria_wykr.get_dict_of_numbers_of_already_added_values()
+        print(dict_of_numbers_of_already_added_values)
+        for element in dict_of_numbers_of_already_added_values:
+            if dict_of_numbers_of_already_added_values[element] > 0:
+                selections.remove(element)
+
+    if len(selections)>0:
+        response = QInputDialog.getItem(parent, caption, text, selections)
+        if response[1]:
+            return response[0]
+
+    else:
+        QMessageBox.warning(window_seria_wykr ,"WYKORZYSTANE","wykorzystałeś wszystkie wartości z pliku")
+        return None
 
 
 def create_window_wykr():

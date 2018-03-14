@@ -776,15 +776,25 @@ class SerialChartsWindow(QWidget):
 
         namess, values = [], []
         i = 0
+        skip = False
         for dat in data:
             if dat.strip() != "":
                 namess.append(column)
                 try:
                     values.append(float(dat.strip()))
                 except ValueError:
-                    QMessageBox.warning(self, "WARTOŚĆ NIENUMERYCZNA!!!",
-                                        "Na karcie {} wartość {} jest nienumeryczna! \n Ustawiono na 0.0.".format(
-                                            self.coolWidget.labels[i], namess[len(namess) - 1]))
+                    if not skip:
+                        msg = QMessageBox()
+                        msg.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
+                        msg.setWindowTitle("WARTOŚĆ NIENUMERYCZNA!!!")
+                        msg.setText("Na karcie {} wartość {} jest nienumeryczna! \n Ustawiono na 0.0.".format(self.coolWidget.labels[i], namess[len(namess) - 1]))
+                        msg.addButton(QMessageBox.Ok)
+                        msg.setIcon(QMessageBox.Warning)
+                        msg.addButton("OK (DLA WSZYTSKICH)",QMessageBox.YesRole)
+                        returned = msg.exec_()
+                        print(returned)
+                        if returned == 0: # Ich don`t know why but it is 0 (printing test)
+                            skip = True
                     values.append(0.0)
             else:
                 namess.append("")

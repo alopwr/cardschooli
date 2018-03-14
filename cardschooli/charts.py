@@ -705,6 +705,7 @@ class SerialChartsWindow(QWidget):
         figlegend.legend(self.LEGEND_PATCHES_BASE, self.LEGEND_NAME_BASE)
         figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600,
                           transparent=True)
+
     def generating_chart(self, master_list):
         LIST_OF_GOD, size, thing = master_list
         names = []
@@ -745,6 +746,7 @@ class SerialChartsWindow(QWidget):
 
         self.legend_base_update(names, patches)
         plt.close()
+
     def legend_base_update(self, texts, patches):
         i = 0
         for text in texts:

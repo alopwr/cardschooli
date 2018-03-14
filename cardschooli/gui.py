@@ -422,7 +422,9 @@ class Window4(QWidget):
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - krok 4")
         center(self)
-        self.loading = QLabel("Twoja talia jest generowana. Zachowaj cierpliwość, to może chwilę potrwać...", self)
+        self.loading = QLabel(
+            "Twoja talia jest generowana. Program może wydawać się nieresponsywny. Zachowaj cierpliwość, to może chwilę potrwać...",
+            self)
         self.loading.move(140, 216)
         self.preloader = QLabel(self)
         self.movie = QMovie(os.path.join(os.pardir, "res", "img", "preloader.gif"))

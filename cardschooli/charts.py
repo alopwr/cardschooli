@@ -73,6 +73,13 @@ class MyWidget2(QWidget):
         main_layout.addWidget(self.combobox)
         main_layout.addWidget(delt_btn)
 
+        delt_all_btn = QPushButton("CAłĄ SERIĘ {}".format(self.name))
+        delt_all_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", image)))
+        delt_all_btn.setIconSize(QSize(35, 35))
+        delt_all_btn.resize(10, 10)
+        delt_all_btn.clicked.connect(self.delt_all_btn_act)
+        main_layout.addWidget(delt_all_btn)
+
         self.setLayout(main_layout)
 
     def spin_change(self, value):
@@ -98,7 +105,8 @@ class MyWidget2(QWidget):
 
     def delt_btn_act(self):
         window_seria_wykr.deleting(self.number, self.item.name)
-
+    def delt_all_btn_act(self):
+        window_seria_wykr.all_deleting(self.item.number)
     def adding_to_combo(self, combobox):
         if not window_seria_wykr.coolWidget.is_polish_names:
             list_of_colors = window_seria_wykr.list_of_colors
@@ -155,6 +163,7 @@ class MyWidget(QWidget):
 
         layout.addWidget(combobox)
         layout.addWidget(delt_btn)
+
 
         self.setLayout(layout)
 
@@ -589,7 +598,7 @@ class SerialChartsWindow(QWidget):
         self.setWindowTitle("cardschooli - dodaj wykresy seryjne")
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         cardschooli.gui.center(self)
-        self.resize(800, 600)
+        self.resize(1000, 600)
         self.names = 0
         self.values = 1
         self.colors = 2
@@ -654,6 +663,14 @@ class SerialChartsWindow(QWidget):
         self.main_layout.addLayout(layout)
         self.main_layout.addWidget(OK_btn)
         self.setLayout(self.main_layout)
+    def all_deleting(self,number):
+        for thing_name in self.LIST_OF_GOD:
+            for i in range(self.coolWidget.LIST_OF_TABS[thing_name].QLIST.count()):
+                item = self.coolWidget.LIST_OF_TABS[thing_name].QLIST.item(i)
+                if item.number == number:
+                    self.removing(i, thing_name)
+                    self.coolWidget.LIST_OF_TABS[thing_name].QLIST.removeItemWidget(item)
+                    item.change_is_empty(True)
 
     def deleting(self, number, thing_name):
         i = 0

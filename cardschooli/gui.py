@@ -87,6 +87,7 @@ class Window0(QWidget):
     starting window
     asks user for project name
     """
+
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
@@ -108,6 +109,7 @@ class Window0(QWidget):
             cardschooli.boom_menu.boom_window.init_ui()
         else:
             self.show()
+
     def next(self):
         self.project = self.project_name.text()
         cardschooli.charts.window_wykr.give_project(self.project)
@@ -418,7 +420,6 @@ class Window4(QWidget):
     def __init__(self):
         super().__init__()
 
-
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - krok 4")
         center(self)
@@ -437,10 +438,11 @@ class Window4(QWidget):
         self.label = QLabel("", self)
         self.label.setPixmap(pixmap)
         self.label.move(400, 165)
-        self.label2 = QLabel("PLIK GOTOWY",self)
+        self.label2 = QLabel("PLIK GOTOWY", self)
         self.label2.setStyleSheet("color: red")
         self.label2.hide()
         self.label.hide()
+
     def init_ui(self):
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
 
@@ -461,6 +463,8 @@ class Window4(QWidget):
         cardschooli.fs_interaction.clean_files(os.path.join(os.pardir, "cards", window0.project))
         self.label.show()
         self.label2.show()
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     cardschooli.boom_menu.create_windows()

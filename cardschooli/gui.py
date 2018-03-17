@@ -17,7 +17,6 @@ import cardschooli.fs_interaction
 import cardschooli.obverse
 import cardschooli.reverse
 
-
 def center(window):
     """ centers window """
     qr = window.frameGeometry()
@@ -65,21 +64,38 @@ def raise_warning(parent, caption, text):
 
 def coords_dialog(parent):
     """ asks user for coords """
-    i, ok_pressed0 = QInputDialog.getInt(parent, "Podaj pozycję w poziomie obiektu:",
-                                         "Anuluj aby wycentrować horyzontalnie. X:", min=0, max=1500)
-    j, ok_pressed1 = QInputDialog.getInt(parent, "Podaj pozycję w pionie obiektu:",
-                                         "Anuluj aby wycentrować wertykalnie. Y:", min=0, max=2100)
-    if not ok_pressed0:
-        i = -1
-    if not ok_pressed1:
-        j = -1
-    return [i, j]
+    msg = QMessageBox()
+    msg.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
+    msg.setWindowTitle("WYBIERZ")
+    msg.setText("wybierz sposób wprowdzenia współrzędnych")
+    msg.setIcon(QMessageBox.Question)
+    msg.addButton("ZCZYTAJ Z MYSZKI",QMessageBox.YesRole)
+    msg.addButton("WPISZ RĘCZNIE", QMessageBox.NoRole)
+    returned = msg.exec_()
 
+    if returned == 1:
+        i, ok_pressed0 = QInputDialog.getInt(parent, "Podaj pozycję w poziomie obiektu:",
+                                             "Anuluj aby wycentrować horyzontalnie. X:", min=0, max=1500)
+        j, ok_pressed1 = QInputDialog.getInt(parent, "Podaj pozycję w pionie obiektu:",
+                                             "Anuluj aby wycentrować wertykalnie. Y:", min=0, max=2100)
+        if not ok_pressed0:
+            i = -1
+        if not ok_pressed1:
+            j = -1
+        return [i, j]
+
+    elif returned == 0:
+        parent.getting_coords_by_mouse = True
+        return "MOUSE"
 
 def choose_colum(parent, caption, text, selections):
     response = QInputDialog.getItem(parent, caption, text, selections)
     if response[1]:
         return response[0]
+
+
+class FileHolder(object):
+    pass
 
 
 class Window0(QWidget):
@@ -191,23 +207,17 @@ class Window2(QWidget):
         finish_btn.setStyleSheet("background-color: orange")
 
         self.setMouseTracking(True)
-        self.shortcut = QShortcut(QKeySequence("Ctrl+T"), self)
-        self.shortcut.activated.connect(self.turn_on_get_coords_by_mouse)
-        self.i_might_need_coords_by_mouse = False
         self.getting_coords_by_mouse = False
-
-    def turn_on_get_coords_by_mouse(self):
-        if self.i_might_need_coords_by_mouse:
-            self.getting_coords_by_mouse = True
 
     def get_coords_by_mouse(self):
         scale = 0.25
-        X = (self.x - 25) / scale
-        Y = (self.y - 60) / scale
+        X =int( (self.x - 25) / scale)
+
+        Y = int((self.y - 60) / scale)
         if X >= 0 and Y >= 0 and X < self.card.xy_size[0] and Y < self.card.xy_size[1]:
             self.X = X
             self.Y = Y
-            print(self.X, self.Y)
+            self.getting_coords_by_mouse = False
         else:
             QMessageBox.warning(self, "POZA ZAKRESEM", "wybierz miejsce na karcie")
 
@@ -238,38 +248,85 @@ class Window2(QWidget):
             self.card.change_color(color)
             self.update_preview()
 
+    """-------------------------------- image_btn_act start --------------------------------"""
     def image_btn_act(self):
-        paste_path = file_dialog(self, "Wybierz obrazek do zaimportowania na rewers:", "PNG (*.png)", ".png")
-        if not paste_path:
+        self.fileholder_img_adding = FileHolder()
+        self.fileholder_img_adding.paste_path = file_dialog(self, "Wybierz obrazek do zaimportowania na rewers:", "PNG (*.png)", ".png")
+
+        if not self.fileholder_img_adding.paste_path:
             raise_warning(self, "Nie wybrałeś obrazka!", "Nie wybrałeś obrazka do zaimportowania!")
             return None
-        coords = coords_dialog(self)
-        self.card.paste(paste_path, coords)
+
+        self.fileholder_img_adding.coords = coords_dialog(self)
+        self.fileholder_img_adding.coords = self.start_wait_or_not(self.fileholder_img_adding.coords,self.image_btn_act_part2,self.fileholder_img_adding)
+
+        if not self.fileholder_img_adding.coords == None:
+            self.image_btn_act_part2()
+        else:
+            return None
+    def image_btn_act_part2(self):
+        self.card.paste(self.fileholder_img_adding.paste_path, self.fileholder_img_adding.coords)
         self.update_preview()
 
+    """-------------------------------- image_btn_act end --------------------------------"""
+
+    """-------------------------------- text_btn_act start --------------------------------"""
+
     def text_btn_act(self):
-        text = text_dialog(self)
-        if not text:
+        self.fileholder_txt_adding = FileHolder()
+        self.fileholder_txt_adding.text = text_dialog(self)
+        if not self.fileholder_txt_adding.text:
             return None
-        size = size_dialog(self)
-        if not size:
+
+        self.fileholder_txt_adding.size = size_dialog(self)
+        if not self.fileholder_txt_adding.size:
             return None
-        coords = coords_dialog(self)
-        if not coords:
+
+        self.fileholder_txt_adding.color = color_dialog()
+        if not self.fileholder_txt_adding.color:
             return None
-        color = color_dialog()
-        if not color:
+
+        self.fileholder_txt_adding.coords = coords_dialog(self)
+        self.fileholder_txt_adding.coords = self.start_wait_or_not(self.fileholder_txt_adding.coords,self.text_btn_act_part2,self.fileholder_txt_adding)
+
+        if not self.fileholder_txt_adding.coords:
             return None
-        if self.card.add_text(coords, text, size, color):
+
+        self.text_btn_act_part2()
+    def text_btn_act_part2(self):
+
+        if self.card.add_text(self.fileholder_txt_adding.coords, self.fileholder_txt_adding.text, self.fileholder_txt_adding.size, self.fileholder_txt_adding.color):
             raise_warning(self, "Za duży tekst!", "Wybrany przez ciebie tekst nie zmieści się na karcie. Spróbuj "
                                                   "ponownie z innymi ustawieniami.")
             return None
         self.update_preview()
+        del self.fileholder_txt_adding
+    """-------------------------------- text_btn_act end --------------------------------"""
 
     def finish_btn_act(self):
         self.card.save_reverses()
         self.close()
         window3.init_ui()
+
+    def start_wait_or_not(self,coords,second_part_of_parent_f,parent_fileholder):
+        self.filehoder_for_wait_loop = FileHolder()
+        self.filehoder_for_wait_loop.second_part_of_parent_func = second_part_of_parent_f
+        self.filehoder_for_wait_loop.parent_fileholder = parent_fileholder
+
+        if coords == "MOUSE":
+            return self.looped_waiting()
+        else:
+            return coords
+    def looped_waiting(self):
+        if  self.getting_coords_by_mouse:
+            timeoutTimer = QTimer(self)
+            timeoutTimer.setSingleShot(True)
+            timeoutTimer.timeout.connect(self.looped_waiting)
+            timeoutTimer.start(50)
+        else:
+            self.filehoder_for_wait_loop.parent_fileholder.coords = [self.X, self.Y]
+            self.filehoder_for_wait_loop.second_part_of_parent_func()
+            del self.filehoder_for_wait_loop
 
 
 class Window3(QWidget):
@@ -341,7 +398,6 @@ class Window3(QWidget):
         if X >= 0 and Y >= 0 and X < self.card.xy_size[0] and Y < self.card.xy_size[1]:
             self.X = X
             self.Y = Y
-            print(self.X, self.Y)
         else:
             QMessageBox.warning(self, "POZA ZAKRESEM", "wybierz miejsce na karcie")
 

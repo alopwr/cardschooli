@@ -324,6 +324,32 @@ class Window3(QWidget):
         chart_seria_btn.clicked.connect(self.chart_seria_btn_act)
         chart_seria_btn.setStyleSheet("background-color: lightblue")
 
+        self.setMouseTracking(True)
+        self.shortcut = QShortcut(QKeySequence("Ctrl+T"), self)
+        self.shortcut.activated.connect(self.turn_on_get_coords_by_mouse)
+        self.i_might_need_coords_by_mouse = True
+        self.getting_coords_by_mouse = False
+
+    def turn_on_get_coords_by_mouse(self):
+        if self.i_might_need_coords_by_mouse:
+            self.getting_coords_by_mouse = True
+
+    def get_coords_by_mouse(self):
+        scale = 0.25
+        X = (self.x - 25) / scale
+        Y = (self.y - 60) / scale
+        if X >= 0 and Y >= 0 and X < self.card.xy_size[0] and Y < self.card.xy_size[1]:
+            self.X = X
+            self.Y = Y
+            print(self.X, self.Y)
+        else:
+            QMessageBox.warning(self, "POZA ZAKRESEM", "wybierz miejsce na karcie")
+
+    def mousePressEvent(self, event):
+        if self.getting_coords_by_mouse:
+            self.x = event.x()
+            self.y = event.y()
+            self.get_coords_by_mouse()
     def text_seria_btn_act(self):
         column = choose_colum(self, "Wybierz kolumnę:",
                               "Wybierz kolumnę, w której zapisane są teksty dla każdej karty: ",

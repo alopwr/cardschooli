@@ -31,7 +31,7 @@ class TestCardReverse(object):
             sha1sum = sha1()
             data = f.read()
             sha1sum.update(data)
-            assert sha1sum.hexdigest() == "7fabbec978b5cedad4a87c285cf5b93134b9a8fb"
+            assert sha1sum.hexdigest() == "58fda18bb194ca7ced890ee2d1d2f6208a9ec641"
 
     def test_paste(self):
         cardreverse = reverse.CardReverse("unittests3")
@@ -41,7 +41,7 @@ class TestCardReverse(object):
             sha1sum = sha1()
             data = f.read()
             sha1sum.update(data)
-            assert sha1sum.hexdigest() == "99afde750ad26cbeb7b90e2c70f00290225d28ba"
+            assert sha1sum.hexdigest() == "7a171e8949c6a384c483b2fe76d99b62a62b6070"
 
     def test_add_text(self):
         cardreverse = reverse.CardReverse("unittests4")
@@ -51,7 +51,7 @@ class TestCardReverse(object):
             sha1sum = sha1()
             data = f.read()
             sha1sum.update(data)
-            assert sha1sum.hexdigest() == "b8dff86d4924ad9e2e749b2f464eae12368bc954"
+            assert sha1sum.hexdigest() == "984343ff1425e6f713cf9ebe80b5c0a2f049bc93"
 
     def test_save_reverses(self):
         cardreverse = reverse.CardReverse("unittests4")

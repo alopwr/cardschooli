@@ -58,13 +58,16 @@ def read_config(path):
             commands.append(i)
     return commands
 
+
 def clean_files2(directory_path):
     for root, dirs, files in os.walk(directory_path):
         for name in files:
             if name.endswith("_new.png"):
                 os.remove(os.path.join(root, name))
+
+
 def clean_files(directory_path):
     for root, dirs, files in os.walk(directory_path):
         for name in files:
-            if not name == "cards.pdf" and not name=="legend.png" and not name=="legend2.png":
+            if not name == "cards.pdf" and not name == "legend.png" and not name == "legend2.png":
                 os.remove(os.path.join(root, name))

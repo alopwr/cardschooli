@@ -143,7 +143,7 @@ class CardObverse(object):
     def save_preview(self):
         """ saves scaled preview of obverse (the first one) """
         tn_obverse = self.obverse.copy()
-        tn_obverse.thumbnail((380, 520))
+        tn_obverse.thumbnail((375, 525))
         tn_obverse.save(cardschooli.fs_interaction.project_location(self.project_name, "obverse_preview.png"),
                         format="PNG", dpi=(600, 600))
 

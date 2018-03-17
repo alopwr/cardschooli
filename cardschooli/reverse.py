@@ -57,7 +57,7 @@ class CardReverse(object):
         saves card's scaled reverse thubnail at project + reverse_preview.png path
         """
         tn_reverse = self.reverse.copy()
-        tn_reverse.thumbnail((380, 520))
+        tn_reverse.thumbnail((375, 525))
         tn_reverse.save(cardschooli.fs_interaction.project_location(self.project_location, "reverse_preview.png"),
                         format="PNG", dpi=(600, 600))
 

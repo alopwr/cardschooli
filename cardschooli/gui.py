@@ -6,16 +6,18 @@ allows user creating his deck of cards
 import os.path
 import sys
 
-from PyQt5.QtCore import QTimer
-from PyQt5.QtGui import QPixmap, QMovie, QIcon,QKeySequence
+from PyQt5.QtCore import QTimer,Qt
+from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
-    QColorDialog, QInputDialog, QMessageBox,QShortcut
+    QColorDialog, QInputDialog, QMessageBox,QCheckBox
 
 import cardschooli.boom_menu
 import cardschooli.charts
 import cardschooli.fs_interaction
 import cardschooli.obverse
 import cardschooli.reverse
+
+show_again = True
 
 def center(window):
     """ centers window """
@@ -85,15 +87,25 @@ def coords_dialog(parent):
         return [i, j]
 
     elif returned == 0:
-        msg = QMessageBox()
-        msg.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-        msg.setWindowTitle("WYBRANO:  ZCZYTAJ Z MYSZKI")
-        msg.setText("kliknij myszką na wybrane przez ciebie miejsce na karcie \n miejsce to bendzie LEWYM GÓNYM ROGIEM obiektu, który chcesz wstawić")
-        msg.addButton(QMessageBox.Ok)
-        msg.exec_()
+        if show_again:
+            msg = QMessageBox()
+            msg.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
+            msg.setWindowTitle("WYBRANO:  ZCZYTAJ Z MYSZKI")
+            msg.setText("kliknij myszką na wybrane przez ciebie miejsce na karcie \n miejsce to bendzie LEWYM GÓNYM ROGIEM obiektu, który chcesz wstawić")
+            msg.addButton(QMessageBox.Ok)
+            dontShowCheckBox = QCheckBox("nie pokazuj tego ponownie")
+            dontShowCheckBox.stateChanged.connect(change_dont_show_it_again)
+            msg.setCheckBox(dontShowCheckBox)
+            msg.exec_()
         parent.getting_coords_by_mouse = True
         return "MOUSE"
 
+def change_dont_show_it_again(state):
+    global show_again
+    if state == Qt.Checked:
+        show_again = False
+    else:
+        show_again = True
 def choose_colum(parent, caption, text, selections):
     response = QInputDialog.getItem(parent, caption, text, selections)
     if response[1]:

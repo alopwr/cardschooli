@@ -17,16 +17,19 @@ import cardschooli.gui
 class QListWidgetItem2(QListWidgetItem):
     """ my own version of QListWidgetItem """
 
-    def __init__(self, number=0, name="",title="",isEmpty=True):
+    def __init__(self, number=0, name="", title="", isEmpty=True):
         super().__init__()
         self.number = number
         self.name = name
         self.title = title
         self.is_empty = isEmpty
+
     def change_numb(self, new_number):
         self.number = new_number
-    def change_is_empty(self,newvalue):
+
+    def change_is_empty(self, newvalue):
         self.is_empty = newvalue
+
     def give_combo(self, combobox):
         self.combobox = combobox
 
@@ -73,7 +76,7 @@ class MyWidget2(QWidget):
         main_layout.addWidget(self.combobox)
         main_layout.addWidget(delt_btn)
 
-        delt_all_btn = QPushButton("CAłĄ SERIĘ {}".format(self.name))
+        delt_all_btn = QPushButton("CAŁĄ SERIĘ {}".format(self.name))
         delt_all_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", image)))
         delt_all_btn.setIconSize(QSize(35, 35))
         delt_all_btn.resize(10, 10)
@@ -105,8 +108,10 @@ class MyWidget2(QWidget):
 
     def delt_btn_act(self):
         window_seria_wykr.deleting(self.number, self.item.name)
+
     def delt_all_btn_act(self):
         window_seria_wykr.all_deleting(self.item.number)
+
     def adding_to_combo(self, combobox):
         if not window_seria_wykr.coolWidget.is_polish_names:
             list_of_colors = window_seria_wykr.list_of_colors
@@ -163,7 +168,6 @@ class MyWidget(QWidget):
 
         layout.addWidget(combobox)
         layout.addWidget(delt_btn)
-
 
         self.setLayout(layout)
 
@@ -226,7 +230,7 @@ class ChartsWindow(QWidget):
         self.load_colors()
 
         add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "plusik.png")))
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "add.png")))
         add_btn.clicked.connect(self.add_new)
         add_btn.setToolTip("dodaje element do wykresu")
         add_btn.setStyleSheet("background-color: mediumSeaGreen")
@@ -358,13 +362,15 @@ class ChartsWindow(QWidget):
             return self.maxim
         else:
             return 999
+
     def get_already_added_names_list(self):
-        already_added_names_list=[]
+        already_added_names_list = []
         for i in range(self.QLIST.count()):
             if not self.QLIST.item(i).is_empty:
                 already_added_names_list.append(self.QLIST.item(i).title)
 
         return already_added_names_list
+
     def add_new(self):
         if self.return_maxim() > 0:
             already_added_names_list = self.get_already_added_names_list()
@@ -376,14 +382,14 @@ class ChartsWindow(QWidget):
             if not color:
                 return None
 
-            itemek = QListWidgetItem2(title=name, isEmpty = False)
+            itemek = QListWidgetItem2(title=name, isEmpty=False)
             self.number_of_layouts += 1
 
             if self.is_percent:
-                my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, item=itemek,
+                my_itemek = MyWidget(name, value, color, "delete.png", self.number_of_layouts, item=itemek,
                                      accurancy=2)
             else:
-                my_itemek = MyWidget(name, value, color, "deleting.png", self.number_of_layouts, item=itemek,
+                my_itemek = MyWidget(name, value, color, "delete.png", self.number_of_layouts, item=itemek,
                                      max_value=999999999, accurancy=1)
             itemek.setSizeHint(my_itemek.sizeHint())
 
@@ -437,11 +443,11 @@ class ChartsWindow(QWidget):
 
         return [i, j]
 
-    def get_text(self,already_added_names_list):
+    def get_text(self, already_added_names_list):
         text, okPressed = QInputDialog.getText(self, "Podaj nazwę elementu", "NAZWA:", QLineEdit.Normal, "")
 
         if text in already_added_names_list:
-            QMessageBox.warning(self,"NAZWA ZAJETA","istnieje już wartość o takiej nazwie. proszę podaj inną")
+            QMessageBox.warning(self, "NAZWA ZAJETA", "istnieje już wartość o takiej nazwie. proszę podaj inną")
             self.get_text(already_added_names_list)
 
         if okPressed and (text != "" or text != " " or text != None):
@@ -621,7 +627,7 @@ class SerialChartsWindow(QWidget):
     def load_ui(self):
 
         add_btn = QPushButton("ADD", self)
-        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "plusik.png")))
+        add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "add.png")))
         add_btn.clicked.connect(self.add_new)
         add_btn.setToolTip("dodaje element do wykresu")
         add_btn.setStyleSheet("background-color: mediumSeaGreen")
@@ -663,7 +669,8 @@ class SerialChartsWindow(QWidget):
         self.main_layout.addLayout(layout)
         self.main_layout.addWidget(OK_btn)
         self.setLayout(self.main_layout)
-    def all_deleting(self,number):
+
+    def all_deleting(self, number):
         for thing_name in self.LIST_OF_GOD:
             for i in range(self.coolWidget.LIST_OF_TABS[thing_name].QLIST.count()):
                 item = self.coolWidget.LIST_OF_TABS[thing_name].QLIST.item(i)
@@ -790,23 +797,23 @@ class SerialChartsWindow(QWidget):
             for name in self.LIST_OF_GOD[thing][self.colors]:
                 color = self.LIST_OF_GOD[thing][self.colors][name]
                 self.LIST_OF_GOD[thing][self.colors][name] = self.dict_of_colors[color]
+
     def get_dict_of_numbers_of_already_added_values(self):
         dict_of_numbers_of_already_added_values = {}
         for tab in self.coolWidget.LIST_OF_TABS.values():
             for i in range(tab.QLIST.count()):
                 if not tab.QLIST.item(i).is_empty:
-                    if tab.QLIST.item(i).title in dict_of_numbers_of_already_added_values :
-                        dict_of_numbers_of_already_added_values[tab.QLIST.item(i).title] +=1
+                    if tab.QLIST.item(i).title in dict_of_numbers_of_already_added_values:
+                        dict_of_numbers_of_already_added_values[tab.QLIST.item(i).title] += 1
                     else:
                         dict_of_numbers_of_already_added_values[tab.QLIST.item(i).title] = 1
                 else:
                     dict_of_numbers_of_already_added_values[tab.QLIST.item(i).title] = 0
         return dict_of_numbers_of_already_added_values
 
-
-
     def add_new(self):
-        column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pozycję na wykresach",adding_a_value_to_chart_not_something_else=True)
+        column = choose_colum(self, "Wybierz pozycję", "Wybierz kolumnę z wartościami na pozycję na wykresach",
+                              adding_a_value_to_chart_not_something_else=True)
         try:
             column_nr = self.columnlist[2].index(column)
         except ValueError:
@@ -830,12 +837,13 @@ class SerialChartsWindow(QWidget):
                         msg = QMessageBox()
                         msg.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
                         msg.setWindowTitle("WARTOŚĆ NIENUMERYCZNA!!!")
-                        msg.setText("Na karcie {} wartość {} jest nienumeryczna! \n Ustawiono na 0.0.".format(self.coolWidget.labels[i], namess[len(namess) - 1]))
+                        msg.setText("Na karcie {} wartość {} jest nienumeryczna! \n Ustawiono na 0.0.".format(
+                            self.coolWidget.labels[i], namess[len(namess) - 1]))
                         msg.addButton(QMessageBox.Ok)
                         msg.setIcon(QMessageBox.Warning)
-                        msg.addButton("OK (DLA WSZYTSKICH)",QMessageBox.YesRole)
+                        msg.addButton("OK (DLA WSZYTSKICH)", QMessageBox.YesRole)
                         returned = msg.exec_()
-                        if returned == 0: # Ich don`t know why but it is 0 (printing test)
+                        if returned == 0:  # Ich don`t know why but it is 0 (printing test)
                             skip = True
                     values.append(0.0)
             else:
@@ -856,13 +864,12 @@ class SerialChartsWindow(QWidget):
                 self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
                 self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
 
-
                 name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
-                itemek = QListWidgetItem2(name=thing, title=name,isEmpty=False)
+                itemek = QListWidgetItem2(name=thing, title=name, isEmpty=False)
                 my_itemek = MyWidget2(name,
                                       self.LIST_OF_GOD[thing][self.values][name],
                                       self.LIST_OF_GOD[thing][self.colors][name],
-                                      "deleting.png", self.number_of_layouts, item=itemek,
+                                      "delete.png", self.number_of_layouts, item=itemek,
                                       max_value=999999999, accurancy=1)
 
                 itemek.setSizeHint(my_itemek.sizeHint())
@@ -1032,7 +1039,7 @@ def ask_for_polish_names():
     question1 = Question()
 
 
-def choose_colum(parent, caption, text,selections = None, adding_a_value_to_chart_not_something_else = False):
+def choose_colum(parent, caption, text, selections=None, adding_a_value_to_chart_not_something_else=False):
     "ask for column"
     if adding_a_value_to_chart_not_something_else:
         selections = window_seria_wykr.coolWidget.headers.copy()
@@ -1041,13 +1048,13 @@ def choose_colum(parent, caption, text,selections = None, adding_a_value_to_char
             if dict_of_numbers_of_already_added_values[element] > 0:
                 selections.remove(element)
 
-    if len(selections)>0:
+    if len(selections) > 0:
         response = QInputDialog.getItem(parent, caption, text, selections)
         if response[1]:
             return response[0]
 
     else:
-        QMessageBox.warning(window_seria_wykr ,"WYKORZYSTANE","wykorzystałeś wszystkie wartości z pliku")
+        QMessageBox.warning(window_seria_wykr, "WYKORZYSTANE", "wykorzystałeś wszystkie wartości z pliku")
         return None
 
 

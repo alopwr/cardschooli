@@ -6,10 +6,10 @@ allows user creating his deck of cards
 import os.path
 import sys
 
-from PyQt5.QtCore import QTimer,Qt
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
-    QColorDialog, QInputDialog, QMessageBox,QCheckBox
+    QColorDialog, QInputDialog, QMessageBox, QCheckBox
 
 import cardschooli.boom_menu
 import cardschooli.charts
@@ -589,9 +589,7 @@ class Window3(QWidget):
         else:
             return coords
     def looped_waiting(self):
-        print(self.getting_coords_by_mouse)
         if self.getting_coords_by_mouse:
-            print("xd")
             timeoutTimer = QTimer(self)
             timeoutTimer.setSingleShot(True)
             timeoutTimer.timeout.connect(self.looped_waiting)

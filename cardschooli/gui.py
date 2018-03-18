@@ -5,6 +5,7 @@ allows user creating his deck of cards
 """
 import os.path
 import sys
+from shutil import copyfile
 
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QPixmap, QMovie, QIcon
@@ -18,6 +19,7 @@ import cardschooli.obverse
 import cardschooli.reverse
 
 show_again = True
+
 
 def center(window):
     """ centers window """
@@ -35,6 +37,14 @@ def file_dialog(parent, caption, *expression, folder=False):
         return filename
     filename = QFileDialog.getOpenFileName(parent=parent, caption=caption, filter=expression[0], options=options)
     return filename[0] if filename[1] and filename[0].endswith(expression[1]) else None
+
+
+def save_file_dialog(parent, caption, expression):
+    options = QFileDialog.Options()
+    options |= QFileDialog.DontUseNativeDialog
+    dialog = QFileDialog.getSaveFileName(parent, caption, filter=expression)
+    if dialog:
+        return dialog[0]
 
 
 def color_dialog():
@@ -59,21 +69,25 @@ def text_dialog(parent):
         return text
 
 
+def raise_info(parent, caption, text):
+    QMessageBox.information(parent, caption, text, QMessageBox.Ok)
+
+
 def raise_warning(parent, caption, text):
     """ raises PyQt warning """
     QMessageBox.warning(parent, caption, text, QMessageBox.Ok)
 
 
-def coords_dialog(parent,parent2=False):
+def coords_dialog(parent, parent2=False):
     """ asks user for way of getting coords and ask user for coords  """
     if not parent2:
-        parent2=parent
+        parent2 = parent
     msg = QMessageBox()
     msg.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
     msg.setWindowTitle("WYBIERZ")
     msg.setText("wybierz sposób wprowdzenia współrzędnych")
     msg.setIcon(QMessageBox.Question)
-    msg.addButton("ZCZYTAJ Z MYSZKI",QMessageBox.YesRole)
+    msg.addButton("ZCZYTAJ Z MYSZKI", QMessageBox.YesRole)
     msg.addButton("WPISZ RĘCZNIE", QMessageBox.NoRole)
     returned = msg.exec_()
 
@@ -93,16 +107,19 @@ def coords_dialog(parent,parent2=False):
             msg = QMessageBox()
             msg.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
             msg.setWindowTitle("WYBRANO:  ZCZYTAJ Z MYSZKI")
-            msg.setText("kliknij myszką na wybrane przez ciebie miejsce na karcie \n miejsce to bendzie LEWYM GÓNYM ROGIEM obiektu, który chcesz wstawić")
+            msg.setText(
+                "Kliknij myszką na wybrane przez ciebie miejsce na karcie. \n Miejsce to będzie LEWYM GÓNYM ROGIEM "
+                "obiektu, który chcesz wstawić.")
             msg.addButton(QMessageBox.Ok)
-            dontShowCheckBox = QCheckBox("nie pokazuj tego ponownie")
+            dontShowCheckBox = QCheckBox("Nie pokazuj tego ponownie.")
             dontShowCheckBox.stateChanged.connect(change_dont_show_it_again)
             msg.setCheckBox(dontShowCheckBox)
             msg.exec_()
         parent2.getting_coords_by_mouse = True
-        if parent2!=parent:
+        if parent2 != parent:
             parent.close()
         return "MOUSE"
+
 
 def change_dont_show_it_again(state):
     global show_again
@@ -110,6 +127,8 @@ def change_dont_show_it_again(state):
         show_again = False
     else:
         show_again = True
+
+
 def choose_colum(parent, caption, text, selections):
     response = QInputDialog.getItem(parent, caption, text, selections)
     if response[1]:
@@ -233,7 +252,7 @@ class Window2(QWidget):
 
     def get_coords_by_mouse(self):
         scale = 0.25
-        X =int( (self.x - 25) / scale)
+        X = int((self.x - 25) / scale)
 
         Y = int((self.y - 60) / scale)
         if X >= 0 and Y >= 0 and X < self.card.xy_size[0] and Y < self.card.xy_size[1]:
@@ -271,21 +290,25 @@ class Window2(QWidget):
             self.update_preview()
 
     """-------------------------------- image_btn_act START --------------------------------"""
+
     def image_btn_act(self):
         self.fileholder_img_adding = FileHolder()
-        self.fileholder_img_adding.paste_path = file_dialog(self, "Wybierz obrazek do zaimportowania na rewers:", "PNG (*.png)", ".png")
+        self.fileholder_img_adding.paste_path = file_dialog(self, "Wybierz obrazek do zaimportowania na rewers:",
+                                                            "PNG (*.png)", ".png")
 
         if not self.fileholder_img_adding.paste_path:
             raise_warning(self, "Nie wybrałeś obrazka!", "Nie wybrałeś obrazka do zaimportowania!")
             return None
 
         self.fileholder_img_adding.coords = coords_dialog(self)
-        self.fileholder_img_adding.coords = self.start_wait_or_not(self.fileholder_img_adding.coords,self.image_btn_act_part2,self.fileholder_img_adding)
+        self.fileholder_img_adding.coords = self.start_wait_or_not(self.fileholder_img_adding.coords,
+                                                                   self.image_btn_act_part2, self.fileholder_img_adding)
 
         if not self.fileholder_img_adding.coords == None:
             self.image_btn_act_part2()
         else:
             return None
+
     def image_btn_act_part2(self):
         self.card.paste(self.fileholder_img_adding.paste_path, self.fileholder_img_adding.coords)
         self.update_preview()
@@ -309,20 +332,24 @@ class Window2(QWidget):
             return None
 
         self.fileholder_txt_adding.coords = coords_dialog(self)
-        self.fileholder_txt_adding.coords = self.start_wait_or_not(self.fileholder_txt_adding.coords,self.text_btn_act_part2,self.fileholder_txt_adding)
+        self.fileholder_txt_adding.coords = self.start_wait_or_not(self.fileholder_txt_adding.coords,
+                                                                   self.text_btn_act_part2, self.fileholder_txt_adding)
 
         if not self.fileholder_txt_adding.coords:
             return None
 
         self.text_btn_act_part2()
+
     def text_btn_act_part2(self):
 
-        if self.card.add_text(self.fileholder_txt_adding.coords, self.fileholder_txt_adding.text, self.fileholder_txt_adding.size, self.fileholder_txt_adding.color):
+        if self.card.add_text(self.fileholder_txt_adding.coords, self.fileholder_txt_adding.text,
+                              self.fileholder_txt_adding.size, self.fileholder_txt_adding.color):
             raise_warning(self, "Za duży tekst!", "Wybrany przez ciebie tekst nie zmieści się na karcie. Spróbuj "
                                                   "ponownie z innymi ustawieniami.")
             return None
         self.update_preview()
         del self.fileholder_txt_adding
+
     """-------------------------------- text_btn_act END --------------------------------"""
 
     def finish_btn_act(self):
@@ -330,7 +357,7 @@ class Window2(QWidget):
         self.close()
         window3.init_ui()
 
-    def start_wait_or_not(self,coords,second_part_of_parent_f,parent_fileholder):
+    def start_wait_or_not(self, coords, second_part_of_parent_f, parent_fileholder):
         self.filehoder_for_wait_loop = FileHolder()
         self.filehoder_for_wait_loop.second_part_of_parent_func = second_part_of_parent_f
         self.filehoder_for_wait_loop.parent_fileholder = parent_fileholder
@@ -339,12 +366,13 @@ class Window2(QWidget):
             return self.looped_waiting()
         else:
             return coords
+
     def looped_waiting(self):
-        if  self.getting_coords_by_mouse:
-            timeoutTimer = QTimer(self)
-            timeoutTimer.setSingleShot(True)
-            timeoutTimer.timeout.connect(self.looped_waiting)
-            timeoutTimer.start(50)
+        if self.getting_coords_by_mouse:
+            timeout_timer = QTimer(self)
+            timeout_timer.setSingleShot(True)
+            timeout_timer.timeout.connect(self.looped_waiting)
+            timeout_timer.start(50)
         else:
             self.filehoder_for_wait_loop.parent_fileholder.coords = [self.X, self.Y]
             self.filehoder_for_wait_loop.second_part_of_parent_func()
@@ -425,15 +453,17 @@ class Window3(QWidget):
             self.get_coords_by_mouse()
 
     """-------------------------------- text_seria_btn_act START --------------------------------"""
+
     def text_seria_btn_act(self):
         self.fileholder_txt_seria_adding = FileHolder()
         self.fileholder_txt_seria_adding.column = choose_colum(self, "Wybierz kolumnę:",
-                              "Wybierz kolumnę, w której zapisane są teksty dla każdej karty: ",
-                              cardschooli.fs_interaction.read_csv(window1.filename, 0))
+                                                               "Wybierz kolumnę, w której zapisane są teksty dla każdej karty: ",
+                                                               cardschooli.fs_interaction.read_csv(window1.filename, 0))
         if not self.fileholder_txt_seria_adding.column:
             return None
         self.fileholder_txt_seria_adding.column_data = cardschooli.fs_interaction.read_csv(window1.filename, 0)
-        self.fileholder_txt_seria_adding.column_nr = self.fileholder_txt_seria_adding.column_data.index(self.fileholder_txt_seria_adding.column)
+        self.fileholder_txt_seria_adding.column_nr = self.fileholder_txt_seria_adding.column_data.index(
+            self.fileholder_txt_seria_adding.column)
 
         self.fileholder_txt_seria_adding.size = size_dialog(self)
         if not self.fileholder_txt_seria_adding.size:
@@ -444,18 +474,21 @@ class Window3(QWidget):
 
         self.fileholder_txt_seria_adding.coords = coords_dialog(self)
         self.fileholder_txt_seria_adding.coords = self.start_wait_or_not(self.fileholder_txt_seria_adding.coords,
-                                                                          self.text_seria_btn_act_part2,
-                                                                          self.fileholder_txt_seria_adding)
+                                                                         self.text_seria_btn_act_part2,
+                                                                         self.fileholder_txt_seria_adding)
 
         if not self.fileholder_txt_seria_adding.coords:
             return None
         self.text_seria_btn_act_part2()
 
     def text_seria_btn_act_part2(self):
-        self.card.add_text_series(self.fileholder_txt_seria_adding.column_nr, self.fileholder_txt_seria_adding.coords, self.fileholder_txt_seria_adding.size, self.fileholder_txt_seria_adding.color, first=True)
+        self.card.add_text_series(self.fileholder_txt_seria_adding.column_nr, self.fileholder_txt_seria_adding.coords,
+                                  self.fileholder_txt_seria_adding.size, self.fileholder_txt_seria_adding.color,
+                                  first=True)
         self.update_preview()
 
     """-------------------------------- text_seria_btn_act END --------------------------------"""
+
     def chart_btn_act(self):
         cardschooli.charts.window_wykr.isCreatingChart = True
         cardschooli.charts.window_wykr.init_ui()
@@ -498,9 +531,11 @@ class Window3(QWidget):
             self.update_preview()
 
     """-------------------------------- image_btn_act START --------------------------------"""
+
     def image_btn_act(self):
         self.fileholder_img_adding = FileHolder()
-        self.fileholder_img_adding.paste_path = file_dialog(self, "Wybierz obrazek do zaimportowania na awers:", "PNG (*.png)", ".png")
+        self.fileholder_img_adding.paste_path = file_dialog(self, "Wybierz obrazek do zaimportowania na awers:",
+                                                            "PNG (*.png)", ".png")
         if not self.fileholder_img_adding.paste_path:
             raise_warning(self, "Nie wybrałeś obrazka!", "Nie wybrałeś obrazka do zaimportowania!")
             return None
@@ -512,37 +547,47 @@ class Window3(QWidget):
             self.image_btn_act_part2()
         else:
             return None
+
     def image_btn_act_part2(self):
         self.card.paste(self.fileholder_img_adding.paste_path, self.fileholder_img_adding.coords)
         self.update_preview()
 
     """-------------------------------- image_btn_act END --------------------------------"""
     """-------------------------------- image_folder_btn_act START --------------------------------"""
+
     def image_folder_btn_act(self):
         self.fileholder_img_series_adding = FileHolder()
         self.fileholder_img_series_adding.column = choose_colum(self, "Wybierz kolumnę:",
-                              "Wybierz kolumnę, w której zapisane są nazwy plików PNG dla każdej karty:",
-                              cardschooli.fs_interaction.read_csv(window1.filename, 0))
+                                                                "Wybierz kolumnę, w której zapisane są nazwy plików PNG dla każdej karty:",
+                                                                cardschooli.fs_interaction.read_csv(window1.filename,
+                                                                                                    0))
         if not self.fileholder_img_series_adding.column:
             return None
         self.fileholder_img_series_adding.column_data = cardschooli.fs_interaction.read_csv(window1.filename, 0)
-        self.fileholder_img_series_adding.column_nr = self.fileholder_img_series_adding.column_data.index(self.fileholder_img_series_adding.column)
+        self.fileholder_img_series_adding.column_nr = self.fileholder_img_series_adding.column_data.index(
+            self.fileholder_img_series_adding.column)
         self.fileholder_img_series_adding.folder = file_dialog(self, "Wybierz folder z obrazkami:", folder=True)
         if not self.fileholder_img_series_adding.folder:
             return None
 
         self.fileholder_img_series_adding.coords = coords_dialog(self)
-        self.fileholder_img_series_adding.coords = self.start_wait_or_not(self.fileholder_img_series_adding.coords,self.image_folder_btn_act_part2,self.fileholder_img_series_adding)
+        self.fileholder_img_series_adding.coords = self.start_wait_or_not(self.fileholder_img_series_adding.coords,
+                                                                          self.image_folder_btn_act_part2,
+                                                                          self.fileholder_img_series_adding)
 
         if not self.fileholder_img_series_adding.coords:
             return None
         self.image_folder_btn_act_part2()
+
     def image_folder_btn_act_part2(self):
-        self.card.add_image_folder(self.fileholder_img_series_adding.folder, self.fileholder_img_series_adding.column_nr, self.fileholder_img_series_adding.coords, first=True)
+        self.card.add_image_folder(self.fileholder_img_series_adding.folder,
+                                   self.fileholder_img_series_adding.column_nr,
+                                   self.fileholder_img_series_adding.coords, first=True)
         self.update_preview()
 
     """-------------------------------- image_folder_btn_act END --------------------------------"""
     """-------------------------------- text_btn_act START --------------------------------"""
+
     def text_btn_act(self):
         self.fileholder_txt_adding = FileHolder()
         self.fileholder_txt_adding.text = text_dialog(self)
@@ -563,23 +608,27 @@ class Window3(QWidget):
             return None
 
         self.text_btn_act_part2()
+
     def text_btn_act_part2(self):
-        if self.card.add_text(self.fileholder_txt_adding.coords, self.fileholder_txt_adding.text, self.fileholder_txt_adding.size, self.fileholder_txt_adding.color):
+        if self.card.add_text(self.fileholder_txt_adding.coords, self.fileholder_txt_adding.text,
+                              self.fileholder_txt_adding.size, self.fileholder_txt_adding.color):
             raise_warning(self, "Za duży tekst!", "Wybrany przez ciebie tekst nie zmieści się na karcie. Spróbuj "
                                                   "ponownie z innymi ustawieniami.")
             return None
         self.update_preview()
 
     """-------------------------------- text_btn_act END --------------------------------"""
+
     def finish_btn_act(self):
-        if not cardschooli.charts.window_wykr.isCreatingChart and not cardschooli.charts.window_seria_wykr.isCreatingChart:
+        if not (cardschooli.charts.window_wykr.isCreatingChart or cardschooli.charts.window_seria_wykr.isCreatingChart):
             self.close()
             window4.init_ui()
         else:
             QMessageBox().warning(self, "W TRAKCIE CZYNNOŚCI",
                                   "Jesteś w trakcie dodawania wykresu",
                                   QMessageBox.Ok)
-    def start_wait_or_not(self,coords,second_part_of_parent_f,parent_fileholder):
+
+    def start_wait_or_not(self, coords, second_part_of_parent_f, parent_fileholder):
         self.filehoder_for_wait_loop = FileHolder()
         self.filehoder_for_wait_loop.second_part_of_parent_func = second_part_of_parent_f
         self.filehoder_for_wait_loop.parent_fileholder = parent_fileholder
@@ -588,6 +637,7 @@ class Window3(QWidget):
             return self.looped_waiting()
         else:
             return coords
+
     def looped_waiting(self):
         if self.getting_coords_by_mouse:
             timeoutTimer = QTimer(self)
@@ -599,42 +649,31 @@ class Window3(QWidget):
             self.filehoder_for_wait_loop.second_part_of_parent_func()
             del self.filehoder_for_wait_loop
 
+
 class Window4(QWidget):
     def __init__(self):
         super().__init__()
-
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - krok 4")
         center(self)
         self.loading = QLabel(
-            "Twoja talia jest generowana. Program może wydawać się nieresponsywny. Zachowaj cierpliwość, to może chwilę potrwać...",
+            "Twoja talia jest generowana. Zachowaj cierpliwość, to może chwilę potrwać...\nProgram może wydawać się "
+            "nieresponsywny.",
             self)
         self.loading.move(140, 216)
         self.preloader = QLabel(self)
         self.movie = QMovie(os.path.join(os.pardir, "res", "img", "preloader.gif"))
         self.preloader.setMovie(self.movie)
-
-        self.preloader.setGeometry(336, 236, 128, 128)
+        self.preloader.setGeometry(336, 266, 128, 128)
         self.movie.start()
 
-        pixmap = QPixmap(os.path.join(os.pardir, "res", "img", "done.png"))
-        self.label = QLabel("", self)
-        self.label.setPixmap(pixmap)
-        self.label.move(400, 165)
-        self.label2 = QLabel("PLIK GOTOWY", self)
-        self.label2.setStyleSheet("color: red")
-        self.label2.hide()
-        self.label.hide()
-
     def init_ui(self):
-        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
-
         self.show()
-
-        timeoutTimer = QTimer(self)
-        timeoutTimer.setSingleShot(True)
-        timeoutTimer.timeout.connect(self.compile)
-        timeoutTimer.start(1000)
+        timeout_timer = QTimer(self)
+        timeout_timer.setSingleShot(True)
+        timeout_timer.timeout.connect(self.compile)
+        timeout_timer.start(1000)
 
     def compile(self):
         window2.card.save_reverses()
@@ -642,10 +681,60 @@ class Window4(QWidget):
                                         cardschooli.fs_interaction.project_location(window0.project,
                                                                                     "obverse.cardconfig")):
             raise_warning(self, "Brak pliku konfiguracyjnego", "Nie udało się wczytać pliku konfiguracyjnego talii.")
-            return 1
+            exit()
         cardschooli.fs_interaction.clean_files(os.path.join(os.pardir, "cards", window0.project))
-        self.label.show()
-        self.label2.show()
+        self.close()
+        window5.init_ui()
+
+
+class Window5(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
+        self.resize(800, 600)
+        self.setWindowTitle("cardschooli - koniec!")
+        center(self)
+        self.finish = QLabel("Karty zostały wygenerowane! Gdzie chcesz zapisać gotowy do wydruku plik PDF?", self)
+        self.savepdfbtn = QPushButton("Wybierz lokalizację dla pliku PDF", self)
+        self.savepdfbtn.setGeometry(225, 275, 350, 50)
+        self.savepdfbtn.clicked.connect(self.save_pdf)
+
+    def init_ui(self):
+        if os.path.isfile(cardschooli.fs_interaction.project_location(window0.project, "legend.png")):
+            self.savelegendbtn = QPushButton("Zapisz legendę do wykresów w plik PNG", self)
+            self.savelegendbtn.setGeometry(225, 350, 350, 25)
+            self.savelegendbtn.clicked.connect(self.save_legend)
+        self.show()
+
+    def save_pdf(self):
+        pdf_loc = self.get_pdf_loc()
+        if pdf_loc == 1:
+            return 1
+        copyfile(cardschooli.fs_interaction.project_location(window0.project, "cards.pdf"), pdf_loc)
+        raise_info(self, "Zapisano PDFa!",
+                   "Już wszystko gotowe! Zapisano plik PDF pod wskazaną lokalizacją, teraz pozostaje ci go tylko "
+                   "wydrukować. Dzięki za wspólne tworzenie!")
+
+    def save_legend(self):
+        legend_loc = self.get_legend_loc()
+        if legend_loc == 1:
+            return 1
+        copyfile(cardschooli.fs_interaction.project_location(window0.project, "legend.png"), legend_loc)
+        raise_info(self, "Zapisano!", "Zapisano grafikę z legendą pod wskazaną lokalizacją.")
+
+    def get_pdf_loc(self):
+        pdf_loc = save_file_dialog(self, "Wybierz lokalizację dla gotowego do wydruku pliku PDF z kartami:",
+                                   "Portable Document Format(*.pdf)")
+        if pdf_loc:
+            return pdf_loc
+        return 1
+
+    def get_legend_loc(self):
+        legend_loc = save_file_dialog(self, "Wybierz lokalizację dla grafiki z legendą do wygenerowanych wykresów:",
+                                      "Legenda (*.png)")
+        if legend_loc:
+            return legend_loc
+        return 1
 
 
 if __name__ == "__main__":
@@ -656,6 +745,7 @@ if __name__ == "__main__":
     window2 = Window2()
     window3 = Window3()
     window4 = Window4()
+    window5 = Window5()
     cardschooli.charts.create_window_wykr()
     cardschooli.charts.create_window_seria_wykr()
     cardschooli.charts.window_wykr.window3 = window3

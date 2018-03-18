@@ -412,7 +412,7 @@ class ChartsWindow(QWidget):
             return i
         else:
             i, ok_pressed = QInputDialog.getDouble(self, "Podaj wartość",
-                                                   "Podaj wartość elementu na wykresie (q) : ", 1, 1, 999999999, 1)
+                                                   "Podaj wartość elementu na wykresie (g) : ", 1, 1, 999999999, 1)
             if ok_pressed:
                 return i
 

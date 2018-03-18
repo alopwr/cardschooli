@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
 import cardschooli.fs_interaction
 import cardschooli.gui
 
-
+is_chart = False
 class QListWidgetItem2(QListWidgetItem):
     """ my own version of QListWidgetItem """
 
@@ -336,6 +336,8 @@ class ChartsWindow(QWidget):
         self.adding_chart()
 
         self.isCreatingChart = False
+        global is_chart
+        is_chart = True
         self.close()
 
     """-------------------------------- ok_act END --------------------------------"""
@@ -921,6 +923,8 @@ class SerialChartsWindow(QWidget):
                                                       first=True)
         window_wykr.window3.update_preview()
         self.isCreatingChart = False
+        global is_chart
+        is_chart = True
         self.close()
     """-------------------------------- ok_act(serial) END --------------------------------"""
     def get_size(self):

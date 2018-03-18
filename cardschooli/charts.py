@@ -4,7 +4,7 @@ import os.path
 from random import randrange
 
 import matplotlib.pyplot as plt
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize,QTimer
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
@@ -233,7 +233,7 @@ class ChartsWindow(QWidget):
 
         self.QLIST = QListWidget()
         self.QLIST.setToolTip("pozycje na wykresie")
-
+        """
         x_spin = QSpinBox()
         y_spin = QSpinBox()
         x_spin.setRange(0, 9999)
@@ -242,29 +242,34 @@ class ChartsWindow(QWidget):
         y_spin.setValue(self.Y)
         x_spin.valueChanged[str].connect(self.x_spin_change)
         y_spin.valueChanged[str].connect(self.y_spin_change)
-
+        """
         OK_btn = QPushButton("Dodaj wykres na karte >>>")
         OK_btn.clicked.connect(self.ok_act)
         OK_btn.setStyleSheet("background-color: gold")
 
         self.main_layout = QVBoxLayout()
         layout1 = QHBoxLayout()
+        """
         layout3 = QHBoxLayout()
         layout4 = QHBoxLayout()
-        layout2 = QVBoxLayout()
-        layout2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
+        """
+        #layout2 = QVBoxLayout()
+        #layout2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
+        """
         layout2.addLayout(layout3)
         layout2.addLayout(layout4)
+        """
         layout1.addWidget(add_btn)
         layout1.addWidget(self.QLIST)
-        layout1.addLayout(layout2)
+        #layout1.addLayout(layout2)
         self.main_layout.addLayout(layout1)
         self.main_layout.addWidget(OK_btn)
+        """
         layout3.addWidget(QLabel("X: "))
         layout3.addWidget(x_spin)
         layout4.addWidget(QLabel("Y: "))
         layout4.addWidget(y_spin)
-
+        """
     def init_ui(self):
         ask_for_polish_names()
         self.QLIST.clear()
@@ -291,13 +296,13 @@ class ChartsWindow(QWidget):
                 new_value += l
         new_value = float(new_value)
         return new_value
-
+    """
     def x_spin_change(self, newvalue):
         self.X = int(window_wykr.spin_str_2_float(newvalue))
 
     def y_spin_change(self, newvalue):
         self.Y = int(window_wykr.spin_str_2_float(newvalue))
-
+    """
     def deleting(self, number):
         i = 0
         i2 = self.QLIST.count()
@@ -319,22 +324,38 @@ class ChartsWindow(QWidget):
             self.maxim += float(remov_val)
 
     def adding_chart(self):
+        self.X,self.Y = self.fileholder_chart.coords
         self.window3.card.adding_chart("wykres.png", (self.X, self.Y), self.project)
         self.window3.update_preview()
 
+    def ok_act_part2(self):
+        self.generating_chart(self.LIST_OF_GOD, self.fileholder_chart.size)
+        self.adding_chart()
+
+        self.isCreatingChart = False
+        self.close()
     def ok_act(self):
         if len(self.LIST_OF_GOD[0]) > 0 and self.suma() == 100.0:
-            size = self.get_size()
-            if not size:
+
+            self.fileholder_chart = cardschooli.gui.FileHolder()
+            self.fileholder_chart.size = self.get_size()
+
+            if not self.fileholder_chart.size:
                 return None
+
             if self.is_polish_names:
                 self.exchange_colors_name()
 
-            self.generating_chart(self.LIST_OF_GOD, size)
-            self.adding_chart()
+            self.fileholder_chart.coords = cardschooli.gui.coords_dialog(self,self.window3)
+            self.fileholder_chart.coords = self.window3.start_wait_or_not(self.fileholder_chart.coords,
+                                                                       self.ok_act_part2,
+                                                                       self.fileholder_chart)
 
-            self.isCreatingChart = False
-            self.close()
+            if self.fileholder_chart.coords == None:
+                return None
+
+            self.ok_act_part2()
+
         elif len(self.LIST_OF_GOD[0]) == 0:
             QMessageBox().warning(self, "!!! PUSTO !!!",
                                   "!!!        nie możesz dodać pustego wykresu        !!!", QMessageBox.Ok)

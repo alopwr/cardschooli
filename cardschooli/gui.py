@@ -64,8 +64,10 @@ def raise_warning(parent, caption, text):
     QMessageBox.warning(parent, caption, text, QMessageBox.Ok)
 
 
-def coords_dialog(parent):
+def coords_dialog(parent,parent2=False):
     """ asks user for way of getting coords and ask user for coords  """
+    if not parent2:
+        parent2=parent
     msg = QMessageBox()
     msg.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
     msg.setWindowTitle("WYBIERZ")
@@ -97,7 +99,9 @@ def coords_dialog(parent):
             dontShowCheckBox.stateChanged.connect(change_dont_show_it_again)
             msg.setCheckBox(dontShowCheckBox)
             msg.exec_()
-        parent.getting_coords_by_mouse = True
+        parent2.getting_coords_by_mouse = True
+        if parent2!=parent:
+            parent.close()
         return "MOUSE"
 
 def change_dont_show_it_again(state):
@@ -585,7 +589,9 @@ class Window3(QWidget):
         else:
             return coords
     def looped_waiting(self):
-        if  self.getting_coords_by_mouse:
+        print(self.getting_coords_by_mouse)
+        if self.getting_coords_by_mouse:
+            print("xd")
             timeoutTimer = QTimer(self)
             timeoutTimer.setSingleShot(True)
             timeoutTimer.timeout.connect(self.looped_waiting)

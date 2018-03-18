@@ -4,11 +4,11 @@ import os.path
 from random import randrange
 
 import matplotlib.pyplot as plt
-from PyQt5.QtCore import QSize,QTimer
+from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
-    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
+    QHBoxLayout, QDoubleSpinBox, QComboBox, QTabWidget
 
 import cardschooli.fs_interaction
 import cardschooli.gui
@@ -212,8 +212,6 @@ class ChartsWindow(QWidget):
         self.colors = 2
         self.explodings = 3
         self.maxim = 100
-        self.X = 0
-        self.Y = 0
         self.is_percent = False
         self.project = ""
         self.filename = ""
@@ -233,43 +231,17 @@ class ChartsWindow(QWidget):
 
         self.QLIST = QListWidget()
         self.QLIST.setToolTip("pozycje na wykresie")
-        """
-        x_spin = QSpinBox()
-        y_spin = QSpinBox()
-        x_spin.setRange(0, 9999)
-        x_spin.setValue(self.X)
-        y_spin.setRange(0, 9999)
-        y_spin.setValue(self.Y)
-        x_spin.valueChanged[str].connect(self.x_spin_change)
-        y_spin.valueChanged[str].connect(self.y_spin_change)
-        """
         OK_btn = QPushButton("Dodaj wykres na karte >>>")
         OK_btn.clicked.connect(self.ok_act)
         OK_btn.setStyleSheet("background-color: gold")
 
         self.main_layout = QVBoxLayout()
         layout1 = QHBoxLayout()
-        """
-        layout3 = QHBoxLayout()
-        layout4 = QHBoxLayout()
-        """
-        #layout2 = QVBoxLayout()
-        #layout2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
-        """
-        layout2.addLayout(layout3)
-        layout2.addLayout(layout4)
-        """
         layout1.addWidget(add_btn)
         layout1.addWidget(self.QLIST)
-        #layout1.addLayout(layout2)
         self.main_layout.addLayout(layout1)
         self.main_layout.addWidget(OK_btn)
-        """
-        layout3.addWidget(QLabel("X: "))
-        layout3.addWidget(x_spin)
-        layout4.addWidget(QLabel("Y: "))
-        layout4.addWidget(y_spin)
-        """
+
     def init_ui(self):
         ask_for_polish_names()
         self.QLIST.clear()
@@ -296,13 +268,6 @@ class ChartsWindow(QWidget):
                 new_value += l
         new_value = float(new_value)
         return new_value
-    """
-    def x_spin_change(self, newvalue):
-        self.X = int(window_wykr.spin_str_2_float(newvalue))
-
-    def y_spin_change(self, newvalue):
-        self.Y = int(window_wykr.spin_str_2_float(newvalue))
-    """
     def deleting(self, number):
         i = 0
         i2 = self.QLIST.count()
@@ -628,8 +593,6 @@ class SerialChartsWindow(QWidget):
         self.isCreatingChart = False
         self.load_colors()
         self.LIST_OF_GOD = {}
-        self.X = 0
-        self.Y = 0
         self.number_of_layouts = -1
         self.LEGEND_NAME_BASE = []
         self.LEGEND_PATCHES_BASE = []
@@ -651,36 +614,10 @@ class SerialChartsWindow(QWidget):
         OK_btn = QPushButton("Dodaj wykres na kartę >>>")
         OK_btn.clicked.connect(self.ok_act)
         OK_btn.setStyleSheet("background-color: gold")
-        """
-        x_spin = QSpinBox()
-        y_spin = QSpinBox()
-        x_spin.setRange(0, 9999)
-        x_spin.setValue(self.X)
-        y_spin.setRange(0, 9999)
-        y_spin.setValue(self.Y)
-        x_spin.valueChanged[str].connect(self.x_spin_change)
-        y_spin.valueChanged[str].connect(self.y_spin_change)
-        
-        layout3 = QHBoxLayout()
-        layout4 = QHBoxLayout()
-
-        layout3.addWidget(QLabel("X: "))
-        layout3.addWidget(x_spin)
-        layout4.addWidget(QLabel("Y: "))
-        layout4.addWidget(y_spin)
-        
-        layout2 = QVBoxLayout()
-        layout2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
-
-        layout2.addLayout(layout3)
-
-        layout2.addLayout(layout4)
-        """
         self.coolWidget = ChartControlWidget()
         layout = QHBoxLayout()
         layout.addWidget(add_btn)
         layout.addWidget(self.coolWidget)
-        #layout.addLayout(layout2)
 
         self.main_layout = QVBoxLayout()
         self.main_layout.addLayout(layout)
@@ -858,7 +795,7 @@ class SerialChartsWindow(QWidget):
                         msg.setIcon(QMessageBox.Warning)
                         msg.addButton("OK (DLA WSZYTSKICH)",QMessageBox.YesRole)
                         returned = msg.exec_()
-                        if returned == 0: # Ich don`t know why but it is 0 (printing test)
+                        if returned == 0:
                             skip = True
                     values.append(0.0)
             else:
@@ -979,14 +916,6 @@ class SerialChartsWindow(QWidget):
         self.isCreatingChart = False
         self.close()
     """-------------------------------- ok_act(serial) END --------------------------------"""
-
-    """
-    def x_spin_change(self, newvalue):
-        self.X = int(window_wykr.spin_str_2_float(newvalue))
-
-    def y_spin_change(self, newvalue):
-        self.Y = int(window_wykr.spin_str_2_float(newvalue))
-    """
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, "SZEROKOŚĆ",
                                              "Podaj szerokość diagramu. \n(piksele)", 500,

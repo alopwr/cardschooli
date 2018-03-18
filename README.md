@@ -5,15 +5,4 @@
 [![Coverage Status](https://coveralls.io/repos/github/m4k5/cardschooli/badge.svg?branch=master)](https://coveralls.io/github/m4k5/cardschooli?branch=master)
 [![Requirements Status](https://requires.io/github/m4k5/cardschooli/requirements.svg?branch=master)](https://requires.io/github/m4k5/cardschooli/requirements/?branch=master)
 
-Gamify education with cards!
-
-### TODO:
-- [x] dodawanie tekstu na awers
-- [ ] zmienne przy generowaniu tesktu na awersy
-- [ ] składanie PNG do duplexerowego PDF A4
-> from fpdf import FPDF <br>
- pdf = FPDF() <br>
-for image in imagelist:<br>
-    pdf.add_page() <br>
-    pdf.image(image,x,y,w,h) <br>
-pdf.output("yourfile.pdf", "F") <br>
+Gamify education with cards! 

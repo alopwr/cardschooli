@@ -8,7 +8,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
-    QHBoxLayout, QDoubleSpinBox, QComboBox, QSpinBox, QTabWidget
+    QHBoxLayout, QDoubleSpinBox, QComboBox, QTabWidget
 
 import cardschooli.fs_interaction
 import cardschooli.gui
@@ -76,7 +76,7 @@ class MyWidget2(QWidget):
         main_layout.addWidget(self.combobox)
         main_layout.addWidget(delt_btn)
 
-        delt_all_btn = QPushButton("CAŁĄ SERIĘ {}".format(self.name))
+        delt_all_btn = QPushButton("CAłĄ SERIĘ {}".format(self.name))
         delt_all_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", image)))
         delt_all_btn.setIconSize(QSize(35, 35))
         delt_all_btn.resize(10, 10)
@@ -216,8 +216,6 @@ class ChartsWindow(QWidget):
         self.colors = 2
         self.explodings = 3
         self.maxim = 100
-        self.X = 0
-        self.Y = 0
         self.is_percent = False
         self.project = ""
         self.filename = ""
@@ -237,37 +235,16 @@ class ChartsWindow(QWidget):
 
         self.QLIST = QListWidget()
         self.QLIST.setToolTip("pozycje na wykresie")
-
-        x_spin = QSpinBox()
-        y_spin = QSpinBox()
-        x_spin.setRange(0, 9999)
-        x_spin.setValue(self.X)
-        y_spin.setRange(0, 9999)
-        y_spin.setValue(self.Y)
-        x_spin.valueChanged[str].connect(self.x_spin_change)
-        y_spin.valueChanged[str].connect(self.y_spin_change)
-
         OK_btn = QPushButton("Dodaj wykres na karte >>>")
         OK_btn.clicked.connect(self.ok_act)
         OK_btn.setStyleSheet("background-color: gold")
 
         self.main_layout = QVBoxLayout()
         layout1 = QHBoxLayout()
-        layout3 = QHBoxLayout()
-        layout4 = QHBoxLayout()
-        layout2 = QVBoxLayout()
-        layout2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
-        layout2.addLayout(layout3)
-        layout2.addLayout(layout4)
         layout1.addWidget(add_btn)
         layout1.addWidget(self.QLIST)
-        layout1.addLayout(layout2)
         self.main_layout.addLayout(layout1)
         self.main_layout.addWidget(OK_btn)
-        layout3.addWidget(QLabel("X: "))
-        layout3.addWidget(x_spin)
-        layout4.addWidget(QLabel("Y: "))
-        layout4.addWidget(y_spin)
 
     def init_ui(self):
         ask_for_polish_names()
@@ -295,13 +272,6 @@ class ChartsWindow(QWidget):
                 new_value += l
         new_value = float(new_value)
         return new_value
-
-    def x_spin_change(self, newvalue):
-        self.X = int(window_wykr.spin_str_2_float(newvalue))
-
-    def y_spin_change(self, newvalue):
-        self.Y = int(window_wykr.spin_str_2_float(newvalue))
-
     def deleting(self, number):
         i = 0
         i2 = self.QLIST.count()
@@ -323,22 +293,32 @@ class ChartsWindow(QWidget):
             self.maxim += float(remov_val)
 
     def adding_chart(self):
-        self.window3.card.adding_chart("wykres.png", (self.X, self.Y), self.project)
+        self.X,self.Y = self.fileholder_chart.coords
+        self.window3.card.adding_chart("wykres.png", [self.X, self.Y], self.project)
         self.window3.update_preview()
-
+        """-------------------------------- ok_act START --------------------------------"""
     def ok_act(self):
         if len(self.LIST_OF_GOD[0]) > 0 and self.suma() == 100.0:
-            size = self.get_size()
-            if not size:
+
+            self.fileholder_chart = cardschooli.gui.FileHolder()
+            self.fileholder_chart.size = self.get_size()
+
+            if not self.fileholder_chart.size:
                 return None
+
             if self.is_polish_names:
                 self.exchange_colors_name()
 
-            self.generating_chart(self.LIST_OF_GOD, size)
-            self.adding_chart()
+            self.fileholder_chart.coords = cardschooli.gui.coords_dialog(self,self.window3)
+            self.fileholder_chart.coords = self.window3.start_wait_or_not(self.fileholder_chart.coords,
+                                                                       self.ok_act_part2,
+                                                                       self.fileholder_chart)
 
-            self.isCreatingChart = False
-            self.close()
+            if self.fileholder_chart.coords == None:
+                return None
+
+            self.ok_act_part2()
+
         elif len(self.LIST_OF_GOD[0]) == 0:
             QMessageBox().warning(self, "!!! PUSTO !!!",
                                   "!!!        nie możesz dodać pustego wykresu        !!!", QMessageBox.Ok)
@@ -351,7 +331,14 @@ class ChartsWindow(QWidget):
                 QMessageBox().warning(self, "!!! ZA MAŁO !!!",
                                       "!!!       brakuje do sumy 100%      !!! \n",
                                       QMessageBox.Ok)
+    def ok_act_part2(self):
+        self.generating_chart(self.LIST_OF_GOD, self.fileholder_chart.size)
+        self.adding_chart()
 
+        self.isCreatingChart = False
+        self.close()
+
+    """-------------------------------- ok_act END --------------------------------"""
     def exchange_colors_name(self):
         for name in self.LIST_OF_GOD[self.colors]:
             color = self.LIST_OF_GOD[self.colors][name]
@@ -604,7 +591,7 @@ class SerialChartsWindow(QWidget):
         self.setWindowTitle("cardschooli - dodaj wykresy seryjne")
         self.setWindowIcon(QIcon(os.path.join(os.pardir, "res", "img", "icon.png")))
         cardschooli.gui.center(self)
-        self.resize(1000, 600)
+        self.resize(800, 600)
         self.names = 0
         self.values = 1
         self.colors = 2
@@ -612,8 +599,6 @@ class SerialChartsWindow(QWidget):
         self.isCreatingChart = False
         self.load_colors()
         self.LIST_OF_GOD = {}
-        self.X = 0
-        self.Y = 0
         self.number_of_layouts = -1
         self.LEGEND_NAME_BASE = []
         self.LEGEND_PATCHES_BASE = []
@@ -635,35 +620,10 @@ class SerialChartsWindow(QWidget):
         OK_btn = QPushButton("Dodaj wykres na kartę >>>")
         OK_btn.clicked.connect(self.ok_act)
         OK_btn.setStyleSheet("background-color: gold")
-
-        x_spin = QSpinBox()
-        y_spin = QSpinBox()
-        x_spin.setRange(0, 9999)
-        x_spin.setValue(self.X)
-        y_spin.setRange(0, 9999)
-        y_spin.setValue(self.Y)
-        x_spin.valueChanged[str].connect(self.x_spin_change)
-        y_spin.valueChanged[str].connect(self.y_spin_change)
-
-        layout3 = QHBoxLayout()
-        layout4 = QHBoxLayout()
-
-        layout3.addWidget(QLabel("X: "))
-        layout3.addWidget(x_spin)
-        layout4.addWidget(QLabel("Y: "))
-        layout4.addWidget(y_spin)
-
-        layout2 = QVBoxLayout()
-        layout2.addWidget(QLabel("WSPÓŁRZĘDNE\n WYKRESU \nNA KARCIE: "))
-
-        layout2.addLayout(layout3)
-
-        layout2.addLayout(layout4)
         self.coolWidget = ChartControlWidget()
         layout = QHBoxLayout()
         layout.addWidget(add_btn)
         layout.addWidget(self.coolWidget)
-        layout.addLayout(layout2)
 
         self.main_layout = QVBoxLayout()
         self.main_layout.addLayout(layout)
@@ -843,7 +803,7 @@ class SerialChartsWindow(QWidget):
                         msg.setIcon(QMessageBox.Warning)
                         msg.addButton("OK (DLA WSZYTSKICH)", QMessageBox.YesRole)
                         returned = msg.exec_()
-                        if returned == 0:  # Ich don`t know why but it is 0 (printing test)
+                        if returned == 0:
                             skip = True
                     values.append(0.0)
             else:
@@ -907,28 +867,31 @@ class SerialChartsWindow(QWidget):
                         xd = list_of_colors.pop(numb)
                     else:
                         self.LIST_OF_GOD[thing][self.colors][colorKey] = dzienniczek_kolorkow[colorKey]
+    """-------------------------------- ok_act(serial) START --------------------------------"""
 
     def ok_act(self):
+        self.fileholder_charts = cardschooli.gui.FileHolder()
         self.master_generator_dict = {}
         returned_from_isempty = self.is_empty()
         isempty = returned_from_isempty[0]
         if not isempty:
-            size = self.get_size()
-            if not size:
+            self.fileholder_charts.size = self.get_size()
+            if not self.fileholder_charts.size:
                 return None
+
             if self.coolWidget.is_polish_names:
                 self.exchange_colors_name()
 
-            self.colors_random()
-            for thing in self.LIST_OF_GOD:
-                if len(self.LIST_OF_GOD[thing][self.names]) > 0:
-                    lista = self.LIST_OF_GOD[thing]
-                    self.master_generator_dict[thing.strip()] = (lista, size, thing)
-            window_wykr.window3.card.add_series_of_charts(self.columnlist[1], (self.X, self.Y), window_wykr.project,
-                                                          first=True)
-            window_wykr.window3.update_preview()
-            self.isCreatingChart = False
-            self.close()
+            self.fileholder_charts.coords = cardschooli.gui.coords_dialog(self, window_wykr.window3)
+            self.fileholder_charts.coords = window_wykr.window3.start_wait_or_not(self.fileholder_charts.coords,
+                                                                          self.ok_act_part2,
+                                                                          self.fileholder_charts)
+
+            if self.fileholder_charts.coords == None:
+                return None
+
+            self.ok_act_part2()
+
         else:
             names = ""
             i = 0
@@ -945,12 +908,21 @@ class SerialChartsWindow(QWidget):
                                   "!!!        nie możesz dodać pustego wykresu        !!!\n wykres {} nie ma żadnych pozycji".format(
                                       names), QMessageBox.Ok)
 
-    def x_spin_change(self, newvalue):
-        self.X = int(window_wykr.spin_str_2_float(newvalue))
+    def ok_act_part2(self):
+        self.X, self.Y = self.fileholder_charts.coords
+        self.colors_random()
 
-    def y_spin_change(self, newvalue):
-        self.Y = int(window_wykr.spin_str_2_float(newvalue))
+        for thing in self.LIST_OF_GOD:
+            if len(self.LIST_OF_GOD[thing][self.names]) > 0:
+                lista = self.LIST_OF_GOD[thing]
+                self.master_generator_dict[thing.strip()] = (lista, self.fileholder_charts.size, thing)
 
+        window_wykr.window3.card.add_series_of_charts(self.columnlist[1], [self.X, self.Y], window_wykr.project,
+                                                      first=True)
+        window_wykr.window3.update_preview()
+        self.isCreatingChart = False
+        self.close()
+    """-------------------------------- ok_act(serial) END --------------------------------"""
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, "SZEROKOŚĆ",
                                              "Podaj szerokość diagramu. \n(piksele)", 500,

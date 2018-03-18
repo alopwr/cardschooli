@@ -31,8 +31,9 @@ class CardReverse(object):
     """
 
     def __init__(self, project_location):
+        self.xy_size=(1500,2100)
         self.project_location = project_location
-        self.reverse = Image.new("RGB", (1500, 2100))
+        self.reverse = Image.new("RGB", (self.xy_size[0], self.xy_size[1]))
         self.reverse_draw = ImageDraw.Draw(self.reverse)
         self.save_preview()
 
@@ -43,7 +44,7 @@ class CardReverse(object):
         grid = Image.new("RGB", (4500, 6300))
         locations = [(x, y) for x in range(3) for y in range(3)]
         for i in range(9):
-            x, y = locations[i][0] * 1500, locations[i][1] * 2100
+            x, y = locations[i][0] * self.xy_size[0], locations[i][1] * self.xy_size[1]
             grid.paste(self.reverse, (x, y))
         grid.save(cardschooli.fs_interaction.project_location(self.project_location, "reverse.png"), format="PNG",
                   dpi=(600, 600))

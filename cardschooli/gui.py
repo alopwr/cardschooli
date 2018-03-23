@@ -12,7 +12,6 @@ from PyQt5.QtGui import QPixmap, QMovie, QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QPushButton, QLineEdit, QLabel, QFileDialog, \
     QColorDialog, QInputDialog, QMessageBox, QCheckBox
 
-import cardschooli.boom_menu
 import cardschooli.charts
 import cardschooli.fs_interaction
 import cardschooli.obverse
@@ -161,11 +160,7 @@ class Window0(QWidget):
         self.project_name.returnPressed.connect(self.next)
         self.start_btn.clicked.connect(self.next)
         self.start_btn.setStyleSheet("background-color: aqua")
-        if cardschooli.boom_menu.CZY_BOOM_MENU:
-            cardschooli.boom_menu.boom_window.window0 = self
-            cardschooli.boom_menu.boom_window.init_ui()
-        else:
-            self.show()
+        self.show()
 
     def next(self):
         self.project = self.project_name.text()
@@ -739,7 +734,6 @@ class Window5(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    cardschooli.boom_menu.create_windows()
     window0 = Window0()
     window1 = Window1()
     window2 = Window2()

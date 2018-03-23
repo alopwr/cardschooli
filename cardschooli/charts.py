@@ -13,6 +13,8 @@ import cardschooli.fs_interaction
 import cardschooli.gui
 
 is_chart = False
+
+
 class QListWidgetItem2(QListWidgetItem):
     """ my own version of QListWidgetItem """
 
@@ -29,10 +31,6 @@ class QListWidgetItem2(QListWidgetItem):
     def change_is_empty(self, newvalue):
         self.is_empty = newvalue
 
-    """
-    def give_combo(self, combobox):
-        self.combobox = combobox
-    """
 
 class MyWidget2(QWidget):
     """a simple position on QListWidgetItem(series of charts version)"""
@@ -62,11 +60,8 @@ class MyWidget2(QWidget):
 
         self.color_btn = QPushButton("kolor")
         self.color_btn.clicked.connect(self.color_btn_act)
-        #combobox = QComboBox()
-        #self.combobox = self.adding_to_combo(combobox)
 
         spinbox.valueChanged[str].connect(self.spin_change)
-        #self.combobox.currentIndexChanged[str].connect(self.combo_change)
 
         main_layout = QHBoxLayout()
 
@@ -75,7 +70,6 @@ class MyWidget2(QWidget):
 
         main_layout.addWidget(label2)
         main_layout.addWidget(self.color_btn)
-        #main_layout.addWidget(self.combobox)
         main_layout.addWidget(delt_btn)
 
         delt_all_btn = QPushButton("CAłĄ SERIĘ {}".format(self.name))
@@ -103,39 +97,13 @@ class MyWidget2(QWidget):
 
     def set_color_btn(self, color):
         self.color_btn.setStyleSheet("background-color: {}".format(color))
-    """
-    def combo_change(self, newvalue):
-        for thing in window_seria_wykr.LIST_OF_GOD:
-            colors = window_seria_wykr.LIST_OF_GOD[thing][window_seria_wykr.colors]
-            for name in colors:
-                if name == self.name:
-                    window_seria_wykr.LIST_OF_GOD[thing][window_seria_wykr.colors][name] = newvalue
 
-                    i = 0
-                    i2 = window_seria_wykr.coolWidget.LIST_OF_TABS[thing].QLIST.count()
-                    while i < i2:
-                        item = window_seria_wykr.coolWidget.LIST_OF_TABS[thing].QLIST.item(i)
-                        if item.number == self.number:
-                            window_seria_wykr.coolWidget.LIST_OF_TABS[thing].QLIST.item(i).combobox.setCurrentText(
-                                newvalue)
-
-                        i += 1
-    """
     def delt_btn_act(self):
         window_seria_wykr.deleting(self.number, self.item.name)
 
     def delt_all_btn_act(self):
         window_seria_wykr.all_deleting(self.item.number)
-    """
-    def adding_to_combo(self, combobox):
-        if not window_seria_wykr.coolWidget.is_polish_names:
-            list_of_colors = window_seria_wykr.list_of_colors
-        else:
-            list_of_colors = window_seria_wykr.list_of_colors_P
-        combobox.addItems(list_of_colors)
-        combobox.setCurrentText(self.color)
-        return combobox
-    """
+
 
 class MyWidget(QWidget):
     """a simple position on QListWidgetItem"""
@@ -167,12 +135,8 @@ class MyWidget(QWidget):
 
         self.color_btn = QPushButton("kolor")
         self.color_btn.clicked.connect(self.color_btn_act)
-        #combobox = QComboBox()
-        #combobox = self.adding_to_combo(combobox)
 
         spinbox.valueChanged[str].connect(self.spin_change)
-
-        #combobox.currentIndexChanged[str].connect(self.combo_change)
 
         layout = QHBoxLayout()
         layout.addWidget(label)
@@ -183,7 +147,6 @@ class MyWidget(QWidget):
         else:
             layout.addWidget(label_grams)
         layout.addWidget(self.color_btn)
-        #layout.addWidget(combobox)
         layout.addWidget(delt_btn)
 
         self.setLayout(layout)
@@ -200,29 +163,19 @@ class MyWidget(QWidget):
                 window_wykr.maxim += (oldvalue - newvalue)
 
         window_wykr.LIST_OF_GOD[window_wykr.values][self.name] = newvalue
-    def set_color_btn(self,color):
+
+    def set_color_btn(self, color):
         self.color_btn.setStyleSheet("background-color: {}".format(color))
+
     def color_btn_act(self):
         color = cardschooli.gui.color_dialog()
         if color:
             self.set_color_btn(color)
             window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = color
-    """
-    def combo_change(self, value):
-        window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = value
-    """
+
     def delt_btn_act(self):
         window_wykr.deleting(self.number)
-    """
-    def adding_to_combo(self, combobox):
-        if not window_wykr.is_polish_names:
-            list_of_colors = window_wykr.list_of_colors
-        else:
-            list_of_colors = window_wykr.list_of_colors_P
-        combobox.addItems(list_of_colors)
-        combobox.setCurrentText(self.color)
-        return combobox
-    """
+
 
 class ChartsWindow(QWidget):
     """
@@ -231,7 +184,7 @@ class ChartsWindow(QWidget):
 
     def __init__(self):
         super().__init__()
-        #self.is_polish_names = False
+        # self.is_polish_names = False
         self.isCreatingChart = False
         self.number_of_layouts = -1
         self.LIST_OF_GOD = [{}, {}, {}, {}]
@@ -248,8 +201,6 @@ class ChartsWindow(QWidget):
         self.resize(800, 600)
         self.setWindowTitle("cardschooli - dodaj wykres")
         cardschooli.gui.center(self)
-
-        #self.load_colors()
 
         add_btn = QPushButton("ADD", self)
         add_btn.setIcon(QIcon(os.path.join(os.pardir, "res", "img", "add.png")))
@@ -271,7 +222,6 @@ class ChartsWindow(QWidget):
         self.main_layout.addWidget(OK_btn)
 
     def init_ui(self):
-        #ask_for_polish_names()
         self.QLIST.clear()
         self.LIST_OF_GOD = [{}, {}, {}, {}]
         self.setLayout(self.main_layout)
@@ -283,10 +233,7 @@ class ChartsWindow(QWidget):
 
     def give_project(self, prjct):
         self.project = prjct
-    """
-    def change_is_polish_names(self, new):
-        self.is_polish_names = new
-    """
+
     def spin_str_2_float(self, newvalues):
         new_value = ""
         for l in newvalues:
@@ -296,6 +243,7 @@ class ChartsWindow(QWidget):
                 new_value += l
         new_value = float(new_value)
         return new_value
+
     def deleting(self, number):
         i = 0
         i2 = self.QLIST.count()
@@ -317,10 +265,11 @@ class ChartsWindow(QWidget):
             self.maxim += float(remov_val)
 
     def adding_chart(self):
-        self.X,self.Y = self.fileholder_chart.coords
+        self.X, self.Y = self.fileholder_chart.coords
         self.window3.card.adding_chart("wykres.png", [self.X, self.Y], self.project)
         self.window3.update_preview()
         """-------------------------------- ok_act START --------------------------------"""
+
     def ok_act(self):
         if len(self.LIST_OF_GOD[0]) > 0 and self.suma() == 100.0:
 
@@ -330,13 +279,10 @@ class ChartsWindow(QWidget):
             if not self.fileholder_chart.size:
                 return None
 
-#            if self.is_polish_names:
- #               self.exchange_colors_name()
-
-            self.fileholder_chart.coords = cardschooli.gui.coords_dialog(self,self.window3)
+            self.fileholder_chart.coords = cardschooli.gui.coords_dialog(self, self.window3)
             self.fileholder_chart.coords = self.window3.start_wait_or_not(self.fileholder_chart.coords,
-                                                                       self.ok_act_part2,
-                                                                       self.fileholder_chart)
+                                                                          self.ok_act_part2,
+                                                                          self.fileholder_chart)
 
             if self.fileholder_chart.coords == None:
                 return None
@@ -355,6 +301,7 @@ class ChartsWindow(QWidget):
                 QMessageBox().warning(self, "!!! ZA MAŁO !!!",
                                       "!!!       brakuje do sumy 100%      !!! \n",
                                       QMessageBox.Ok)
+
     def ok_act_part2(self):
         self.generating_chart(self.LIST_OF_GOD, self.fileholder_chart.size)
         self.adding_chart()
@@ -365,12 +312,7 @@ class ChartsWindow(QWidget):
         self.close()
 
     """-------------------------------- ok_act END --------------------------------"""
-    """"
-    def exchange_colors_name(self):
-        for name in self.LIST_OF_GOD[self.colors]:
-            color = self.LIST_OF_GOD[self.colors][name]
-            self.LIST_OF_GOD[self.colors][name] = self.dict_of_colors[color]
-    """
+
     def return_maxim(self):
         if self.is_percent:
             return self.maxim
@@ -471,20 +413,7 @@ class ChartsWindow(QWidget):
                                   "!!!       Wypełnij nazwę      !!! \n ",
                                   QMessageBox.Ok)
             self.get_text(already_added_names_list)
-    """
-    def load_colors(self):
-        with open(os.path.join(os.pardir, "res", "files", "colors.txt")) as f:
-            self.list_of_colors = f.readlines()
-        self.list_of_colors = [x.strip() for x in self.list_of_colors]
 
-        with open(os.path.join(os.pardir, "res", "files", "colorsPOLISH.txt")) as f:
-            self.list_of_colors_P = f.readlines()
-        self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
-
-        self.dict_of_colors = {}
-        for i in range(len(self.list_of_colors)):
-            self.dict_of_colors[self.list_of_colors_P[i]] = self.list_of_colors[i]
-    """
     def suma(self):
 
         if self.is_percent:
@@ -499,19 +428,8 @@ class ChartsWindow(QWidget):
             return 100.0
 
     def get_color(self):
-       return cardschooli.gui.color_dialog()
-    """
-    def get_color(self):
-        if not self.is_polish_names:
-            self.List_of_colors = self.list_of_colors
-        else:
-            self.List_of_colors = self.list_of_colors_P
+        return cardschooli.gui.color_dialog()
 
-        item, okPressed = QInputDialog.getItem(self, "wybierz kolor", "KOLOR ELEMENTU NA WYKRESIE: ",
-                                               self.List_of_colors, 0, False)
-        if okPressed and item:
-            return item
-    """
     def calculate_the_legends_size(self, names):
         dlugosci = []
         for name in names:
@@ -627,7 +545,6 @@ class SerialChartsWindow(QWidget):
         self.colors = 2
         self.explodings = 3
         self.isCreatingChart = False
-        # self.load_colors()
         self.LIST_OF_GOD = {}
         self.number_of_layouts = -1
         self.LEGEND_NAME_BASE = []
@@ -782,13 +699,6 @@ class SerialChartsWindow(QWidget):
                 self.LEGEND_PATCHES_BASE.append(patches[i])
             i += 1
 
-    """
-    def exchange_colors_name(self):
-        for thing in self.LIST_OF_GOD:
-            for name in self.LIST_OF_GOD[thing][self.colors]:
-                color = self.LIST_OF_GOD[thing][self.colors][name]
-                self.LIST_OF_GOD[thing][self.colors][name] = self.dict_of_colors[color]
-    """
     def get_dict_of_numbers_of_already_added_values(self):
         dict_of_numbers_of_already_added_values = {}
         for tab in self.coolWidget.LIST_OF_TABS.values():
@@ -844,12 +754,6 @@ class SerialChartsWindow(QWidget):
                 namess.append("")
                 values.append(0.0)
             i += 1
-        """
-        if self.coolWidget.is_polish_names:
-            listofcolors = self.list_of_colors_P
-        else:
-            listofcolors = self.list_of_colors
-        """
         i = 0
         for thing in self.LIST_OF_GOD:
             if not namess[i] == "":
@@ -868,8 +772,6 @@ class SerialChartsWindow(QWidget):
                 my_itemek.set_color_btn(color)
                 itemek.setSizeHint(my_itemek.sizeHint())
 
-                #itemek.give_combo(my_itemek.combobox)
-
                 self.coolWidget.LIST_OF_TABS[thing].QLIST.addItem(itemek)
                 self.coolWidget.LIST_OF_TABS[thing].QLIST.setItemWidget(itemek, my_itemek)
             i += 1
@@ -885,24 +787,6 @@ class SerialChartsWindow(QWidget):
         else:
             return False, puste
 
-    """
-    def colors_random(self):
-        list_of_colors = self.list_of_colors
-        czarna_lista = []
-        dzienniczek_kolorkow = {}
-        for thing in self.LIST_OF_GOD:
-
-            for colorKey in self.LIST_OF_GOD[thing][self.colors]:
-                if self.LIST_OF_GOD[thing][self.colors][colorKey] == "automatically generated color":
-                    if colorKey not in czarna_lista:
-                        numb = randrange(1, len(self.list_of_colors))
-                        self.LIST_OF_GOD[thing][self.colors][colorKey] = list_of_colors[numb]
-                        czarna_lista.append(colorKey)
-                        dzienniczek_kolorkow[colorKey] = list_of_colors[numb]
-                        xd = list_of_colors.pop(numb)
-                    else:
-                        self.LIST_OF_GOD[thing][self.colors][colorKey] = dzienniczek_kolorkow[colorKey]
-    """
     """-------------------------------- ok_act(serial) START --------------------------------"""
 
     def ok_act(self):
@@ -914,14 +798,10 @@ class SerialChartsWindow(QWidget):
             self.fileholder_charts.size = self.get_size()
             if not self.fileholder_charts.size:
                 return None
-            """
-            if self.coolWidget.is_polish_names:
-                self.exchange_colors_name()
-            """
             self.fileholder_charts.coords = cardschooli.gui.coords_dialog(self, window_wykr.window3)
             self.fileholder_charts.coords = window_wykr.window3.start_wait_or_not(self.fileholder_charts.coords,
-                                                                          self.ok_act_part2,
-                                                                          self.fileholder_charts)
+                                                                                  self.ok_act_part2,
+                                                                                  self.fileholder_charts)
 
             if self.fileholder_charts.coords == None:
                 return None
@@ -946,8 +826,6 @@ class SerialChartsWindow(QWidget):
 
     def ok_act_part2(self):
         self.X, self.Y = self.fileholder_charts.coords
-        #self.colors_random()
-
         for thing in self.LIST_OF_GOD:
             if len(self.LIST_OF_GOD[thing][self.names]) > 0:
                 lista = self.LIST_OF_GOD[thing]
@@ -960,7 +838,9 @@ class SerialChartsWindow(QWidget):
         global is_chart
         is_chart = True
         self.close()
+
     """-------------------------------- ok_act(serial) END --------------------------------"""
+
     def get_size(self):
         i, ok_pressed0 = QInputDialog.getInt(self, "SZEROKOŚĆ",
                                              "Podaj szerokość diagramu. \n(piksele)", 500,
@@ -975,22 +855,6 @@ class SerialChartsWindow(QWidget):
 
         return [i, j]
 
-    """
-    def load_colors(self):
-        with open(os.path.join(os.pardir, "res", "files", "colors.txt")) as f:
-            self.list_of_colors = f.readlines()
-        self.list_of_colors = [x.strip() for x in self.list_of_colors]
-        self.list_of_colors[0] = "automatically generated color"
-
-        with open(os.path.join(os.pardir, "res", "files", "colorsPOLISH.txt")) as f:
-            self.list_of_colors_P = f.readlines()
-        self.list_of_colors_P = [x.strip() for x in self.list_of_colors_P]
-        self.list_of_colors_P[0] = "automatycznie generowane koloru"
-
-        self.dict_of_colors = {}
-        for i in range(len(self.list_of_colors)):
-            self.dict_of_colors[self.list_of_colors_P[i]] = self.list_of_colors[i]
-    """
 
 class ChartControlWidget(QWidget):
     """

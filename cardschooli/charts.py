@@ -1,14 +1,13 @@
 # coding=utf-8
 
 import os.path
-from random import randrange
 
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, \
     QInputDialog, QMessageBox, QListWidget, QVBoxLayout, QListWidgetItem, \
-    QHBoxLayout, QDoubleSpinBox, QComboBox, QTabWidget
+    QHBoxLayout, QDoubleSpinBox, QTabWidget
 
 import cardschooli.fs_interaction
 import cardschooli.gui
@@ -30,9 +29,10 @@ class QListWidgetItem2(QListWidgetItem):
     def change_is_empty(self, newvalue):
         self.is_empty = newvalue
 
+    """
     def give_combo(self, combobox):
         self.combobox = combobox
-
+    """
 
 class MyWidget2(QWidget):
     """a simple position on QListWidgetItem(series of charts version)"""
@@ -60,6 +60,8 @@ class MyWidget2(QWidget):
         spinbox.setValue(float(value))
         spinbox.setDecimals(accurancy)
 
+        self.color_btn = QPushButton("kolor")
+        self.color_btn.clicked.connect(self.color_btn_act)
         #combobox = QComboBox()
         #self.combobox = self.adding_to_combo(combobox)
 
@@ -72,7 +74,7 @@ class MyWidget2(QWidget):
         main_layout.addWidget(spinbox)
 
         main_layout.addWidget(label2)
-
+        main_layout.addWidget(self.color_btn)
         #main_layout.addWidget(self.combobox)
         main_layout.addWidget(delt_btn)
 
@@ -88,6 +90,19 @@ class MyWidget2(QWidget):
     def spin_change(self, value):
         window_seria_wykr.LIST_OF_GOD[self.item.name][window_seria_wykr.values][
             self.name] = window_wykr.spin_str_2_float(value)
+
+    def color_btn_act(self):
+        newcolor = cardschooli.gui.color_dialog()
+        if newcolor:
+            for thing in window_seria_wykr.LIST_OF_GOD:
+                colors = window_seria_wykr.LIST_OF_GOD[thing][window_seria_wykr.colors]
+                for name in colors:
+                    if name == self.name:
+                        window_seria_wykr.LIST_OF_GOD[thing][window_seria_wykr.colors][name] = newcolor
+            self.set_color_btn(newcolor)
+
+    def set_color_btn(self, color):
+        self.color_btn.setStyleSheet("background-color: {}".format(color))
     """
     def combo_change(self, newvalue):
         for thing in window_seria_wykr.LIST_OF_GOD:
@@ -189,8 +204,9 @@ class MyWidget(QWidget):
         self.color_btn.setStyleSheet("background-color: {}".format(color))
     def color_btn_act(self):
         color = cardschooli.gui.color_dialog()
-        self.set_color_btn(color)
-        window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = color
+        if color:
+            self.set_color_btn(color)
+            window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = color
     """
     def combo_change(self, value):
         window_wykr.LIST_OF_GOD[window_wykr.colors][self.name] = value
@@ -382,16 +398,13 @@ class ChartsWindow(QWidget):
 
             itemek = QListWidgetItem2(title=name, isEmpty=False)
             self.number_of_layouts += 1
-            print(0)
             if self.is_percent:
                 my_itemek = MyWidget(name, value, color, "delete.png", self.number_of_layouts, item=itemek,
                                      accurancy=2)
             else:
                 my_itemek = MyWidget(name, value, color, "delete.png", self.number_of_layouts, item=itemek,
                                      max_value=999999999, accurancy=1)
-            print(0.1)
             my_itemek.set_color_btn(color)
-            print(1)
             itemek.setSizeHint(my_itemek.sizeHint())
 
             self.QLIST.addItem(itemek)
@@ -614,7 +627,7 @@ class SerialChartsWindow(QWidget):
         self.colors = 2
         self.explodings = 3
         self.isCreatingChart = False
-        self.load_colors()
+        # self.load_colors()
         self.LIST_OF_GOD = {}
         self.number_of_layouts = -1
         self.LEGEND_NAME_BASE = []
@@ -769,12 +782,13 @@ class SerialChartsWindow(QWidget):
                 self.LEGEND_PATCHES_BASE.append(patches[i])
             i += 1
 
+    """
     def exchange_colors_name(self):
         for thing in self.LIST_OF_GOD:
             for name in self.LIST_OF_GOD[thing][self.colors]:
                 color = self.LIST_OF_GOD[thing][self.colors][name]
                 self.LIST_OF_GOD[thing][self.colors][name] = self.dict_of_colors[color]
-
+    """
     def get_dict_of_numbers_of_already_added_values(self):
         dict_of_numbers_of_already_added_values = {}
         for tab in self.coolWidget.LIST_OF_TABS.values():
@@ -794,6 +808,9 @@ class SerialChartsWindow(QWidget):
         try:
             column_nr = self.columnlist[2].index(column)
         except ValueError:
+            return None
+        color = cardschooli.gui.color_dialog()
+        if not color:
             return None
         self.number_of_layouts += 1
 
@@ -827,18 +844,18 @@ class SerialChartsWindow(QWidget):
                 namess.append("")
                 values.append(0.0)
             i += 1
-
+        """
         if self.coolWidget.is_polish_names:
             listofcolors = self.list_of_colors_P
         else:
             listofcolors = self.list_of_colors
-
+        """
         i = 0
         for thing in self.LIST_OF_GOD:
             if not namess[i] == "":
                 self.LIST_OF_GOD[thing][self.names][self.number_of_layouts] = namess[i]
                 self.LIST_OF_GOD[thing][self.values][namess[i]] = values[i]
-                self.LIST_OF_GOD[thing][self.colors][namess[i]] = listofcolors[0]
+                self.LIST_OF_GOD[thing][self.colors][namess[i]] = color
                 self.LIST_OF_GOD[thing][self.explodings][namess[i]] = 0.0
 
                 name = self.LIST_OF_GOD[thing][self.names][self.number_of_layouts]
@@ -848,10 +865,10 @@ class SerialChartsWindow(QWidget):
                                       self.LIST_OF_GOD[thing][self.colors][name],
                                       "delete.png", self.number_of_layouts, item=itemek,
                                       max_value=999999999, accurancy=1)
-
+                my_itemek.set_color_btn(color)
                 itemek.setSizeHint(my_itemek.sizeHint())
 
-                itemek.give_combo(my_itemek.combobox)
+                #itemek.give_combo(my_itemek.combobox)
 
                 self.coolWidget.LIST_OF_TABS[thing].QLIST.addItem(itemek)
                 self.coolWidget.LIST_OF_TABS[thing].QLIST.setItemWidget(itemek, my_itemek)
@@ -868,6 +885,7 @@ class SerialChartsWindow(QWidget):
         else:
             return False, puste
 
+    """
     def colors_random(self):
         list_of_colors = self.list_of_colors
         czarna_lista = []
@@ -884,6 +902,7 @@ class SerialChartsWindow(QWidget):
                         xd = list_of_colors.pop(numb)
                     else:
                         self.LIST_OF_GOD[thing][self.colors][colorKey] = dzienniczek_kolorkow[colorKey]
+    """
     """-------------------------------- ok_act(serial) START --------------------------------"""
 
     def ok_act(self):
@@ -895,10 +914,10 @@ class SerialChartsWindow(QWidget):
             self.fileholder_charts.size = self.get_size()
             if not self.fileholder_charts.size:
                 return None
-
+            """
             if self.coolWidget.is_polish_names:
                 self.exchange_colors_name()
-
+            """
             self.fileholder_charts.coords = cardschooli.gui.coords_dialog(self, window_wykr.window3)
             self.fileholder_charts.coords = window_wykr.window3.start_wait_or_not(self.fileholder_charts.coords,
                                                                           self.ok_act_part2,
@@ -927,7 +946,7 @@ class SerialChartsWindow(QWidget):
 
     def ok_act_part2(self):
         self.X, self.Y = self.fileholder_charts.coords
-        self.colors_random()
+        #self.colors_random()
 
         for thing in self.LIST_OF_GOD:
             if len(self.LIST_OF_GOD[thing][self.names]) > 0:
@@ -956,6 +975,7 @@ class SerialChartsWindow(QWidget):
 
         return [i, j]
 
+    """
     def load_colors(self):
         with open(os.path.join(os.pardir, "res", "files", "colors.txt")) as f:
             self.list_of_colors = f.readlines()
@@ -970,7 +990,7 @@ class SerialChartsWindow(QWidget):
         self.dict_of_colors = {}
         for i in range(len(self.list_of_colors)):
             self.dict_of_colors[self.list_of_colors_P[i]] = self.list_of_colors[i]
-
+    """
 
 class ChartControlWidget(QWidget):
     """

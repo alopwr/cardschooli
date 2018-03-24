@@ -502,7 +502,7 @@ class ChartsWindow(QWidget):
             x, y = self.calculate_the_legends_size(names)
             figlegend = plt.figure(figsize=(x, y))
             figlegend.legend(patches, names)
-            figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "legend2.png"), dpi=600)
+            figlegend.savefig(cardschooli.fs_interaction.project_location(window_wykr.project, "legend.png"), dpi=600)
 
         else:
             labels = []

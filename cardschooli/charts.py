@@ -663,7 +663,8 @@ class SerialChartsWindow(QWidget):
                     labels.append((str(name)[:(len(str(name)) - 2)] + " g"))
                 else:
                     labels.append((str(name) + " g"))
-
+            else:
+                labels.append("")
         sizes = []
         for value in LIST_OF_GOD[1].values():  # values = 1
             sizes.append(value)

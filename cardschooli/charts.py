@@ -929,7 +929,7 @@ def choose_colum(parent, caption, text, selections=None, adding_a_value_to_chart
             return response[0]
 
     else:
-        QMessageBox.warning(window_seria_wykr, "WYKORZYSTANE", "wykorzystałeś wszystkie wartości z pliku")
+        QMessageBox.warning(window_seria_wykr, "Wykorzystano!", "wykorzystałeś wszystkie wartości z pliku")
         return None
 
 

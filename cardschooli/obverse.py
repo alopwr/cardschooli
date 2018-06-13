@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-generating, updating and saving the card"s obverse
+generating, updating and saving the card's obverse
 """
 import os.path
 
@@ -71,7 +71,7 @@ def add_command(command, path):
 
 def generate(name, data_path, config_path):
     """ proceeds with creating obverses from config file """
-    pdf = FPDF()
+    pdf = FPDF('P', 'mm', (64, 89))
     obverses = [CardObverse(name, data_path, i) for i in
                 range(cardschooli.fs_interaction.get_file_lenght(data_path) - 1)]
     try:
@@ -87,34 +87,40 @@ def generate(name, data_path, config_path):
             elif i[0] == "imgf":
                 j.add_image_folder(i[1], i[2], (i[3], i[4]), False)
             elif i[0] == "txt":
-                j.add_text((i[1], i[2]), i[3], i[5], i[6], i[4], False)
+                j.add_text([i[1], i[2]], i[3], i[5], i[6], i[4], False)
             elif i[0] == "chrt":
                 j.add_series_of_charts(i[1], (i[2], i[3]), i[4], False)
             elif i[0] == "txtS":
                 j.add_text_series(i[1], (i[2], i[3]), i[4], i[5], i[6], False)
 
-    locations = [(x, y) for y in range(3) for x in range(3)]
-    grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
+    # locations = [(x, y) for y in range(3) for x in range(3)]
+    # grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
     for i, obv in enumerate(obverses):
         path = cardschooli.fs_interaction.project_location(name, "obverse{}.png".format(i))
         obv.obverse.save(path)
-        img = Image.open(path)
-        if i % 9 == 0 and i != 0:
-            grid.save(cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)), dpi=(600, 600))
-            add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
-                     cardschooli.fs_interaction.project_location(name, "reverse.png"))
-            grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
-        x, y = locations[i % 9][0] * 1500, locations[i % 9][1] * 2100
-        grid.paste(img, (x, y))
-    if len(obverses) % 9 != 0:
-        grid.save(cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)), dpi=(600, 600))
-        add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
-                 cardschooli.fs_interaction.project_location(name, "reverse.png"))
+        pdf.add_page()
+        pdf.image(path, x=0, y=0, w=64, h=89)
+        pdf.add_page()
+        pdf.image(cardschooli.fs_interaction.project_location(name, "reverse.png"), x=0, y=0, w=64, h=89)
+        # pdf.add_page()
+        # if i % 9 == 0 and i != 0:
+        #     grid.save(cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)), dpi=(600, 600))
+        #     add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
+        #              cardschooli.fs_interaction.project_location(name, "reverse.png"))
+        #     grid = Image.new("RGB", (4500, 6300), (255, 255, 255))
+        # x, y = locations[i % 9][0] * 1500, locations[i % 9][1] * 2100
+        # grid.paste(img, (x, y))
+    # if len(obverses) % 9 != 0:
+    #     grid.save(cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)), dpi=(600, 600))
+    #     add_grid(pdf, cardschooli.fs_interaction.project_location(name, "grid{}.png".format(i)),
+    #              cardschooli.fs_interaction.project_location(name, "reverse.png"))
     pdf.output(cardschooli.fs_interaction.project_location(name, "cards.pdf"))
     try:
         cardschooli.charts.window_seria_wykr.generating_legend()
     except:
         pass
+
+
 def add_grid(pdf, grid, rev):
     pdf.add_page()
     pdf.image(grid, w=190.5, h=266.7)
@@ -177,7 +183,8 @@ class CardObverse(object):
         else:
             row = cardschooli.fs_interaction.read_csv(self.data_path, self.number + 1)
 
-        cardschooli.charts.window_seria_wykr.generating_chart(cardschooli.charts.window_seria_wykr.master_generator_dict[row[column_nr].strip()])
+        cardschooli.charts.window_seria_wykr.generating_chart(
+            cardschooli.charts.window_seria_wykr.master_generator_dict[row[column_nr].strip()])
 
         name = row[column_nr].strip() + "_wykres.png"
         self.paste(cardschooli.fs_interaction.project_location(project, name), coords, False)

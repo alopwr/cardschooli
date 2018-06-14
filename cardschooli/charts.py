@@ -15,6 +15,17 @@ import cardschooli.gui
 is_chart = False
 CZCIONKA = 5
 
+
+def replace2(text, old, new):
+    return_text = ""
+    for letter in text:
+        if letter == old:
+            return_text += new
+        else:
+            return_text += letter
+    return return_text
+
+
 class QListWidgetItem2(QListWidgetItem):
     """ my own version of QListWidgetItem """
 
@@ -666,7 +677,9 @@ class SerialChartsWindow(QWidget):
                 if int(name) == name:
                     labels.append((str(name)[:(len(str(name)) - 2)] + " g"))
                 else:
-                    labels.append((str(name) + " g"))
+                    labl = (str(name) + " g")
+                    labl = replace2(labl, '.', ',')
+                    labels.append(labl)
             else:
                 labels.append("")
         sizes = []

@@ -13,7 +13,7 @@ import cardschooli.fs_interaction
 import cardschooli.gui
 
 is_chart = False
-
+CZCIONKA = 5
 
 class QListWidgetItem2(QListWidgetItem):
     """ my own version of QListWidgetItem """
@@ -620,6 +620,10 @@ class SerialChartsWindow(QWidget):
 
     def dynamic_font(self, texts, size):
         new_texts = []
+        for txt in texts:
+            txt.set_fontsize(CZCIONKA)
+            new_texts.append(txt)
+        """
         if size[0] >= 300 or size[1] >= 300:
             for txt in texts:
                 txt.set_fontsize(8)
@@ -640,7 +644,7 @@ class SerialChartsWindow(QWidget):
             for txt in texts:
                 txt.set_fontsize(2)
                 new_texts.append(txt)
-
+        """
         return new_texts
 
     def generating_legend(self):
@@ -678,8 +682,8 @@ class SerialChartsWindow(QWidget):
             explode.append(expld)
 
         dpi = 600
-
         plt.figure(figsize=(size[0] / dpi, size[1] / dpi))
+
         patches, texts = plt.pie(sizes, labels=labels, shadow=False, startangle=90, colors=colors,
                                  labeldistance=0.5)
 
@@ -687,7 +691,7 @@ class SerialChartsWindow(QWidget):
         plt.axis("equal")
         plt.savefig(cardschooli.fs_interaction.project_location(window_wykr.project,
                                                                 "{}_wykres.png".format(str(thing).strip())),
-                    dpi=dpi, transparent=True)
+                    dpi=dpi, transparent=False)
 
         self.legend_base_update(names, patches)
         plt.close()

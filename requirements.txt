@@ -11,6 +11,6 @@ pyparsing==2.2.0
 PyQt5==5.11.1
 pytest==3.6.2
 python-dateutil==2.7.3
-pytz==2018.4
+pytz==2018.5
 sip==4.19.8
 six==1.11.0

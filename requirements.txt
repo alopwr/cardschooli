@@ -4,7 +4,7 @@ cycler==0.10.0
 fpdf==1.7.2
 matplotlib==3.0.0
 numpy==1.15.2
-Pillow==5.2.0
+Pillow==5.3.0
 pluggy==0.7.1
 py==1.6.0
 pyparsing==2.2.2

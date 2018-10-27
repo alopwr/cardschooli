@@ -10,7 +10,7 @@ py==1.7.0
 pyparsing==2.2.2
 PyQt5==5.11.3
 pytest==3.9.3
-python-dateutil==2.7.4
+python-dateutil==2.7.5
 pytz==2018.6
 sip==4.19.8
 six==1.11.0

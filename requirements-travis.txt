@@ -13,4 +13,4 @@ pytest==4.0.1
 python-dateutil==2.7.5
 pytz==2018.7
 sip==4.19.8
-six==1.11.0
+six==1.12.0

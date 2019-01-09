@@ -5,7 +5,7 @@ fpdf==1.7.2
 matplotlib==3.0.2
 numpy==1.15.4
 Pillow==5.4.1
-pluggy==0.8.0
+pluggy==0.8.1
 py==1.7.0
 pyparsing==2.3.0
 PyQt5==5.11.3

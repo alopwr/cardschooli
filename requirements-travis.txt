@@ -9,7 +9,7 @@ pluggy==0.9.0
 py==1.8.0
 pyparsing==2.3.1
 PyQt5==5.12.1
-pytest==4.3.1
+pytest==4.4.0
 python-dateutil==2.8.0
 pytz==2018.9
 sip==4.19.8

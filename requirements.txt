@@ -3,7 +3,7 @@ coverage==5.1
 cycler==0.10.0
 fpdf==1.7.2
 matplotlib==3.2.1
-numpy==1.18.3
+numpy==1.18.4
 Pillow==7.1.2
 pluggy==0.13.1
 py==1.8.1

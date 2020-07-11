@@ -5,4 +5,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/m4k5/cardschooli/badge.svg?branch=master)](https://coveralls.io/github/m4k5/cardschooli?branch=master)
 [![Requirements Status](https://requires.io/github/m4k5/cardschooli/requirements.svg?branch=master)](https://requires.io/github/m4k5/cardschooli/requirements/?branch=master)
 
-Gamify education with cards! 
+# Gamify education with cards! 
+Created as a school project in secondary school. Reasons, details and photos [in project's deck](https://slides.com/skica/meal-fight) (in polish).

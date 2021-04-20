@@ -6,7 +6,7 @@ matplotlib==2.2.2
 numpy==1.14.4
 Pillow==5.1.0
 pluggy==0.6.0
-py==1.5.3
+py==1.10.0
 pyparsing==2.2.0
 PyQt5==5.10.1
 pytest==3.6.1
